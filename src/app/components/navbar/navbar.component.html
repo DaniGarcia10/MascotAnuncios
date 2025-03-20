@@ -1,37 +1,50 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Navbar</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+        <a class="navbar-brand font-weight-bold text-primary me-3" href="#">MascotAnuncios</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    Dropdown
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Something else here</a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 text-nowrap">
+                <li class="nav-item active me-3">
+                    <a class="nav-link" routerLink="/publicar">Publicar anuncio</a>
+                </li>
+                <li class="nav-item active me-3">
+                    <a class="nav-link" routerLink="/misanuncios">Mis anuncios</a>
+                </li>
+                <li class="nav-item active me-3">
+                    <a class="nav-link" routerLink="/mismascotas">Mis mascotas</a>
+                </li>
+                <li class="nav-item active me-3">
+                    <a class="nav-link" routerLink="/misuscripcion">Mi subscripcion</a>
+                </li>
+                <li class="nav-item dropdown me-3">
+                    <a class="nav-link dropdown-toggle text-secondary" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-paw"></i> Mascotas
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" routerLink="/perros">Perros</a></li>
+                        <li><a class="dropdown-item" routerLink="/gatos">Gatos</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item me-3">
+                    <a class="nav-link text-secondary" routerLink="/favoritos"><i class="fas fa-heart"></i> Favoritos</a>
+                </li>
+                <li class="nav-item active me-3">
+                    <a class="nav-link" routerLink="/misuscripcion">Perfil</a>
+                </li>
+                <li class="nav-item active me-3">
+                    <a class="nav-link" (click)="logout()">Cerrar sesión</a>
+                </li>
+            </ul>
+            <form class="d-flex">
+                <div class="input-group">
+                    <input class="form-control border-secondary" type="search" placeholder="Buscar mascotas..." aria-label="Search">
+                    <button class="btn btn-secondary text-white" type="submit"><i class="fas fa-search"></i> Buscar</button>
                 </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-            </li>
-        </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
+            </form>
+        </div>
     </div>
 </nav>

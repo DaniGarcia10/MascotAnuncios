@@ -5,6 +5,7 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { environment } from '../environments/environment';
+import { FormsModule } from '@angular/forms'; // Importar FormsModule
 
 @NgModule({
   declarations: [],
@@ -13,7 +14,8 @@ import { environment } from '../environments/environment';
     AppComponent,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule, // Para autenticación
-    AngularFirestoreModule // Para Firestore
+    AngularFirestoreModule, // Para Firestore
+    FormsModule // Agregar FormsModule aquí
   ],
   providers: [],
   // Removed bootstrap array as AppComponent is standalone

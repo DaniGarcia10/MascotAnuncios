@@ -1,2 +1,7 @@
-<app-navbar></app-navbar>
-<!-- ...existing content... -->
+<div class="d-flex flex-column min-vh-100">
+    <app-navbar></app-navbar>
+    <div class="flex-grow-1">
+      <router-outlet></router-outlet> <!-- Contenido dinámico -->
+    </div>
+    <app-footer class="mt-auto"></app-footer>
+  </div>
