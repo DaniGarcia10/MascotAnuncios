@@ -10,7 +10,4 @@ export class Usuario {
         public foto_perfil: string,
     ) { }
 
-    getPerfil(): string {
-        return `${this.nombre} - ${this.vendedor ? 'Vendedor' : 'Comprador'}`;
-    }
 }

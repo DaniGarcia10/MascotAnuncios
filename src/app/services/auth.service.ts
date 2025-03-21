@@ -1,30 +1,58 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Auth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, User } from '@angular/fire/auth';
+import { Observable } from 'rxjs';
+import { Usuario } from '../models/Usuario.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private isLoggedIn: boolean = false; // Estado de autenticación
+  private logueado: boolean = false;
 
-  constructor() {}
+  constructor(private auth:Auth) { }
 
-  login(email: string, password: string): Observable<any> {
-    console.log('Autenticando usuario:', email);
-    this.isLoggedIn = true; // Simulación de inicio de sesión exitoso
-    return of({ success: true });
+  registro(email:string, password:string): any {
+      return createUserWithEmailAndPassword(this.auth, email, password);
   }
 
-  register(email: string, password: string): Observable<any> {
-    console.log('Registrando usuario:', email);
-    return of({ success: true });
+  login(email: string, password: string): Promise<any> {
+    return signInWithEmailAndPassword(this.auth, email, password);
   }
 
-  logout(): void {
-    this.isLoggedIn = false; // Cerrar sesión
+  logout(): Promise<void> {
+    return this.auth.signOut();
   }
 
   isAuthenticated(): boolean {
-    return this.isLoggedIn; // Verificar si está autenticado
+    return this.logueado; // Verificar si está autenticado
   }
+
+  getUserAuthenticated(): Observable<Usuario | null> {
+    return new Observable((observer) => {
+      onAuthStateChanged(
+        this.auth,
+        (usuario: User | null) => {
+          if (usuario) {
+            const usuarioTransformado: Usuario = new Usuario(
+              usuario.uid,
+              usuario.displayName || '', // Nombre
+              '', // Apellidos (Firebase no proporciona esta propiedad)
+              usuario.email || '',
+              '', // Teléfono (Firebase no proporciona esta propiedad)
+              false, // Vendedor (valor predeterminado)
+              '', // ID criadero (valor predeterminado)
+              usuario.photoURL || '' // Foto de perfil
+            );
+            observer.next(usuarioTransformado);
+          } else {
+            observer.next(null);
+          }
+        },
+        (error: Error) => {
+          observer.error(error);
+        }
+      );
+    });
+  }
+
 }

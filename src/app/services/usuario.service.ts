@@ -1,19 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@angular/fire/auth';
+import { map } from 'rxjs/operators';
+import { Database, get,  objectVal,  DataSnapshot,  ref,  set,  child,  query,  orderByChild,  equalTo } from '@angular/fire/database';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuarioService {
+  private COLLECTION_NAME = "usuarios";
 
-  constructor(private auth:Auth) { }
+  constructor(private database: Database) { }
 
-  registro(email:string, password:string): any {
-    return createUserWithEmailAndPassword(this.auth, email, password);
-  }
-
-  login(email: string, password: string): Promise<any> {
-    return signInWithEmailAndPassword(this.auth, email, password);
-  }
 
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { UsuarioService } from '../../services/usuario.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-registro',
@@ -14,7 +14,7 @@ export class RegistroComponent implements OnInit {
 
   formRegistro: FormGroup;
 
-  constructor(private usuarioService: UsuarioService) {
+  constructor(private authService: AuthService) {
     this.formRegistro = new FormGroup({
       nombre: new FormControl('', Validators.required),
       apellidos: new FormControl('', Validators.required),
@@ -35,7 +35,7 @@ export class RegistroComponent implements OnInit {
     const usuario = this.formRegistro.value;
     console.log('Datos del usuario:', usuario);
 
-    this.usuarioService.registro(usuario.email, usuario.password).then((response: any) => {
+    this.authService.registro(usuario.email, usuario.password).then((response: any) => {
       console.log('Registro exitoso:', response);
     }).catch((error: any) => {
       console.error('Error en el registro:', error);

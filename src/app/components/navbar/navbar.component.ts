@@ -11,7 +11,7 @@ export class NavbarComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   logout() {
-    this.authService.logout(); // Cerrar sesión
-    this.router.navigate(['/login']); // Redirigir al login
+    this.authService.logout();
+    this.router.navigate(['/login']); 
   }
 }
