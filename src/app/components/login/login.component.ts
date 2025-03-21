@@ -1,24 +1,30 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms'; // Importar FormsModule
-import { AuthService } from '../../services/auth.service';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { UsuarioService } from '../../services/usuario.service';
 
 @Component({
   selector: 'app-login',
-  standalone: true, // Asegurarse de que sea standalone
-  imports: [FormsModule], // Agregar FormsModule aquí
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css'],
+  standalone: true,
+  imports: [ReactiveFormsModule],
 })
 export class LoginComponent {
-  email: string = '';
-  password: string = '';
+  formLogin: FormGroup;
 
-  constructor(private authService: AuthService) {}
+  constructor(private usuarioService: UsuarioService) {
+    this.formLogin = new FormGroup({
+      email: new FormControl(),
+      password: new FormControl(),
+    });
+  }
 
-  login() {
-    this.authService.login(this.email, this.password).subscribe({
-      next: (response) => console.log('Login exitoso:', response),
-      error: (err) => console.error('Error en login:', err),
+  onSubmit(): void {
+    const { email, password } = this.formLogin.value;
+    this.usuarioService.login(email, password).then((response: any) => {
+      console.log('Login exitoso:', response);
+    }).catch((error: any) => {
+      console.error('Error en el login:', error.message);
     });
   }
 }

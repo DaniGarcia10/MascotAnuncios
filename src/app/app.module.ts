@@ -1,23 +1,30 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { AppComponent } from './app.component';
-import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFireAuthModule } from '@angular/fire/compat/auth';
-import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { ReactiveFormsModule } from '@angular/forms';
+import { AppRoutes } from './app.routes';
 import { environment } from '../environments/environment';
-import { FormsModule } from '@angular/forms'; // Importar FormsModule
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { provideAuth, getAuth } from '@angular/fire/auth';
+import { AppComponent } from './app.component';
+import { LoginComponent } from './components/login/login.component';
+import { RegistroComponent } from './components/registro/registro.component';
 
 @NgModule({
   declarations: [],
   imports: [
     BrowserModule,
+    AppRoutes,
+    ReactiveFormsModule,
     AppComponent,
-    AngularFireModule.initializeApp(environment.firebase),
-    AngularFireAuthModule, // Para autenticación
-    AngularFirestoreModule, // Para Firestore
-    FormsModule // Agregar FormsModule aquí
+    LoginComponent,
+    RegistroComponent,
+    BrowserModule,
+    ReactiveFormsModule
   ],
-  providers: [],
-  // Removed bootstrap array as AppComponent is standalone
+  providers: [
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
+  ],
+  bootstrap: []
 })
 export class AppModule { }
