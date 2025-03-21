@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container">
-        <a class="navbar-brand font-weight-bold text-primary me-3" href="#">MascotAnuncios</a>
+        <a class="navbar-brand font-weight-bold text-primary me-3" href="#Inicio">MascotAnuncios</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -8,36 +8,46 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 text-nowrap">
-                <li class="nav-item active me-3">
-                    <a class="nav-link" routerLink="/publicar">Publicar anuncio</a>
-                </li>
-                <li class="nav-item active me-3">
-                    <a class="nav-link" routerLink="/misanuncios">Mis anuncios</a>
-                </li>
-                <li class="nav-item active me-3">
-                    <a class="nav-link" routerLink="/mismascotas">Mis mascotas</a>
-                </li>
-                <li class="nav-item active me-3">
-                    <a class="nav-link" routerLink="/misuscripcion">Mi susscripcion</a>
-                </li>
-                <li class="nav-item dropdown me-3">
-                    <a class="nav-link dropdown-toggle text-secondary" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-paw"></i> Mascotas
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" routerLink="/perros">Perros</a></li>
-                        <li><a class="dropdown-item" routerLink="/gatos">Gatos</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item me-3">
-                    <a class="nav-link text-secondary" routerLink="/favoritos"><i class="fas fa-heart"></i> Favoritos</a>
-                </li>
-                <li class="nav-item active me-3">
-                    <a class="nav-link" routerLink="/misuscripcion">Perfil</a>
-                </li>
-                <li class="nav-item active me-3">
-                    <a class="nav-link" (click)="logout()">Cerrar sesión</a>
-                </li>
+                <ng-container *ngIf="isAuthenticated; else guestLinks">
+                    <li class="nav-item active me-3">
+                        <a class="nav-link" routerLink="/publicar">Publicar anuncio</a>
+                    </li>
+                    <li class="nav-item active me-3">
+                        <a class="nav-link" routerLink="/misanuncios">Mis anuncios</a>
+                    </li>
+                    <li class="nav-item active me-3">
+                        <a class="nav-link" routerLink="/mismascotas">Mis mascotas</a>
+                    </li>
+                    <li class="nav-item active me-3">
+                        <a class="nav-link" routerLink="/misuscripcion">Mi suscripción</a>
+                    </li>
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link dropdown-toggle text-secondary" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-paw"></i> Mascotas
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" routerLink="/perros">Perros</a></li>
+                            <li><a class="dropdown-item" routerLink="/gatos">Gatos</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link text-secondary" routerLink="/favoritos"><i class="fas fa-heart"></i> Favoritos</a>
+                    </li>
+                    <li class="nav-item active me-3">
+                        <a class="nav-link" routerLink="/perfil">Perfil</a>
+                    </li>
+                    <li class="nav-item active me-3">
+                        <a class="nav-link" (click)="logout()">Cerrar sesión</a>
+                    </li>
+                </ng-container>
+                <ng-template #guestLinks>
+                    <li class="nav-item me-3">
+                        <a class="nav-link text-secondary" routerLink="/login"><i class="fas fa-heart"></i> Iniciar sesión</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link text-secondary" routerLink="/registro"><i class="fas fa-heart"></i> Registrarse</a>
+                    </li>
+                </ng-template>
             </ul>
             <form class="d-flex">
                 <div class="input-group">

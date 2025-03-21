@@ -9,10 +9,14 @@ import { Usuario } from '../models/Usuario.model';
 export class AuthService {
   private logueado: boolean = false;
 
-  constructor(private auth:Auth) { }
+  constructor(private auth: Auth) {
+    onAuthStateChanged(this.auth, (user) => {
+      this.logueado = !!user;
+    });
+  }
 
-  registro(email:string, password:string): any {
-      return createUserWithEmailAndPassword(this.auth, email, password);
+  registro(email: string, password: string): any {
+    return createUserWithEmailAndPassword(this.auth, email, password);
   }
 
   login(email: string, password: string): Promise<any> {
@@ -24,35 +28,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.logueado; // Verificar si está autenticado
-  }
-
-  getUserAuthenticated(): Observable<Usuario | null> {
-    return new Observable((observer) => {
-      onAuthStateChanged(
-        this.auth,
-        (usuario: User | null) => {
-          if (usuario) {
-            const usuarioTransformado: Usuario = new Usuario(
-              usuario.uid,
-              usuario.displayName || '', // Nombre
-              '', // Apellidos (Firebase no proporciona esta propiedad)
-              usuario.email || '',
-              '', // Teléfono (Firebase no proporciona esta propiedad)
-              false, // Vendedor (valor predeterminado)
-              '', // ID criadero (valor predeterminado)
-              usuario.photoURL || '' // Foto de perfil
-            );
-            observer.next(usuarioTransformado);
-          } else {
-            observer.next(null);
-          }
-        },
-        (error: Error) => {
-          observer.error(error);
-        }
-      );
-    });
+    return this.logueado;
   }
 
 }
