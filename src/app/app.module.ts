@@ -8,10 +8,14 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegistroComponent } from './components/registro/registro.component';
+import { RouterModule } from '@angular/router';
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 
 @NgModule({
   declarations: [],
   imports: [
+    RouterModule,
     BrowserModule,
     AppRoutes,
     ReactiveFormsModule,
@@ -19,7 +23,9 @@ import { RegistroComponent } from './components/registro/registro.component';
     LoginComponent,
     RegistroComponent,
     BrowserModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule
   ],
   providers: [
     provideFirebaseApp(() => initializeApp(environment.firebase)),

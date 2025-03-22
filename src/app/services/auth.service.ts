@@ -1,34 +1,70 @@
-import { Injectable } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, User } from '@angular/fire/auth';
-import { Observable } from 'rxjs';
-import { Usuario } from '../models/Usuario.model';
+import { Injectable, NgZone } from '@angular/core';
+import { Usuario } from '../models/Usuario.model'; 
+import { Auth, User, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword } from '@angular/fire/auth';
+import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private logueado: boolean = false;
+  private logueado = new BehaviorSubject<boolean>(false); // Cambiar a BehaviorSubject
 
-  constructor(private auth: Auth) {
+  constructor(private auth: Auth, private ngZone: NgZone, private firestore: Firestore) {
     onAuthStateChanged(this.auth, (user) => {
-      this.logueado = !!user;
+      this.ngZone.run(() => {
+        this.logueado.next(!!user); // Actualizar el estado de autenticación dentro de NgZone
+      });
     });
   }
 
   registro(email: string, password: string): any {
-    return createUserWithEmailAndPassword(this.auth, email, password);
+    return this.ngZone.run(() => {
+      return createUserWithEmailAndPassword(this.auth, email, password);
+    });
   }
 
   login(email: string, password: string): Promise<any> {
-    return signInWithEmailAndPassword(this.auth, email, password);
+    return this.ngZone.run(() => {
+      return signInWithEmailAndPassword(this.auth, email, password);
+    });
   }
 
   logout(): Promise<void> {
-    return this.auth.signOut();
+    return this.ngZone.run(() => {
+      return this.auth.signOut(); // Asegurar que signOut se ejecuta dentro de NgZone
+    });
   }
 
-  isAuthenticated(): boolean {
-    return this.logueado;
+  isAuthenticated(): BehaviorSubject<boolean> {
+    return this.logueado; // Retornar el BehaviorSubject
+  }
+
+  getUserDataAuth(): Observable<{ user: User | null, usuario: Usuario | null }> {
+    return new Observable(observer => {
+      onAuthStateChanged(this.auth, async (user) => {
+        if (user) {
+          console.log('Usuario autenticado:', user);
+          try {
+            const userDocRef = doc(this.firestore, 'usuarios', user.uid); // Ruta de la colección 'usuarios'
+            const userDocSnap = await getDoc(userDocRef);
+
+            if (userDocSnap.exists()) {
+              const usuarioData = userDocSnap.data() as Usuario; // Mapear los datos al modelo Usuario
+              console.log('Datos del usuario obtenidos de Firestore:', usuarioData);
+              observer.next({ user, usuario: usuarioData });
+            } else {
+              observer.next({ user, usuario: null }); // Usuario no encontrado en Firestore
+            }
+          } catch (error) {
+            console.error('Error al obtener los datos del usuario:', error);
+            observer.error(error);
+          }
+        } else {
+          observer.next({ user: null, usuario: null }); // Usuario no autenticado
+        }
+      });
+    });
   }
 
 }

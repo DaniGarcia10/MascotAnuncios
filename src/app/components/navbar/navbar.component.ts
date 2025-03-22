@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 
@@ -8,17 +8,22 @@ import { CommonModule } from '@angular/common';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, RouterModule]
 })
-export class NavbarComponent {
-  get isAuthenticated(): boolean {
-    return this.authService.isAuthenticated();
-  }
+export class NavbarComponent implements OnInit {
+  isAuthenticated = false; // Variable local para el estado de autenticación
 
   constructor(private authService: AuthService, private router: Router) {}
 
+  ngOnInit(): void {
+    this.authService.isAuthenticated().subscribe((authStatus) => {
+      this.isAuthenticated = authStatus; // Actualizar el estado local
+    });
+  }
+
   logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']); 
+    this.authService.logout().then(() => {
+      this.router.navigate(['/login']);
+    });
   }
 }

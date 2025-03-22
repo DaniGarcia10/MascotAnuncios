@@ -1,0 +1,14 @@
+<div class="container mt-4">
+  <h2>Mi Perfil</h2>
+  <div *ngIf="usuario; else noUsuario">
+    <p><strong>Nombre:</strong> {{ usuario.nombre }} {{ usuario.apellidos }}</p>
+    <p><strong>Email:</strong> {{ usuario.email }}</p>
+    <p><strong>Teléfono:</strong> {{ usuario.telefono }}</p>
+    <p><strong>Vendedor:</strong> {{ usuario.vendedor ? 'Sí' : 'No' }}</p>
+    <p><strong>ID Criadero:</strong> {{ usuario.id_criadero }}</p>
+    <img *ngIf="usuario.foto_perfil" [src]="usuario.foto_perfil" alt="Foto de perfil" class="img-thumbnail" />
+  </div>
+  <ng-template #noUsuario>
+    <p>No se encontraron datos del usuario.</p>
+  </ng-template>
+</div>

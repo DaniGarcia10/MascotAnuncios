@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { Database, get,  objectVal,  DataSnapshot,  ref,  set,  child,  query,  orderByChild,  equalTo } from '@angular/fire/database';
+import { Injectable, inject } from '@angular/core';
+import { Database, ref, set } from '@angular/fire/database';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +7,13 @@ import { Database, get,  objectVal,  DataSnapshot,  ref,  set,  child,  query,  
 export class UsuarioService {
   private COLLECTION_NAME = "usuarios";
 
-  constructor(private database: Database) { }
+  private database = inject(Database); // Usar inject para obtener la instancia de Database
 
+  constructor() {}
 
+  // Ejemplo de método para guardar un usuario
+  saveUser(userId: string, data: any): Promise<void> {
+    const userRef = ref(this.database, `${this.COLLECTION_NAME}/${userId}`);
+    return set(userRef, data);
+  }
 }
