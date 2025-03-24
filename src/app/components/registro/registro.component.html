@@ -10,22 +10,45 @@
             <div class="mb-3">
               <label for="nombre" class="form-label">Nombre:</label>
               <input id="nombre" formControlName="nombre" type="text" class="form-control" placeholder="Ingresa tu nombre" required>
+              <div *ngIf="formRegistro.get('nombre')?.invalid && formRegistro.get('nombre')?.touched" class="text-danger">
+                <small *ngIf="formRegistro.get('nombre')?.errors?.['required']">El nombre es obligatorio.</small>
+                <small *ngIf="formRegistro.get('nombre')?.errors?.['maxlength']">Máximo 30 caracteres permitidos.</small>
+              </div>
             </div>
             <div class="mb-3">
               <label for="apellidos" class="form-label">Apellidos:</label>
               <input id="apellidos" formControlName="apellidos" type="text" class="form-control" placeholder="Ingresa tus apellidos" required>
+              <div *ngIf="formRegistro.get('apellidos')?.invalid && formRegistro.get('apellidos')?.touched" class="text-danger">
+                <small *ngIf="formRegistro.get('apellidos')?.errors?.['required']">Los apellidos son obligatorios.</small>
+                <small *ngIf="formRegistro.get('apellidos')?.errors?.['maxlength']">Máximo 50 caracteres permitidos.</small>
+              </div>
             </div>
             <div class="mb-3">
               <label for="email" class="form-label">Correo electrónico:</label>
               <input id="email" formControlName="email" type="email" class="form-control" placeholder="Ingresa tu correo" required>
+              <div *ngIf="formRegistro.get('email')?.invalid && formRegistro.get('email')?.touched" class="text-danger">
+                <small *ngIf="formRegistro.get('email')?.errors?.['required']">El correo es obligatorio.</small>
+                <small *ngIf="formRegistro.get('email')?.errors?.['email']">El formato del correo no es válido.</small>
+                <small *ngIf="formRegistro.get('email')?.errors?.['maxlength']">Máximo 50 caracteres permitidos.</small>
+              </div>
             </div>
             <div class="mb-3">
               <label for="telefono" class="form-label">Teléfono:</label>
               <input id="telefono" formControlName="telefono" type="text" class="form-control" placeholder="Ingresa tu teléfono" required>
+              <div *ngIf="formRegistro.get('telefono')?.invalid && formRegistro.get('telefono')?.touched" class="text-danger">
+                <small *ngIf="formRegistro.get('telefono')?.errors?.['required']">El teléfono es obligatorio.</small>
+                <small *ngIf="formRegistro.get('telefono')?.errors?.['pattern']">Solo se permiten números.</small>
+                <small *ngIf="formRegistro.get('telefono')?.errors?.['maxlength']">Máximo 15 caracteres permitidos.</small>
+              </div>
             </div>
             <div class="mb-3">
               <label for="password" class="form-label">Contraseña:</label>
               <input id="password" formControlName="password" type="password" class="form-control" placeholder="Ingresa tu contraseña" required>
+              <div *ngIf="formRegistro.get('password')?.invalid && formRegistro.get('password')?.touched" class="text-danger">
+                <small *ngIf="formRegistro.get('password')?.errors?.['required']">La contraseña es obligatoria.</small>
+                <small *ngIf="formRegistro.get('password')?.errors?.['minlength']">Mínimo 6 caracteres requeridos.</small>
+                <small *ngIf="formRegistro.get('password')?.errors?.['maxlength']">Máximo 20 caracteres permitidos.</small>
+              </div>
             </div>
             <div class="form-check mb-3">
               <input id="vendedor" formControlName="vendedor" type="checkbox" class="form-check-input">
@@ -36,10 +59,19 @@
               <div class="mb-3">
                 <label for="criadero-nombre" class="form-label">Nombre del Criadero:</label>
                 <input id="criadero-nombre" formControlName="nombre" type="text" class="form-control" placeholder="Ingresa el nombre del criadero">
+                <div *ngIf="formRegistro.get('criadero.nombre')?.invalid && formRegistro.get('criadero.nombre')?.touched" class="text-danger">
+                  <small *ngIf="formRegistro.get('criadero.nombre')?.errors?.['maxlength']">Máximo 50 caracteres permitidos.</small>
+                </div>
               </div>
               <div class="mb-3">
                 <label for="nucleo-zoologico" class="form-label">Núcleo Zoológico:</label>
                 <input id="nucleo-zoologico" formControlName="nucleo_zoologico" type="text" class="form-control" placeholder="Ingresa el núcleo zoológico">
+                <div *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.invalid && formRegistro.get('criadero.nucleo_zoologico')?.touched" class="text-danger">
+                  <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['required']">El núcleo zoológico es obligatorio.</small>
+                  <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['pattern']">Solo se permiten caracteres alfanuméricos.</small>
+                  <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['minlength']">Debe tener exactamente 12 caracteres.</small>
+                  <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['maxlength']">Debe tener exactamente 12 caracteres.</small>
+                </div>
               </div>
             </div>
             <button type="submit" class="btn btn-primary w-100">Registrarse</button>

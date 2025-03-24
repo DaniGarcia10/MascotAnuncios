@@ -16,15 +16,20 @@ export class RegistroComponent implements OnInit {
 
   constructor(private authService: AuthService) {
     this.formRegistro = new FormGroup({
-      nombre: new FormControl('', Validators.required),
-      apellidos: new FormControl('', Validators.required),
-      email: new FormControl('', [Validators.required, Validators.email]),
-      telefono: new FormControl('', Validators.required),
+      nombre: new FormControl('', [Validators.required, Validators.maxLength(30)]),
+      apellidos: new FormControl('', [Validators.required, Validators.maxLength(50)]),
+      email: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(50)]),
+      telefono: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.maxLength(15)]),
       vendedor: new FormControl(false),
-      password: new FormControl('', [Validators.required, Validators.minLength(6)]),
+      password: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(20)]),
       criadero: new FormGroup({
-        nombre: new FormControl(''),
-        nucleo_zoologico: new FormControl('')
+        nombre: new FormControl('', [Validators.maxLength(50)]),
+        nucleo_zoologico: new FormControl('', [
+          Validators.required,
+          Validators.pattern('^[a-zA-Z0-9]+$'),
+          Validators.minLength(12),
+          Validators.maxLength(12)
+        ])
       })
     });
   }

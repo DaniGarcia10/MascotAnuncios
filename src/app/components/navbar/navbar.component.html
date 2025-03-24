@@ -35,15 +35,15 @@
                         <a class="nav-link text-secondary" routerLink="/favoritos"><i class="fas fa-heart"></i>
                             Favoritos</a>
                     </li>
+                    <li class="nav-item active me-3">
+                        <a class="nav-link" routerLink="/perfil">Perfil</a>
+                    </li>
                     <form class="d-flex">
                         <div class="input-group">
                             <input class="form-control border-secondary" type="search" placeholder="Buscar..." aria-label="Search">
                             <button class="btn btn-secondary text-white" type="submit"><i class="fas fa-search"></i> Buscar</button>
                         </div>
                     </form>
-                    <li class="nav-item active me-3">
-                        <a class="nav-link" routerLink="/perfil">Perfil</a>
-                    </li>
                     <li class="nav-item active me-3">
                         <a class="nav-link" (click)="logout()">Cerrar sesión</a>
                     </li>

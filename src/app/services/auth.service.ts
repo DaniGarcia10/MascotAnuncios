@@ -3,6 +3,7 @@ import { Usuario } from '../models/Usuario.model';
 import { Auth, User, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword } from '@angular/fire/auth';
 import { Firestore, doc, getDoc } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { getDownloadURL, ref, Storage } from '@angular/fire/storage'; // Importar Firebase Storage
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class AuthService {
   private logueado = new BehaviorSubject<boolean>(false); // Cambiar a BehaviorSubject
 
-  constructor(private auth: Auth, private ngZone: NgZone, private firestore: Firestore) {
+  constructor(private auth: Auth, private ngZone: NgZone, private firestore: Firestore, private storage: Storage) {
     onAuthStateChanged(this.auth, (user) => {
       this.ngZone.run(() => {
         this.logueado.next(!!user); // Actualizar el estado de autenticación dentro de NgZone
@@ -50,7 +51,19 @@ export class AuthService {
             const userDocSnap = await getDoc(userDocRef);
 
             if (userDocSnap.exists()) {
-              const usuarioData = userDocSnap.data() as Usuario; // Mapear los datos al modelo Usuario
+              const usuarioData = userDocSnap.data() as Usuario;
+
+              // Obtener la URL de la imagen desde Firebase Storage
+              const imageDocRef = doc(this.firestore, 'imagenes', usuarioData.foto_perfil);
+              const imageDocSnap = await getDoc(imageDocRef);
+              const imageData = imageDocSnap.data();
+              const url = imageData ? imageData["url"] : null;
+              console.log('Datos de la imagen obtenidos de Firestore:', imageDocSnap.data());
+              if (usuarioData.foto_perfil) {
+                const imageRef = ref(this.storage, url);
+                usuarioData.foto_perfil = await getDownloadURL(imageRef);
+              }
+
               console.log('Datos del usuario obtenidos de Firestore:', usuarioData);
               observer.next({ user, usuario: usuarioData });
             } else {
