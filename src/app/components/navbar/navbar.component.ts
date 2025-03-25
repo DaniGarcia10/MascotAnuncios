@@ -12,12 +12,17 @@ import { CommonModule } from '@angular/common';
 })
 export class NavbarComponent implements OnInit {
   isAuthenticated = false; // Variable local para el estado de autenticación
+  esVendedor = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     this.authService.isAuthenticated().subscribe((authStatus) => {
       this.isAuthenticated = authStatus; // Actualizar el estado local
+    });
+
+    this.authService.getUserDataAuth().subscribe(({ usuario }) => {
+      this.esVendedor = usuario?.vendedor ?? false;
     });
   }
 

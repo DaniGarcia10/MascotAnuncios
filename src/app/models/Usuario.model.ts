@@ -9,5 +9,9 @@ export class Usuario {
         public id_criadero: string,
         public foto_perfil: string,
     ) { }
+    
+    esVendedor(): boolean {
+        return this.vendedor;
+    }
 
 }
