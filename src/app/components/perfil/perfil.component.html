@@ -1,53 +1,76 @@
 <div class="container mt-4 d-flex justify-content-center">
-  <div class="w-50"> 
+  <div class="w-50">
     <h2 class="text-center">Mi Perfil</h2>
-    <div *ngIf="usuario; else noUsuario" class="d-flex align-items-center">
-      <div class="flex-grow-1"> 
-        <p>
-          <strong>Nombre:</strong>
-          <span *ngIf="!editMode">{{ usuario.nombre }}</span>
-          <input *ngIf="editMode" [(ngModel)]="usuario.nombre" class="form-control" />
-        </p>
-        <p>
-          <strong>Apellidos:</strong>
-          <span *ngIf="!editMode">{{ usuario.apellidos }}</span>
-          <input *ngIf="editMode" [(ngModel)]="usuario.apellidos" class="form-control" />
-        </p>
-        <p>
-          <strong>Email:</strong>
-          <span *ngIf="!editMode">{{ usuario.email }}</span>
-          <input *ngIf="editMode" [(ngModel)]="usuario.email" class="form-control" />
-        </p>
-        <p>
-          <strong>Teléfono:</strong>
-          <span *ngIf="!editMode">{{ usuario.telefono }}</span>
-          <input *ngIf="editMode" [(ngModel)]="usuario.telefono" class="form-control" />
-        </p>
-        <p>
-          <strong>Vendedor:</strong>
-          <span *ngIf="!editMode">{{ usuario.vendedor ? 'Sí' : 'No' }}</span>
-          <select *ngIf="editMode" [(ngModel)]="usuario.vendedor" class="form-control">
-            <option [value]="true">Sí</option>
-            <option [value]="false">No</option>
-          </select>
-        </p>
-        <p>
-          <strong>ID Criadero:</strong>
-          <span *ngIf="!editMode">{{ usuario.id_criadero }}</span>
-          <input *ngIf="editMode" [(ngModel)]="usuario.id_criadero" class="form-control" />
-        </p>
+    <form [formGroup]="perfilForm" *ngIf="usuario; else noUsuario">
+      <div class="d-flex align-items-center">
+        <div class="flex-grow-1">
+          <div class="mb-3">
+            <label><strong>Nombre:</strong></label>
+            <span *ngIf="!editMode">{{ usuario.nombre }}</span>
+            <input *ngIf="editMode" formControlName="nombre" class="form-control" />
+            <div *ngIf="perfilForm.get('nombre')?.invalid && perfilForm.get('nombre')?.touched" class="text-danger">
+              <small *ngIf="perfilForm.get('nombre')?.errors?.['required']">El nombre es obligatorio.</small>
+              <small *ngIf="perfilForm.get('nombre')?.errors?.['maxlength']">Máximo 30 caracteres permitidos.</small>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label><strong>Apellidos:</strong></label>
+            <span *ngIf="!editMode">{{ usuario.apellidos }}</span>
+            <input *ngIf="editMode" formControlName="apellidos" class="form-control" />
+            <div *ngIf="perfilForm.get('apellidos')?.invalid && perfilForm.get('apellidos')?.touched" class="text-danger">
+              <small *ngIf="perfilForm.get('apellidos')?.errors?.['required']">Los apellidos son obligatorios.</small>
+              <small *ngIf="perfilForm.get('apellidos')?.errors?.['maxlength']">Máximo 50 caracteres permitidos.</small>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label><strong>Email:</strong></label>
+            <span *ngIf="!editMode">{{ usuario.email }}</span>
+            <input *ngIf="editMode" formControlName="email" class="form-control" />
+            <div *ngIf="perfilForm.get('email')?.invalid && perfilForm.get('email')?.touched" class="text-danger">
+              <small *ngIf="perfilForm.get('email')?.errors?.['required']">El correo es obligatorio.</small>
+              <small *ngIf="perfilForm.get('email')?.errors?.['email']">El formato del correo no es válido.</small>
+              <small *ngIf="perfilForm.get('email')?.errors?.['maxlength']">Máximo 50 caracteres permitidos.</small>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label><strong>Teléfono:</strong></label>
+            <span *ngIf="!editMode">{{ usuario.telefono }}</span>
+            <input *ngIf="editMode" formControlName="telefono" class="form-control" />
+            <div *ngIf="perfilForm.get('telefono')?.invalid && perfilForm.get('telefono')?.touched" class="text-danger">
+              <small *ngIf="perfilForm.get('telefono')?.errors?.['required']">El teléfono es obligatorio.</small>
+              <small *ngIf="perfilForm.get('telefono')?.errors?.['pattern']">Solo se permiten números.</small>
+              <small *ngIf="perfilForm.get('telefono')?.errors?.['maxlength']">Máximo 15 caracteres permitidos.</small>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label><strong>Vendedor:</strong></label>
+            <span *ngIf="!editMode">{{ usuario.vendedor ? 'Sí' : 'No' }}</span>
+            <select *ngIf="editMode" formControlName="vendedor" class="form-control">
+              <option [value]="true">Sí</option>
+              <option [value]="false">No</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label><strong>ID Criadero:</strong></label>
+            <span *ngIf="!editMode">{{ usuario.id_criadero }}</span>
+            <input *ngIf="editMode" formControlName="id_criadero" class="form-control" />
+            <div *ngIf="perfilForm.get('id_criadero')?.invalid && perfilForm.get('id_criadero')?.touched" class="text-danger">
+              <small *ngIf="perfilForm.get('id_criadero')?.errors?.['maxlength']">Máximo 50 caracteres permitidos.</small>
+            </div>
+          </div>
+        </div>
+        <img 
+          *ngIf="usuario.foto_perfil" 
+          [src]="usuario.foto_perfil" 
+          alt="Foto de perfil" 
+          class="img-thumbnail" 
+          style="width: 200px; height: 200px; border-radius: 50%; margin-left: 20px;" 
+        />
       </div>
-      <img 
-        *ngIf="usuario.foto_perfil" 
-        [src]="usuario.foto_perfil" 
-        alt="Foto de perfil" 
-        class="img-thumbnail" 
-        style="width: 200px; height: 200px; border-radius: 50%; margin-left: 20px;" 
-      />
-    </div>
-    <button class="btn btn-primary mt-3" (click)="toggleEditMode()">
-      {{ editMode ? 'Guardar Cambios' : 'Modificar Perfil' }}
-    </button>
+      <button type="button" class="btn btn-primary mt-3" (click)="toggleEditMode()">
+        {{ editMode ? 'Guardar Cambios' : 'Modificar Perfil' }}
+      </button>
+    </form>
     <ng-template #noUsuario>
       <p>No se encontraron datos del usuario.</p>
     </ng-template>

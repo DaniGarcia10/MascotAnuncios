@@ -1,0 +1,30 @@
+<div class="container mt-4">
+  <div *ngIf="anuncios.length > 0; else noAnuncios">
+    <div *ngFor="let anuncio of anuncios" class="card mb-3 border-primary">
+      <div class="card-header bg-primary text-white">
+        <h5 class="card-title">{{ anuncio.titulo }}</h5>
+      </div>
+      <div class="card-body bg-light">
+        <p class="card-text"><strong>Descripción:</strong> {{ anuncio.descripcion }}</p>
+        <p class="card-text"><strong>Raza:</strong> {{ anuncio.raza }}</p>
+        <p class="card-text"><strong>Es perro:</strong> {{ anuncio.perro ? 'Sí' : 'No' }}</p>
+        <p class="card-text"><strong>Edad:</strong> {{ anuncio.edad }}</p>
+        <p class="card-text"><strong>Ubicación:</strong> {{ anuncio.ubicacion }}</p>
+        <p class="card-text"><strong>Fecha de publicación:</strong> {{ anuncio.fecha_publicacion }}</p>
+        <p class="card-text"><strong>Activo:</strong> {{ anuncio.activo ? 'Sí' : 'No' }}</p>
+        <p class="card-text"><strong>Destacado:</strong> {{ anuncio.destacado ? 'Sí' : 'No' }}</p>
+        <p class="card-text"><strong>Especificar cachorros:</strong> {{ anuncio.especificar_cachorros ? 'Sí' : 'No' }}</p>
+        <p class="card-text"><strong>ID Padre:</strong> {{ anuncio.id_padre || 'No especificado' }}</p>
+        <p class="card-text"><strong>ID Madre:</strong> {{ anuncio.id_madre || 'No especificado' }}</p>
+        <p class="card-text"><strong>Publicado por:</strong> {{ anuncio.id_usuario }}</p>
+        <p class="card-text"><strong>ID Imágenes:</strong> {{ anuncio.id_imagenes ? anuncio.id_imagenes.join(', ') : 'No especificado' }}</p>
+      </div>
+      <div class="card-footer bg-warning text-dark">
+        <small>ID del anuncio: {{ anuncio.id }}</small>
+      </div>
+    </div>
+  </div>
+  <ng-template #noAnuncios>
+    <p class="text-center text-danger">No hay anuncios disponibles.</p>
+  </ng-template>
+</div>

@@ -53,14 +53,9 @@ export class AuthService {
             if (userDocSnap.exists()) {
               const usuarioData = userDocSnap.data() as Usuario;
 
-              // Obtener la URL de la imagen desde Firebase Storage
-              const imageDocRef = doc(this.firestore, 'imagenes', usuarioData.foto_perfil);
-              const imageDocSnap = await getDoc(imageDocRef);
-              const imageData = imageDocSnap.data();
-              const url = imageData ? imageData["url"] : null;
-              console.log('Datos de la imagen obtenidos de Firestore:', imageDocSnap.data());
+              
               if (usuarioData.foto_perfil) {
-                const imageRef = ref(this.storage, url);
+                const imageRef = ref(this.storage, usuarioData.foto_perfil);
                 usuarioData.foto_perfil = await getDownloadURL(imageRef);
               }
 
