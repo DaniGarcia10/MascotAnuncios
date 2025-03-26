@@ -4,6 +4,7 @@ import { Auth, User, createUserWithEmailAndPassword, onAuthStateChanged, signInW
 import { Firestore, doc, getDoc } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { getDownloadURL, ref, Storage } from '@angular/fire/storage'; // Importar Firebase Storage
+import { UsuarioService } from './usuario.service'; // Importar UsuarioService
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ import { getDownloadURL, ref, Storage } from '@angular/fire/storage'; // Importa
 export class AuthService {
   private logueado = new BehaviorSubject<boolean>(false); // Cambiar a BehaviorSubject
 
-  constructor(private auth: Auth, private ngZone: NgZone, private firestore: Firestore, private storage: Storage) {
+  constructor(private auth: Auth, private ngZone: NgZone, private firestore: Firestore, private usuarioService: UsuarioService) {
     onAuthStateChanged(this.auth, (user) => {
       this.ngZone.run(() => {
         this.logueado.next(!!user); // Actualizar el estado de autenticación dentro de NgZone
@@ -53,10 +54,8 @@ export class AuthService {
             if (userDocSnap.exists()) {
               const usuarioData = userDocSnap.data() as Usuario;
 
-              
               if (usuarioData.foto_perfil) {
-                const imageRef = ref(this.storage, usuarioData.foto_perfil);
-                usuarioData.foto_perfil = await getDownloadURL(imageRef);
+                usuarioData.foto_perfil = await this.usuarioService.getFotoPerfil(usuarioData.foto_perfil);
               }
 
               console.log('Datos del usuario obtenidos de Firestore:', usuarioData);
