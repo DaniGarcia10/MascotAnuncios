@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AnunciosResumeComponent } from './anuncios-resume.component';
 
 describe('AnunciosResumeComponent', () => {

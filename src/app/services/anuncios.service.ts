@@ -2,15 +2,16 @@ import { Injectable } from '@angular/core';
 import { Firestore, collection, collectionData } from '@angular/fire/firestore';
 import { getDownloadURL, ref, Storage } from '@angular/fire/storage';
 import { Observable, from } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 import { Anuncio } from '../models/Anuncio.model';
+import { ImagenService } from './imagen.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnunciosService {
 
-  constructor(private firestore: Firestore, private storage: Storage) { }
+  constructor(private firestore: Firestore, private storage: Storage, private imagenService: ImagenService) { }
 
   getAnuncios(): Observable<Anuncio[]> {
     const anunciosCollection = collection(this.firestore, 'anuncios');
@@ -19,12 +20,7 @@ export class AnunciosService {
         from(Promise.all(
           anuncios.map(async (anuncio) => {
             if (anuncio.id_imagenes && anuncio.id_imagenes.length > 0) {
-              anuncio.id_imagenes = await Promise.all(
-                anuncio.id_imagenes.map(async (imagenPath: string) => {
-                  const imageRef = ref(this.storage, imagenPath);
-                  return getDownloadURL(imageRef);
-                })
-              );
+              anuncio.id_imagenes = await this.imagenService.cargarImagenes(anuncio.id_imagenes);
             }
             console.log('Datos del anuncio:', anuncio);
             return anuncio;

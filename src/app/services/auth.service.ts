@@ -54,10 +54,6 @@ export class AuthService {
             if (userDocSnap.exists()) {
               const usuarioData = userDocSnap.data() as Usuario;
 
-              if (usuarioData.foto_perfil) {
-                usuarioData.foto_perfil = await this.usuarioService.getFotoPerfil(usuarioData.foto_perfil);
-              }
-
               console.log('Datos del usuario obtenidos de Firestore:', usuarioData);
               observer.next({ user, usuario: usuarioData });
             } else {

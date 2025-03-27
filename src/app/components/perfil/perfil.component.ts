@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
-import { AuthService } from '../../services/auth.service';
 import { Usuario } from '../../models/Usuario.model';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import { UsuarioService } from '../../services/usuario.service'; // Importar UsuarioService
+import { Auth } from '@angular/fire/auth'; 
 
 @Component({
   selector: 'app-perfil',
@@ -17,7 +18,7 @@ export class PerfilComponent implements OnInit {
   editMode: boolean = false;
   perfilForm: FormGroup; 
 
-  constructor(private authService: AuthService) {
+  constructor(private auth: Auth, private usuarioService: UsuarioService) { // Inyectar Auth y UsuarioService
     this.perfilForm = new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.maxLength(30)]),
       apellidos: new FormControl('', [Validators.required, Validators.maxLength(50)]),
@@ -29,17 +30,20 @@ export class PerfilComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.authService.getUserDataAuth().subscribe({
-      next: (data) => {
-        this.usuario = data.usuario;
+    const user = this.auth.currentUser; // Obtener el usuario autenticado
+    if (user) {
+      this.usuarioService.getUsuarioById(user.uid).then((usuario) => {
+        this.usuario = usuario;
         if (this.usuario) {
+          console.log('Datos del usuario:', this.usuario);
           this.perfilForm.patchValue(this.usuario);
         }
-      },
-      error: (err) => {
+      }).catch((err) => {
         console.error('Error al obtener los datos del usuario:', err);
-      }
-    });
+      });
+    } else {
+      console.log('No hay usuario autenticado');
+    }
   }
 
   toggleEditMode(): void {

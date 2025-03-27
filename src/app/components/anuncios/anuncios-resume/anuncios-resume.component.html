@@ -1,45 +1,50 @@
-<div class="container mt-4">
-  <div *ngIf="anuncios.length > 0; else noAnuncios">
-    <div *ngFor="let anuncio of anuncios" class="card mb-4 shadow-sm">
-      <div class="row g-0 align-items-center">
-        <!-- Imagen del anuncio -->
-        <div class="col-md-4">
-          <img *ngIf="anuncio['id_imagenes'] && anuncio['id_imagenes'].length > 0" 
-               [src]="anuncio['id_imagenes'][0]" 
-               class="img-fluid rounded-start w-100 object-fit-cover" 
-               alt="Imagen del anuncio" 
-               style="height: 100%; max-height: 250px;">
-          <div *ngIf="anuncio['id_imagenes'].length > 1" class="mt-2 text-center">
-            <small class="text-muted">+{{ anuncio['id_imagenes'].length - 1 }} imágenes más</small>
+<div *ngFor="let anuncio of anuncios" class="card mb-4 shadow-sm">
+  <div class="row g-0 align-items-center">
+    <!-- Imagen del anuncio -->
+    <div class="col-md-4">
+      <img *ngIf="anuncio['id_imagenes'] && anuncio['id_imagenes'].length > 0" 
+           [src]="anuncio['id_imagenes'][0]" 
+           class="img-fluid rounded-start w-100 object-fit-cover" 
+           alt="Imagen del anuncio" 
+           style="height: 100%; max-height: 250px;">
+      <div *ngIf="anuncio['id_imagenes'].length > 1" class="mt-2 text-center">
+        <small class="text-muted">+{{ anuncio['id_imagenes'].length - 1 }} imágenes más</small>
+      </div>
+    </div>
+
+    <!-- Datos del anuncio -->
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title text-primary fw-bold">{{ anuncio.titulo }}</h5>
+        <p class="card-text">
+          <strong>Precio:</strong> 
+          {{ precioMinimo && precioMaximo ? precioMinimo + '€ - ' + precioMaximo + '€' : 'No disponible' }}
+        </p>
+        <div class="row">
+          <div class="col-md-6">
+            <p class="card-text"><strong>Descripción:</strong> {{ anuncio.descripcion }}</p>
+            <p class="card-text"><strong>Raza:</strong> {{ anuncio.raza }}</p>
+            <p class="card-text"><strong>Edad:</strong> {{ anuncio.edad }}</p>
+            <p class="card-text"><strong>Ubicación:</strong> {{ anuncio.ubicacion }}</p>
+            <p class="card-text"><strong>Padre:</strong> {{ anuncio.id_padre || 'No especificado' }}</p>
+            <p class="card-text"><strong>Madre:</strong> {{ anuncio.id_madre || 'No especificado' }}</p>
+            <p class="card-text"><strong>Fecha de publicación:</strong> {{ anuncio.fecha_publicacion }}</p>
           </div>
         </div>
-
-        <!-- Datos del anuncio -->
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title text-primary fw-bold">{{ anuncio.titulo }}</h5>
-            <p class="card-text"><strong>Descripción:</strong> {{ anuncio.descripcion }}</p>
-            <div class="row">
-              <div class="col-md-6">
-                <p class="card-text"><strong>Raza:</strong> {{ anuncio.raza }}</p>
-                <p class="card-text"><strong>Edad:</strong> {{ anuncio.edad }}</p>
-                <p class="card-text"><strong>Ubicación:</strong> {{ anuncio.ubicacion }}</p>
-              </div>
-            </div>
-              <div>
-                <p class="card-text"><strong>Padre:</strong> {{ anuncio.id_padre || 'No especificado' }}</p>
-                <p class="card-text"><strong>Madre:</strong> {{ anuncio.id_madre || 'No especificado' }}</p>
-                <p class="card-text"><strong>Publicado por:</strong> {{ anuncio.id_usuario }}</p>
-            </div>
-          </div>
-          <div class="card-footer bg-light text-muted text-end">
-            <small>Fecha de publicación: {{ anuncio.fecha_publicacion }}</small>
-          </div>
+      </div>
+      <div class="card-footer bg-light text-muted d-flex align-items-center">
+        <div class="me-3">
+          <img *ngIf="criaderoData?.foto_perfil" 
+               [src]="criaderoData?.foto_perfil" 
+               alt="Foto del criadero" 
+               class="border" 
+               style="width: 50px; height: 50px; object-fit: cover;">
+        </div>
+        <div>
+          <small><strong>Criadero:</strong> {{ criaderoData?.nombre }}</small><br>
+          <small><strong>Nucleo zoologico:</strong> {{ criaderoData?.nucleo_zoologico }}</small>
         </div>
       </div>
     </div>
   </div>
-  <ng-template #noAnuncios>
-    <p class="text-center text-danger fw-bold">No hay anuncios disponibles.</p>
-  </ng-template>
 </div>

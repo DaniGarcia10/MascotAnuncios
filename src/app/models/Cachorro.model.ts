@@ -2,7 +2,7 @@ export interface Cachorro {
     id: string;
     color: string;
     sexo: 'Macho' | 'Hembra';
-    precio: string;
+    precio: number;
     disponible: boolean;
     descripcion: string;
     imagenes: string[];

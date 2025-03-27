@@ -1,1 +1,10 @@
-<app-anuncios-resume></app-anuncios-resume>
+<div class="container mt-4">
+    <div *ngIf="anuncios.length > 0; else noAnuncios">
+      <div *ngFor="let anuncio of anuncios">
+        <app-anuncios-resume [anuncio]="anuncio"></app-anuncios-resume>
+      </div>
+    </div>
+    <ng-template #noAnuncios>
+      <p class="text-center text-danger fw-bold">No hay anuncios disponibles.</p>
+    </ng-template>
+  </div>
