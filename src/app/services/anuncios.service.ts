@@ -19,6 +19,9 @@ export class AnunciosService {
       switchMap((anuncios: any[]) =>
         from(Promise.all(
           anuncios.map(async (anuncio) => {
+            if (anuncio.fecha_publicacion) {
+              anuncio.fecha_publicacion = new Date(anuncio.fecha_publicacion);
+            }
             if (anuncio.id_imagenes && anuncio.id_imagenes.length > 0) {
               anuncio.id_imagenes = await this.imagenService.cargarImagenes(anuncio.id_imagenes);
             }

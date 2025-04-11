@@ -1,11 +1,29 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { AnunciosService } from '../../../services/anuncios.service';
+import { Anuncio } from '../../../models/Anuncio.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-anuncios-detail',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './anuncios-detail.component.html',
-  styleUrl: './anuncios-detail.component.css'
+  styleUrls: ['./anuncios-detail.component.css']
 })
-export class AnunciosDetailComponent {
+export class AnunciosDetailComponent implements OnInit {
+  anuncio?: Anuncio;
 
+  constructor(
+    private route: ActivatedRoute,
+    private anunciosService: AnunciosService
+  ) {}
+
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.anunciosService.getAnuncios().subscribe(anuncios => {
+        this.anuncio = anuncios.find(a => a.id === id);
+      });
+    }
+  }
 }

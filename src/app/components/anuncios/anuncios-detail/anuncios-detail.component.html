@@ -1,1 +1,31 @@
-<p>anuncios-detail works!</p>
+<div *ngIf="anuncio" class="container mt-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title text-primary fw-bold">{{ anuncio.titulo }}</h2>
+        <p class="card-text mb-2">
+          <strong>Raza:</strong> {{ anuncio.raza }} |
+          <strong>Edad:</strong> {{ anuncio.edad }} |
+          <strong>Ubicación:</strong> {{ anuncio.ubicacion }}
+        </p>
+        <p class="card-text">
+          <strong>Publicado:</strong>
+          <i class="bi bi-clock me-1"></i>{{ anuncio.fecha_publicacion }}
+        </p>
+        <p class="card-text">
+          <strong>Descripción:</strong><br>
+          {{ anuncio.descripcion }}
+        </p>
+      </div>
+  
+      <div *ngIf="anuncio.id_imagenes.length > 0" class="card-body">
+        <div class="d-flex flex-wrap justify-content-start">
+          <img *ngFor="let img of anuncio.id_imagenes"
+               [src]="img"
+               class="img-thumbnail m-2"
+               style="max-width: 200px; max-height: 200px; object-fit: cover;"
+               alt="Imagen del anuncio">
+        </div>
+      </div>
+    </div>
+  </div>
+  

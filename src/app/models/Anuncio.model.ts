@@ -4,7 +4,7 @@ export interface Anuncio {
     perro: boolean;
     titulo: string;
     descripcion: string;
-    fecha_publicacion: string;
+    fecha_publicacion: Date;
     id_padre: string | null;
     id_madre: string | null;
     edad: string;

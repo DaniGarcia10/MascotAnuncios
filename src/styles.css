@@ -1,1 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root {
+    --primary-bg-color: #f5f5dc; /* Fondo principal */
+    --primary-text-color: #6b4226; /* Texto principal */
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
+}
