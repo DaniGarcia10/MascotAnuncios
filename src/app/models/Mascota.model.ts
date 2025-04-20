@@ -7,4 +7,6 @@ export interface Mascota {
     sexo: 'Macho' | 'Hembra';
     descripcion: string;
     imagenes: string[];
+    id_padre: string | null;
+    id_madre: string | null;
   }

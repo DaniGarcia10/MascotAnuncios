@@ -1,23 +1,27 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header text-center">
-          <h3>Iniciar Sesión</h3>
-        </div>
-        <div class="card-body">
-          <form [formGroup]="formLogin" (ngSubmit)="onSubmit()">
-            <div class="mb-3">
-              <label for="email" class="form-label">Correo electrónico:</label>
-              <input id="email" formControlName="email" type="email" class="form-control" placeholder="Ingresa tu correo" required>
-            </div>
-            <div class="mb-3">
-              <label for="password" class="form-label">Contraseña:</label>
-              <input id="password" formControlName="password" type="password" class="form-control" placeholder="Ingresa tu contraseña" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
-          </form>
-        </div>
+<div class="position-relative vh-100">
+  <!-- Imagen de fondo -->
+  <div *ngIf="imagenUrl" class="position-absolute top-0 start-0 w-100 h-100">
+    <img [src]="imagenUrl" alt="Fondo Login" class="img-fluid w-100 h-100 object-fit-cover">
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="position-relative z-1 d-flex justify-content-center align-items-start h-100 pt-5">
+    <div class="card" style="max-width: 500px; width: 100%;">
+      <div class="card-header text-center">
+        <h3 class="card-title">Iniciar Sesión</h3>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="formLogin" (ngSubmit)="onSubmit()">
+          <div class="mb-3">
+            <label for="email" class="form-label">Correo electrónico:</label>
+            <input id="email" formControlName="email" type="email" class="form-control" placeholder="Ingresa tu correo" required>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Contraseña:</label>
+            <input id="password" formControlName="password" type="password" class="form-control" placeholder="Ingresa tu contraseña" required>
+          </div>
+          <button type="submit" class="btn btn-marron w-100">Iniciar sesión</button>
+        </form>
       </div>
     </div>
   </div>

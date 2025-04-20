@@ -1,0 +1,10 @@
+<div class="container mt-4">
+  <div *ngIf="mascotas.length > 0; else noMascotas">
+    <div *ngFor="let mascota of mascotas">
+      <app-mascotas-resume [mascota]="mascota"></app-mascotas-resume>
+    </div>
+  </div>
+  <ng-template #noMascotas>
+    <p class="text-center text-danger fw-bold">No hay mascotas disponibles.</p>
+  </ng-template>
+</div>

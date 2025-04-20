@@ -1,9 +1,25 @@
-.container {
-  max-width: 800px;
-  margin: auto;
+.card-title {
+  color: var(--primary-text-color) !important;
 }
-img {
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 5px;
+
+#zoomable-image {
+  transition: transform 0.2s ease-in-out;
+  cursor: grab;
+  user-select: none;
+}
+
+.btn-marron {
+  background-color: #8b5e3c;
+  color: white;
+  border-radius: 12px;
+  font-weight: 500;
+  padding: 0.6rem;
+  transition: all 0.3s ease-in-out;
+  border: none;
+}
+
+.btn-marron:hover {
+  background-color: #8b5e3c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }

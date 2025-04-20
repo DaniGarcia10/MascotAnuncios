@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { Firestore, doc, getDoc, collection, collectionData } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
 import { Mascota } from '../models/Mascota.model';
 import { ImagenService } from './imagen.service';
 
@@ -29,5 +30,10 @@ export class MascotasService {
       console.warn('Mascota no encontrada');
       return undefined;
     }
+  }
+
+  getMascotas(): Observable<Mascota[]> {
+    const mascotasCollection = collection(this.firestore, this.COLLECTION_NAME);
+    return collectionData(mascotasCollection, { idField: 'id' }) as Observable<Mascota[]>;
   }
 }

@@ -1,0 +1,53 @@
+<div class="card mb-4 shadow-sm">
+  <div class="row g-0">
+    <!-- Parte izquierda: Imagen de la mascota -->
+    <div class="col-md-4">
+      <img *ngIf="mascota.imagenes && mascota.imagenes.length > 0" 
+           [src]="mascota.imagenes[0]" 
+           class="img-fluid rounded-start w-100 object-fit-cover" 
+           alt="Imagen de la mascota" 
+           style="height: 100%; max-height: 250px;">
+      <div *ngIf="mascota.imagenes.length > 1" class="mt-2 text-center">
+        <small class="text-muted">+{{ mascota.imagenes.length - 1 }} imágenes más</small>
+      </div>
+    </div>
+
+    <!-- Parte derecha: Información de la mascota -->
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title text-primary fw-bold">{{ mascota.nombre }}</h5>
+        <p class="card-text">{{ mascota.raza }} | {{ mascota.color }} | {{ mascota.sexo }}</p>
+        <p class="card-text">{{ mascota.descripcion }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parte derecha: Información del padre y la madre -->
+  <div class="row g-0 mt-3">
+    <div class="col-md-4 d-flex flex-row justify-content-between align-items-stretch">
+      <!-- Card del padre -->
+      <div class="card mb-3 position-relative d-flex flex-column" style="width: 48%; height: 250px;">
+        <h6 class="card-title text-primary fw-bold position-absolute top-0 start-0 bg-light px-2 py-1">
+          Padre
+        </h6>
+        <img *ngIf="padresImagenes['padre']" 
+             [src]="padresImagenes['padre']" 
+             alt="Imagen del padre" 
+             class="img-fluid w-100 h-100" 
+             style="object-fit: cover;">
+      </div>
+
+      <!-- Card de la madre -->
+      <div class="card position-relative d-flex flex-column" style="width: 48%; height: 250px;">
+        <h6 class="card-title text-primary fw-bold position-absolute top-0 start-0 bg-light px-2 py-1">
+          Madre
+        </h6>
+        <img *ngIf="padresImagenes['madre']" 
+             [src]="padresImagenes['madre']" 
+             alt="Imagen de la madre" 
+             class="img-fluid w-100 h-100" 
+             style="object-fit: cover;">
+      </div>
+    </div>
+  </div>
+</div>

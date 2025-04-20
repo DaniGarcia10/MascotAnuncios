@@ -1,0 +1,70 @@
+<div class="position-relative vh-100">
+  <!-- Contenedor principal -->
+  <div class="position-relative z-1 d-flex justify-content-center align-items-center h-100">
+    <div class="card" style="max-width: 600px; width: 100%;">
+      <div class="card-header text-center">
+        <h3 class="card-title">Publicar Anuncio</h3>
+      </div>
+      <div class="card-body">
+        <form (ngSubmit)="onSubmit()" #anuncioForm="ngForm">
+          <!-- TIPO: Perro o Gato -->
+          <div class="mb-3">
+            <label class="form-label">Tipo:</label>
+            <ng-select [items]="[{label: 'Perro', value: true}, {label: 'Gato', value: false}]" bindLabel="label"
+              bindValue="value" [(ngModel)]="anuncio.perro" name="perro" placeholder="Selecciona tipo"
+              (change)="onTipoChange()" class="custom-ng-select form-control">
+            </ng-select>
+          </div>
+
+          <!-- RAZA: según el tipo seleccionado -->
+          <div class="mb-3">
+            <label for="raza" class="form-label">Raza:</label>
+            <ng-select [items]="filteredRazas" bindLabel="label" bindValue="value" [(ngModel)]="anuncio.raza"
+              name="raza" placeholder="Selecciona una raza" [searchable]="true" (search)="onSearchRaza($event)"
+              class="custom-ng-select form-control">
+            </ng-select>
+          </div>
+
+          <div class="mb-3">
+            <label for="titulo" class="form-label">Título:</label>
+            <input id="titulo" name="titulo" type="text" class="form-control" [(ngModel)]="anuncio.titulo"
+              placeholder="Ingresa el título del anuncio" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción:</label>
+            <textarea id="descripcion" name="descripcion" class="form-control" [(ngModel)]="anuncio.descripcion"
+              placeholder="Describe tu anuncio" required></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="edad" class="form-label">Edad:</label>
+            <input id="edad" name="edad" type="text" class="form-control" [(ngModel)]="anuncio.edad"
+              placeholder="Ingresa la edad">
+          </div>
+
+          <div class="mb-3">
+            <label for="ubicacion" class="form-label">Ubicación:</label>
+            <input id="ubicacion" name="ubicacion" type="text" class="form-control" [(ngModel)]="anuncio.ubicacion"
+              placeholder="Ingresa la ubicación">
+          </div>
+
+          <div class="mb-3">
+            <label for="imagenes" class="form-label">Imágenes:</label>
+            <input id="imagenes" name="imagenes" type="file" class="form-control" (change)="onFileSelected($event)"
+              multiple>
+          </div>
+
+          <div class="form-check mb-3">
+            <input id="destacado" name="destacado" type="checkbox" class="form-check-input"
+              [(ngModel)]="anuncio.destacado">
+            <label for="destacado" class="form-check-label">¿Destacar anuncio?</label>
+          </div>
+
+          <button type="submit" class="btn btn-marron w-100" [disabled]="!anuncioForm.form.valid">Publicar
+            Anuncio</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

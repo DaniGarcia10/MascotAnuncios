@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UsuarioService } from '../../services/usuario.service';
-import { Auth, User } from '@angular/fire/auth';
+import { Auth } from '@angular/fire/auth';
 import { ImagenService } from '../../services/imagen.service'; // Importar ImagenService
 import { CommonModule } from '@angular/common';
 
@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './inicio.component.css'
 })
 export class InicioComponent implements OnInit {
-  imagenUrl: string | null = null; // Variable para almacenar la URL de la imagen
+  imagenUrl: string | null = null; 
 
   constructor(
     private auth: Auth,

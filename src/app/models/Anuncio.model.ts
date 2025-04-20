@@ -12,7 +12,7 @@ export interface Anuncio {
     activo: boolean;
     ubicacion: string;
     destacado: boolean;
-    id_imagenes: string[];
+    imagenes: string[];
     cachorros: string[];
     especificar_cachorros: boolean;
 }

@@ -7,14 +7,18 @@ import { InicioComponent } from './components/inicio/inicio.component';
 import { PerfilComponent } from './components/perfil/perfil.component';
 import { AnunciosListComponent } from './components/anuncios/anuncios-list/anuncios-list.component';
 import { AnunciosDetailComponent } from './components/anuncios/anuncios-detail/anuncios-detail.component';
+import { MascotasListComponent } from './components/mascotas/mascotas-list/mascotas-list.component';
+import { AnunciosFormComponent } from './components/anuncios/anuncios-form/anuncios-form.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegistroComponent },
   { path: 'inicio', component: InicioComponent },
   { path: 'perfil', component: PerfilComponent },
-  { path: 'mascotas', component: AnunciosListComponent },
+  { path: 'anuncios', component: AnunciosListComponent },
   { path: 'anuncio/:id', component: AnunciosDetailComponent },
+  { path: 'mascotas', component: MascotasListComponent },
+  { path: 'publicar', component: AnunciosFormComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 @NgModule({

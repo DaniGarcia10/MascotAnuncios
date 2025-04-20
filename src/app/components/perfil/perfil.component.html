@@ -1,78 +1,109 @@
-<div class="container mt-4 d-flex justify-content-center">
-  <div class="w-50">
-    <h2 class="text-center">Mi Perfil</h2>
-    <form [formGroup]="perfilForm" *ngIf="usuario; else noUsuario">
-      <div class="d-flex align-items-center">
-        <div class="flex-grow-1">
-          <div class="mb-3">
-            <label><strong>Nombre:</strong></label>
-            <span *ngIf="!editMode">{{ usuario.nombre }}</span>
-            <input *ngIf="editMode" formControlName="nombre" class="form-control" />
-            <div *ngIf="perfilForm.get('nombre')?.invalid && perfilForm.get('nombre')?.touched" class="text-danger">
-              <small *ngIf="perfilForm.get('nombre')?.errors?.['required']">El nombre es obligatorio.</small>
-              <small *ngIf="perfilForm.get('nombre')?.errors?.['maxlength']">Máximo 30 caracteres permitidos.</small>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label><strong>Apellidos:</strong></label>
-            <span *ngIf="!editMode">{{ usuario.apellidos }}</span>
-            <input *ngIf="editMode" formControlName="apellidos" class="form-control" />
-            <div *ngIf="perfilForm.get('apellidos')?.invalid && perfilForm.get('apellidos')?.touched" class="text-danger">
-              <small *ngIf="perfilForm.get('apellidos')?.errors?.['required']">Los apellidos son obligatorios.</small>
-              <small *ngIf="perfilForm.get('apellidos')?.errors?.['maxlength']">Máximo 50 caracteres permitidos.</small>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label><strong>Email:</strong></label>
-            <span *ngIf="!editMode">{{ usuario.email }}</span>
-            <input *ngIf="editMode" formControlName="email" class="form-control" />
-            <div *ngIf="perfilForm.get('email')?.invalid && perfilForm.get('email')?.touched" class="text-danger">
-              <small *ngIf="perfilForm.get('email')?.errors?.['required']">El correo es obligatorio.</small>
-              <small *ngIf="perfilForm.get('email')?.errors?.['email']">El formato del correo no es válido.</small>
-              <small *ngIf="perfilForm.get('email')?.errors?.['maxlength']">Máximo 50 caracteres permitidos.</small>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label><strong>Teléfono:</strong></label>
-            <span *ngIf="!editMode">{{ usuario.telefono }}</span>
-            <input *ngIf="editMode" formControlName="telefono" class="form-control" />
-            <div *ngIf="perfilForm.get('telefono')?.invalid && perfilForm.get('telefono')?.touched" class="text-danger">
-              <small *ngIf="perfilForm.get('telefono')?.errors?.['required']">El teléfono es obligatorio.</small>
-              <small *ngIf="perfilForm.get('telefono')?.errors?.['pattern']">Solo se permiten números.</small>
-              <small *ngIf="perfilForm.get('telefono')?.errors?.['maxlength']">Máximo 15 caracteres permitidos.</small>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label><strong>Vendedor:</strong></label>
-            <span *ngIf="!editMode">{{ usuario.vendedor ? 'Sí' : 'No' }}</span>
-            <select *ngIf="editMode" formControlName="vendedor" class="form-control">
-              <option [value]="true">Sí</option>
-              <option [value]="false">No</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label><strong>ID Criadero:</strong></label>
-            <span *ngIf="!editMode">{{ usuario.id_criadero }}</span>
-            <input *ngIf="editMode" formControlName="id_criadero" class="form-control" />
-            <div *ngIf="perfilForm.get('id_criadero')?.invalid && perfilForm.get('id_criadero')?.touched" class="text-danger">
-              <small *ngIf="perfilForm.get('id_criadero')?.errors?.['maxlength']">Máximo 50 caracteres permitidos.</small>
-            </div>
-          </div>
+<div class="d-flex flex-column flex-lg-row vh-100">
+  <!-- Menú lateral -->
+  <div class="menu-lateral p-3 col-12 col-lg-3">
+    <ul class="list-group">
+      <li class="list-group-item" [class.active]="activeSection === 'general'" (click)="setActiveSection('general')">
+        Información general
+      </li>
+      <li class="list-group-item" [class.active]="activeSection === 'password'" (click)="setActiveSection('password')">
+        Cambiar contraseña
+      </li>
+      <li *ngIf="usuario?.id_criadero" class="list-group-item" [class.active]="activeSection === 'criadero'" (click)="setActiveSection('criadero')">
+        Información de mi criadero
+      </li>
+    </ul>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="contenido-principal flex-grow-1 p-4 col-12 col-lg-9">
+    <div *ngIf="activeSection === 'general'">
+      <!-- Información general -->
+      <div class="card mx-auto" style="max-width: 500px; width: 100%;">
+        <div class="card-header text-center">
+          <h3 class="card-title">Mi Perfil</h3>
         </div>
-        <img 
-          *ngIf="usuario.foto_perfil" 
-          [src]="usuario.foto_perfil" 
-          alt="Foto de perfil" 
-          class="img-thumbnail" 
-          style="width: 200px; height: 200px; border-radius: 50%; margin-left: 20px;" 
-        />
+        <div class="card-body">
+          <form [formGroup]="perfilForm" *ngIf="usuario; else noUsuario">
+            <div class="text-center">
+              <img 
+                *ngIf="usuario.foto_perfil" 
+                [src]="usuario.foto_perfil" 
+                alt="Foto de perfil" 
+                class="img-thumbnail"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="nombre" class="form-label"><strong>Nombre:</strong></label>
+              <input id="nombre" formControlName="nombre" class="form-control" [readonly]="!editMode" />
+            </div>
+            <div class="mb-3">
+              <label for="apellidos" class="form-label"><strong>Apellidos:</strong></label>
+              <input id="apellidos" formControlName="apellidos" class="form-control" [readonly]="!editMode" />
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label"><strong>Email:</strong></label>
+              <input id="email" formControlName="email" class="form-control" [readonly]="!editMode" />
+            </div>
+            <div class="mb-3">
+              <label for="telefono" class="form-label"><strong>Teléfono:</strong></label>
+              <input id="telefono" formControlName="telefono" class="form-control" [readonly]="!editMode" />
+            </div>
+            <div class="d-flex justify-content-center mt-4">
+              <button *ngIf="editMode" type="button" class="btn btn-secondary me-2" (click)="cancelEdit()">Cancelar</button>
+              <button *ngIf="editMode" type="submit" class="btn btn-marron">Guardar</button>
+              <button *ngIf="!editMode" type="button" class="btn btn-marron" (click)="toggleEditMode()">Modificar Perfil</button>
+            </div>
+          </form>
+          <ng-template #noUsuario>
+            <p class="text-center text-danger">No se encontraron datos del usuario.</p>
+          </ng-template>
+        </div>
       </div>
-      <button type="button" class="btn btn-primary mt-3" (click)="toggleEditMode()">
-        {{ editMode ? 'Guardar Cambios' : 'Modificar Perfil' }}
-      </button>
-    </form>
-    <ng-template #noUsuario>
-      <p>No se encontraron datos del usuario.</p>
-    </ng-template>
+    </div>
+
+    <div *ngIf="activeSection === 'password'">
+      <!-- Cambiar contraseña -->
+      <div class="card mx-auto" style="max-width: 500px; width: 100%;">
+        <div class="card-header text-center">
+          <h3 class="card-title">Cambiar Contraseña</h3>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="passwordForm" (ngSubmit)="cambiarPassword()">
+            <div class="mb-3">
+              <label for="passwordActual" class="form-label"><strong>Contraseña actual:</strong></label>
+              <input id="passwordActual" formControlName="passwordActual" type="password" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label for="nuevaPassword" class="form-label"><strong>Nueva contraseña:</strong></label>
+              <input id="nuevaPassword" formControlName="nuevaPassword" type="password" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label for="confirmarPassword" class="form-label"><strong>Confirmar nueva contraseña:</strong></label>
+              <input id="confirmarPassword" formControlName="confirmarPassword" type="password" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-marron w-100">Cambiar Contraseña</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="activeSection === 'criadero'">
+      <!-- Información de mi criadero -->
+      <div *ngIf="criadero; else noCriadero" class="card mx-auto" style="max-width: 500px; width: 100%;">
+        <div class="card-header text-center">
+          <h3 class="card-title">Información del Criadero</h3>
+        </div>
+        <div class="card-body text-center">
+          <img *ngIf="criadero.foto_perfil" [src]="criadero.foto_perfil" alt="Foto del criadero" class="img-thumbnail mb-3" />
+          <h5><strong>Nombre:</strong> {{ criadero.nombre }}</h5>
+          <p><strong>Núcleo Zoológico:</strong> {{ criadero.nucleo_zoologico }}</p>
+          <p><strong>Ubicación:</strong> {{ criadero.ubicacion }}</p>
+          <p><strong>Fecha de Registro:</strong> {{ criadero.fecha_registro }}</p>
+        </div>
+      </div>
+      <ng-template #noCriadero>
+        <p class="text-center text-danger">No se encontró información del criadero.</p>
+      </ng-template>
+    </div>
   </div>
 </div>

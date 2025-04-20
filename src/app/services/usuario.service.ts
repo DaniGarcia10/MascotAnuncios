@@ -48,4 +48,22 @@ export class UsuarioService {
       throw error;
     }
   }
+
+  async getIdCriaderoByUsuarioId(userId: string): Promise<string | null> {
+    try {
+      const userDocRef = doc(this.firestore, this.COLLECTION_NAME, userId); // Ruta de la colección 'usuarios'
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const usuarioData = userDocSnap.data() as Usuario;
+        return usuarioData.id_criadero || null; // Retorna el id_criadero o null si no existe
+      } else {
+        console.warn('Usuario no encontrado');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error al obtener el id del criadero:', error);
+      throw error;
+    }
+  }
 }

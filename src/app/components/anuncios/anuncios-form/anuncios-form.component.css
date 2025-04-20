@@ -1,0 +1,60 @@
+.card-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+  }
+    
+    .btn-marron {
+      background-color: #8b5e3c;
+      border-color: #8b5e3c;
+      color: white;
+      border-radius: 12px;
+      font-weight: 500;
+      padding: 0.6rem;
+      transition: all 0.3s ease-in-out;
+    }
+    
+    .btn-marron:hover {
+      background-color: #8b5e3c;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    
+    .card {
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border: none;
+    }
+    
+    .card-body {
+      padding: 2rem;
+    }
+    
+    .form-control {
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    
+    .form-control:focus {
+      border-color: #a1866f;
+      box-shadow: 0 0 0 0.2rem rgba(161, 134, 111, 0.25);
+    }
+    
+    .form-label {
+      font-weight: 500;
+      color: #444;
+    }
+
+    ::ng-deep .custom-ng-select .ng-option:hover {
+      background-color: #8b5e3c;
+      color: white;
+    }
+    
+    ::ng-deep .custom-ng-select .ng-dropdown-panel {
+      background-color: white !important;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      z-index: 1000; /* opcional si hay solapamiento */
+    }
+    

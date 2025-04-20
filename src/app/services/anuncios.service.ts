@@ -22,8 +22,8 @@ export class AnunciosService {
             if (anuncio.fecha_publicacion) {
               anuncio.fecha_publicacion = new Date(anuncio.fecha_publicacion);
             }
-            if (anuncio.id_imagenes && anuncio.id_imagenes.length > 0) {
-              anuncio.id_imagenes = await this.imagenService.cargarImagenes(anuncio.id_imagenes);
+            if (anuncio.imagenes && anuncio.imagenes.length > 0) { // Cambiado de id_imagenes a imagenes
+              anuncio.imagenes = await this.imagenService.cargarImagenes(anuncio.imagenes);
             }
             console.log('Datos del anuncio:', anuncio);
             return anuncio;

@@ -8,20 +8,32 @@ import { UsuarioService } from '../../../services/usuario.service';
 import { CachorrosService } from '../../../services/cachorros.service';
 import { MascotasService } from '../../../services/mascotas.service';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
 
 @Component({
   selector: 'app-anuncios-resume',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './anuncios-resume.component.html',
   styleUrls: ['./anuncios-resume.component.css']
 })
 export class AnunciosResumeComponent implements OnInit {
   @Input() anuncio!: Anuncio;
   anuncios: Anuncio[] = [];
+  anunciosFiltrados: Anuncio[] = [];
   criaderoData?: Criadero;
   precioMinimo?: string;
   precioMaximo?: string;
   padresImagenes: { [key: string]: string } = {};
+
+  // Filtros
+  filtros = {
+    ubicacion: '',
+    precioMin: null as number | null,
+    precioMax: null as number | null,
+    tipoAnimal: '',
+    raza: ''
+  };
 
   constructor(
     private anunciosService: AnunciosService,
@@ -34,6 +46,7 @@ export class AnunciosResumeComponent implements OnInit {
   async ngOnInit() {
     this.anunciosService.getAnuncios().subscribe(data => {
       this.anuncios = data;
+      this.anunciosFiltrados = [...this.anuncios]; // Inicialmente, mostrar todos los anuncios
     });
 
     if (this.anuncio.id_usuario) {
@@ -54,20 +67,33 @@ export class AnunciosResumeComponent implements OnInit {
       });
     }
 
-    // Obtener imágenes de los padres
-    if (this.anuncio.id_padre) {
-      const padre = await this.mascotasService.getMascotaById(this.anuncio.id_padre);
-      if (padre?.imagenes?.length) {
-        this.padresImagenes['padre'] = padre.imagenes[0]; // Usar la primera imagen
-      }
-    }
+  }
 
-    if (this.anuncio.id_madre) {
-      const madre = await this.mascotasService.getMascotaById(this.anuncio.id_madre);
-      if (madre?.imagenes?.length) {
-        this.padresImagenes['madre'] = madre.imagenes[0]; // Usar la primera imagen
-      }
-    }
+  aplicarFiltros() {
+    this.anunciosFiltrados = this.anuncios.filter(anuncio => {
+      const cumpleUbicacion = this.filtros.ubicacion
+        ? anuncio.ubicacion.toLowerCase().includes(this.filtros.ubicacion.toLowerCase())
+        : true;
+
+      const cumplePrecioMin = this.filtros.precioMin
+        ? parseFloat(this.precioMinimo || '0') >= this.filtros.precioMin
+        : true;
+
+      const cumplePrecioMax = this.filtros.precioMax
+        ? parseFloat(this.precioMaximo || '0') <= this.filtros.precioMax
+        : true;
+
+      const cumpleTipoAnimal = this.filtros.tipoAnimal
+        ? (this.filtros.tipoAnimal === 'perro' && anuncio.perro) || 
+          (this.filtros.tipoAnimal === 'gato' && !anuncio.perro)
+        : true;
+
+      const cumpleRaza = this.filtros.raza
+        ? anuncio.raza.toLowerCase().includes(this.filtros.raza.toLowerCase())
+        : true;
+
+      return cumpleUbicacion && cumplePrecioMin && cumplePrecioMax && cumpleTipoAnimal && cumpleRaza;
+    });
   }
 
   calcularTiempoTranscurrido(fecha: Date): string {

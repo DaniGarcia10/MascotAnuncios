@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { Usuario } from '../../models/Usuario.model';
+import { Criadero } from '../../models/Criadero.model';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
-import { UsuarioService } from '../../services/usuario.service'; // Importar UsuarioService
+import { UsuarioService } from '../../services/usuario.service';
+import { CriaderoService } from '../../services/criadero.service';
 import { Auth } from '@angular/fire/auth'; 
 
 @Component({
@@ -15,28 +17,41 @@ import { Auth } from '@angular/fire/auth';
 })
 export class PerfilComponent implements OnInit {
   usuario: Usuario | null = null;
+  criadero: Criadero | null = null;
   editMode: boolean = false;
-  perfilForm: FormGroup; 
+  perfilForm: FormGroup;
+  passwordForm: FormGroup;
+  activeSection: string = 'general';
 
-  constructor(private auth: Auth, private usuarioService: UsuarioService) { // Inyectar Auth y UsuarioService
+  constructor(
+    private auth: Auth,
+    private usuarioService: UsuarioService,
+    private criaderoService: CriaderoService
+  ) {
     this.perfilForm = new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.maxLength(30)]),
       apellidos: new FormControl('', [Validators.required, Validators.maxLength(50)]),
       email: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(50)]),
       telefono: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.maxLength(15)]),
-      vendedor: new FormControl(false),
-      id_criadero: new FormControl('', [Validators.maxLength(50)])
+    });
+
+    this.passwordForm = new FormGroup({
+      passwordActual: new FormControl('', [Validators.required]),
+      nuevaPassword: new FormControl('', [Validators.required, Validators.minLength(6)]),
+      confirmarPassword: new FormControl('', [Validators.required]),
     });
   }
 
   ngOnInit(): void {
-    const user = this.auth.currentUser; // Obtener el usuario autenticado
+    const user = this.auth.currentUser;
     if (user) {
       this.usuarioService.getUsuarioById(user.uid).then((usuario) => {
         this.usuario = usuario;
         if (this.usuario) {
-          console.log('Datos del usuario:', this.usuario);
           this.perfilForm.patchValue(this.usuario);
+          if (this.usuario.id_criadero) {
+            this.cargarCriadero(this.usuario.id_criadero);
+          }
         }
       }).catch((err) => {
         console.error('Error al obtener los datos del usuario:', err);
@@ -46,11 +61,40 @@ export class PerfilComponent implements OnInit {
     }
   }
 
+  cargarCriadero(id: string): void {
+    this.criaderoService.getCriaderoById(id).then((criadero) => {
+      this.criadero = criadero || null;
+    }).catch((err) => {
+      console.error('Error al obtener los datos del criadero:', err);
+    });
+  }
+
   toggleEditMode(): void {
     this.editMode = !this.editMode;
     if (!this.editMode && this.perfilForm.valid) {
       console.log('Datos guardados:', this.perfilForm.value);
       // Aquí puedes agregar lógica para guardar los cambios en la base de datos
+    }
+  }
+
+  cancelEdit(): void {
+    this.editMode = false;
+    this.perfilForm.reset(this.usuario); // Restaura los valores originales
+  }
+
+  setActiveSection(section: string): void {
+    this.activeSection = section;
+  }
+
+  cambiarPassword(): void {
+    if (this.passwordForm.valid) {
+      const { passwordActual, nuevaPassword, confirmarPassword } = this.passwordForm.value;
+      if (nuevaPassword !== confirmarPassword) {
+        alert('Las contraseñas no coinciden.');
+        return;
+      }
+      // Lógica para cambiar la contraseña
+      console.log('Contraseña cambiada:', nuevaPassword);
     }
   }
 }

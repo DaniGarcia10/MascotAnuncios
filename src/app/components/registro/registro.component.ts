@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { ImagenService } from '../../services/imagen.service';
 
 @Component({
   selector: 'app-registro',
@@ -11,10 +12,10 @@ import { AuthService } from '../../services/auth.service';
   imports: [ReactiveFormsModule, CommonModule]
 })
 export class RegistroComponent implements OnInit {
-
   formRegistro: FormGroup;
+  imagenUrl: string | null = null;
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private imagenService: ImagenService) {
     this.formRegistro = new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.maxLength(30)]),
       apellidos: new FormControl('', [Validators.required, Validators.maxLength(50)]),
@@ -34,7 +35,14 @@ export class RegistroComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Cargar la imagen registro.jpg
+    this.imagenService.cargarImagenes(['registro2.jpg']).then((urls) => {
+      this.imagenUrl = urls[0];
+    }).catch((error) => {
+      console.error('Error al cargar la imagen:', error);
+    });
+  }
 
   onSubmit(): void {
     const usuario = this.formRegistro.value;

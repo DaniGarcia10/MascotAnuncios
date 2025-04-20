@@ -15,3 +15,8 @@
 .dropdown-item {
     color: var(--primary-text-color);
 }
+
+.logo-img {
+    height: 40px;
+    width: auto;
+}
