@@ -9,6 +9,7 @@ import { AnunciosListComponent } from './components/anuncios/anuncios-list/anunc
 import { AnunciosDetailComponent } from './components/anuncios/anuncios-detail/anuncios-detail.component';
 import { MascotasListComponent } from './components/mascotas/mascotas-list/mascotas-list.component';
 import { AnunciosFormComponent } from './components/anuncios/anuncios-form/anuncios-form.component';
+import { SuscripcionesComponent } from './components/suscripciones/suscripciones/suscripciones.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -19,6 +20,7 @@ export const routes: Routes = [
   { path: 'anuncio/:id', component: AnunciosDetailComponent },
   { path: 'mascotas', component: MascotasListComponent },
   { path: 'publicar', component: AnunciosFormComponent },
+   { path: 'suscripciones', component: SuscripcionesComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 @NgModule({

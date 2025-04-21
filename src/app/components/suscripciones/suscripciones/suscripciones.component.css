@@ -1,0 +1,91 @@
+.menu-lateral {
+  width: 250px;
+  background-color: #f8f9fa;
+  border-right: 1px solid #ddd;
+}
+
+.list-group-item {
+  cursor: pointer;
+  border: none;
+  padding: 1rem;
+  font-weight: 500;
+  color: #555;
+  transition: background-color 0.3s ease;
+}
+
+.list-group-item:hover {
+  background-color: #e9ecef;
+}
+
+.list-group-item.active {
+  background-color: #8b5e3c;
+  color: white;
+  font-weight: bold;
+}
+
+/* Estilo para los detalles de la suscripción */
+.detalles-suscripcion {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.detalles-suscripcion p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  color: #555;
+}
+
+.detalles-suscripcion p strong {
+  color: #8b5e3c;
+}
+
+.no-suscripcion {
+  font-size: 1.1rem;
+  color: #888;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.formulario-suscripcion {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.formulario-suscripcion .form-label {
+  color: #8b5e3c;
+  font-weight: 500;
+}
+
+.btn-marron {
+  background-color: #8b5e3c;
+  color: white;
+  border-radius: 12px;
+  font-weight: 500;
+  padding: 0.6rem;
+  transition: all 0.3s ease-in-out;
+  border: none;
+}
+
+.btn-marron:hover {
+  background-color: #8b5e3c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+::ng-deep .custom-ng-select .ng-option:hover {
+  background-color: #8b5e3c;
+  color: white;
+}
+
+::ng-deep .custom-ng-select .ng-dropdown-panel {
+  background-color: white !important;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  z-index: 1000;
+}

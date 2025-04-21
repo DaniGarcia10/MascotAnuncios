@@ -1,10 +1,29 @@
-<div class="container mt-4">
-  <div *ngIf="mascotas.length > 0; else noMascotas">
-    <div *ngFor="let mascota of mascotas">
-      <app-mascotas-resume [mascota]="mascota"></app-mascotas-resume>
-    </div>
+<div class="d-flex flex-column flex-lg-row vh-100">
+  <!-- Menú lateral -->
+  <div class="menu-lateral p-3 col-12 col-lg-3">
+    <ul class="list-group">
+      <li class="list-group-item" [class.active]="activeSection === 'add'" (click)="setActiveSection('add')">
+        Añadir mascota
+      </li>
+      <li class="list-group-item" [class.active]="activeSection === 'edit'" (click)="setActiveSection('edit')">
+        Editar mascota
+      </li>
+      <li class="list-group-item" [class.active]="activeSection === 'delete'" (click)="setActiveSection('delete')">
+        Eliminar mascota
+      </li>
+    </ul>
   </div>
-  <ng-template #noMascotas>
-    <p class="text-center text-danger fw-bold">No hay mascotas disponibles.</p>
-  </ng-template>
+
+  <!-- Contenido principal -->
+  <div class="contenido-principal flex-grow-1 p-4 col-12 col-lg-9">
+    <div class="container mt-4">
+      <div *ngIf="mascotas.length > 0; else noMascotas">
+        <div *ngFor="let mascota of mascotas">
+          <app-mascotas-resume [mascota]="mascota"></app-mascotas-resume>
+        </div>
+      </div>
+      <ng-template #noMascotas>
+        <p class="text-center text-danger fw-bold">No hay mascotas disponibles.</p>
+      </ng-template>
+    </div>
 </div>

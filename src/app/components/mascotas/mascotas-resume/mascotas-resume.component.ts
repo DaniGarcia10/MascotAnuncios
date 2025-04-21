@@ -1,33 +1,54 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Mascota } from '../../../models/Mascota.model';
 import { MascotasService } from '../../../services/mascotas.service';
+import { ImagenService } from '../../../services/imagen.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-mascotas-resume',
   templateUrl: './mascotas-resume.component.html',
+  imports: [CommonModule],
   styleUrls: ['./mascotas-resume.component.css']
 })
 export class MascotasResumeComponent implements OnInit {
   @Input() mascota!: Mascota;
   padresImagenes: { [key: string]: string } = {}; // Almacena las imágenes del padre y la madre
 
-  constructor(private mascotasService: MascotasService) {}
+  constructor(
+    private mascotasService: MascotasService,
+    private imagenService: ImagenService // Inyectar el servicio de imágenes
+  ) {}
 
   ngOnInit(): void {
-    // Cargar la imagen del padre
-    if (this.mascota.id_padre) {
+  
+    // Verifica si la mascota tiene imágenes y carga la primera imagen
+    if (this.mascota.imagenes && this.mascota.imagenes.length > 0) {
+      this.imagenService.cargarImagenes([this.mascota.imagenes[0]]).then(urls => {
+        console.log('URL de la mascota:', urls[0]); // Verifica la URL generada
+        this.mascota.imagenes[0] = urls[0]; // Asigna la URL a la imagen de la mascota
+      });
+    }
+
+    if (this.mascota.id_padre && this.mascota.id_padre.trim() !== '') {
       this.mascotasService.getMascotaById(this.mascota.id_padre).then(padre => {
+        console.log('Padre:', padre); // Verifica los datos del padre
         if (padre?.imagenes?.length) {
-          this.padresImagenes['padre'] = padre.imagenes[0]; // Usar la primera imagen
+          this.imagenService.cargarImagenes([padre.imagenes[0]]).then(urls => {
+            console.log('URL del padre:', urls[0]); // Verifica la URL generada
+            this.padresImagenes['padre'] = urls[0];
+          });
         }
       });
     }
 
-    // Cargar la imagen de la madre
-    if (this.mascota.id_madre) {
+    if (this.mascota.id_madre && this.mascota.id_madre.trim() !== '') {
       this.mascotasService.getMascotaById(this.mascota.id_madre).then(madre => {
+        console.log('Madre:', madre); // Verifica los datos de la madre
         if (madre?.imagenes?.length) {
-          this.padresImagenes['madre'] = madre.imagenes[0]; // Usar la primera imagen
+          this.imagenService.cargarImagenes([madre.imagenes[0]]).then(urls => {
+            console.log('URL de la madre:', urls[0]); // Verifica la URL generada
+            this.padresImagenes['madre'] = urls[0];
+          });
         }
       });
     }

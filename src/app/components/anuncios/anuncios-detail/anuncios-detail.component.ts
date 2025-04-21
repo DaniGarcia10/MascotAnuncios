@@ -22,8 +22,7 @@ export class AnunciosDetailComponent implements OnInit {
   criaderoData?: Criadero;
   padresImagenes: { [key: string]: string } = {};
   usuario?: { telefono: string; nombre: string };
-  cachorros: Cachorro[] = []; // Nueva propiedad para almacenar los cachorros
-
+  cachorros: Cachorro[] = [];
   imagenSeleccionada: number = 0;
   estiloImagenModal: { [key: string]: string } = {
     width: 'auto',
@@ -32,8 +31,8 @@ export class AnunciosDetailComponent implements OnInit {
     maxHeight: '100%',
   };
 
-  precioMinimo?: string;
-  precioMaximo?: string; 
+  precioMinimo?: string | null;
+  precioMaximo?: string | null; 
 
   constructor(
     private route: ActivatedRoute,
@@ -42,7 +41,7 @@ export class AnunciosDetailComponent implements OnInit {
     private usuarioService: UsuarioService,
     private criaderoService: CriaderoService,
     private cachorrosService: CachorrosService,
-    private imagenService: ImagenService // Inyectar el servicio de imágenes
+    private imagenService: ImagenService
   ) {}
 
   ngOnInit(): void {
@@ -72,7 +71,7 @@ export class AnunciosDetailComponent implements OnInit {
         if (this.anuncio?.id_usuario) {
           const usuario = await this.usuarioService.getUsuarioById(this.anuncio.id_usuario);
           if (usuario) {
-            this.usuario = usuario; // Solo asigna si no es null
+            this.usuario = usuario;
           } else {
             console.warn('No se encontró el usuario asociado al anuncio.');
           }
@@ -90,23 +89,30 @@ export class AnunciosDetailComponent implements OnInit {
           console.warn('No se encontró el id del usuario asociado al anuncio.');
         }
 
-        // Obtener los datos de los cachorros
-        if (this.anuncio?.cachorros && this.anuncio.cachorros.length > 0) {
-          const cachorros = await this.cachorrosService.getCachorrosByIds(this.anuncio.cachorros);
+        // Obtener el precio según especificar_cachorros
+        if (this.anuncio?.especificar_cachorros) {
+          // Si especificar_cachorros es true, calcula el rango de precios de los cachorros
+          if (this.anuncio?.cachorros && this.anuncio.cachorros.length > 0) {
+            const cachorros = await this.cachorrosService.getCachorrosByIds(this.anuncio.cachorros);
 
-          // Cargar las imágenes de cada cachorro
-          for (const cachorro of cachorros) {
-            if (cachorro.imagenes && cachorro.imagenes.length > 0) {
-              cachorro.imagenes = await this.imagenService.cargarImagenes(cachorro.imagenes);
+            // Cargar las imágenes de cada cachorro
+            for (const cachorro of cachorros) {
+              if (cachorro.imagenes && cachorro.imagenes.length > 0) {
+                cachorro.imagenes = await this.imagenService.cargarImagenes(cachorro.imagenes);
+              }
             }
+
+            this.cachorros = cachorros;
+
+            // Calcular el rango de precios
+            const precios = this.cachorros.map(c => c.precio);
+            this.precioMinimo = Math.min(...precios).toString();
+            this.precioMaximo = Math.max(...precios).toString();
           }
-
-          this.cachorros = cachorros;
-
-          // Calcular el rango de precios
-          const precios = this.cachorros.map(c => c.precio);
-          this.precioMinimo = Math.min(...precios).toString();
-          this.precioMaximo = Math.max(...precios).toString();
+        } else {
+          // Si especificar_cachorros es false, usa directamente el precio del anuncio
+          this.precioMinimo = this.anuncio?.precio?.toString() || null;
+          this.precioMaximo = null; // No hay rango, solo un precio fijo
         }
       });
     }
@@ -169,8 +175,6 @@ export class AnunciosDetailComponent implements OnInit {
 
   prepararZoom(imagen: HTMLImageElement) {
     let scale = 1;
-    let originX = 0;
-    let originY = 0;
     let isDragging = false;
     let startX = 0;
     let startY = 0;

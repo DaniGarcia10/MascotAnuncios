@@ -1,128 +1,46 @@
-<div class="row">
-  <!-- Filtros -->
-  <div class="col-md-3">
-    <div class="card p-3 mb-4">
-      <h5 class="card-title">Filtros</h5>
-      <form (ngSubmit)="aplicarFiltros()">
-        <!-- Filtro por tipo de animal -->
-        <div class="mb-3">
-          <label for="tipoAnimal" class="form-label">Tipo de animal</label>
-          <select id="tipoAnimal" [(ngModel)]="filtros.tipoAnimal" name="tipoAnimal" class="form-select">
-            <option value="perro">Perro</option>
-            <option value="gato">Gato</option>
-          </select>
-        </div>
-
-        <!-- Filtro por raza -->
-        <div class="mb-3">
-          <label for="raza" class="form-label">Raza</label>
-          <input type="text" id="raza" [(ngModel)]="filtros.raza" name="raza" class="form-control" placeholder="Ej: Labrador">
-        </div>
-
-        <!-- Filtro por ubicación -->
-        <div class="mb-3">
-          <label for="ubicacion" class="form-label">Ubicación</label>
-          <input type="text" id="ubicacion" [(ngModel)]="filtros.ubicacion" name="ubicacion" class="form-control" placeholder="Ej: Madrid">
-        </div>
-
-        <!-- Filtro por precio -->
-        <div class="mb-3">
-          <label for="precioMin" class="form-label">Precio mínimo</label>
-          <input type="number" id="precioMin" [(ngModel)]="filtros.precioMin" name="precioMin" class="form-control">
-        </div>
-        <div class="mb-3">
-          <label for="precioMax" class="form-label">Precio máximo</label>
-          <input type="number" id="precioMax" [(ngModel)]="filtros.precioMax" name="precioMax" class="form-control">
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-marron w-100" >Aplicar filtros</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Lista de anuncios -->
-  <div class="col-md-9">
-    <div *ngFor="let anuncio of anunciosFiltrados" class="card mb-4 shadow-sm">
-      <a [routerLink]="['/anuncio', anuncio.id]" class="text-decoration-none text-dark">
-      <div class="row g-0">
-        <!-- Parte izquierda: Información del anuncio -->
-        <div class="col-md-8">
-          <div class="row g-0 align-items-center">
-            <!-- Imagen del anuncio -->
-            <div class="col-md-4">
-              <img *ngIf="anuncio['imagenes'] && anuncio['imagenes'].length > 0" 
-                   [src]="anuncio['imagenes'][0]" 
-                   class="img-fluid rounded-start w-100 object-fit-cover" 
-                   alt="Imagen del anuncio" 
-                   style="height: 100%; max-height: 250px;">
-              <div *ngIf="anuncio['imagenes'].length > 1" class="mt-2 text-center">
-                <small class="text-muted">+{{ anuncio['imagenes'].length - 1 }} imágenes más</small>
-              </div>
-            </div>
-
-            <!-- Datos del anuncio -->
-            <div class="col-md-8">
-              <div class="card-body">
-                <p class="card-text">
-                  <i class="bi bi-clock me-1"></i>{{ calcularTiempoTranscurrido(anuncio.fecha_publicacion) }}
-                </p>
-                <h5 class="card-title text-primary fw-bold">{{ anuncio.titulo }} </h5>
-                <p class="card-text">
-                  <strong>
-                  {{ precioMinimo && precioMaximo ? precioMinimo + '€ - ' + precioMaximo + '€' : 'No disponible' }}</strong>
-                </p>
-                <p class="card-text">{{ anuncio.raza }} | {{ anuncio.edad }} | {{ anuncio.ubicacion }}</p>
-                <p class="card-text">{{ anuncio.descripcion }}</p>
-              </div>
-            </div>
-          </div>
+<div class="card mb-4 shadow-sm">
+  <a [routerLink]="['/anuncio', anuncio.id]" class="text-decoration-none text-dark">
+    <div class="row g-0">
+      <div class="col-md-4 position-relative">
+        <img *ngIf="anuncio.imagenes?.length"
+             [src]="anuncio.imagenes[0]"
+             class="img-fluid rounded-start w-100 object-fit-cover"
+             alt="Imagen del anuncio"
+             style="height: 100%; max-height: 250px; object-fit: cover;">
+        <div *ngIf="anuncio.imagenes?.length > 1" class="badge-imagenes">
+          +{{ anuncio.imagenes.length - 1 }} imágenes más
         </div>
       </div>
-
-      <!-- Footer de la card -->
-      <div class="card-footer bg-light text-muted d-flex align-items-center">
-        <div class="me-3">
-          <img *ngIf="criaderoData?.foto_perfil" 
-               [src]="criaderoData?.foto_perfil" 
-               alt="Foto del criadero" 
-               class="border" 
-               style="width: 50px; height: 50px; object-fit: cover;">
-        </div>
-        <div>
-          <small><strong>Criadero:</strong> {{ criaderoData?.nombre }}</small><br>
-          <small><strong>Nucleo zoologico:</strong> {{ criaderoData?.nucleo_zoologico }}</small>
+      
+      <div class="col-md-8">
+        <div class="card-body">
+          <p class="card-text">
+            <i class="bi bi-clock me-1"></i>{{ calcularTiempoTranscurrido(anuncio.fecha_publicacion) }}
+          </p>
+          <h5 class="card-title text-primary fw-bold">{{ anuncio.titulo }}</h5>
+          <p class="card-text">
+            <strong>
+              {{ precioMinimo && precioMaximo ? precioMinimo + '€ - ' + precioMaximo + '€' : anuncio.precio + '€' }}
+            </strong>
+          </p>
+          <p class="card-text">{{ anuncio.raza }} | {{ anuncio.edad }} | {{ anuncio.ubicacion }}</p>
+          <p class="card-text">{{ anuncio.descripcion }}</p>
         </div>
       </div>
-    </a>
     </div>
-  </div>
+
+    <div class="card-footer bg-light text-muted d-flex align-items-center">
+      <div class="me-3">
+        <img *ngIf="criaderoData?.foto_perfil"
+             [src]="criaderoData.foto_perfil"
+             alt="Foto del criadero"
+             class="border"
+             style="width: 50px; height: 50px; object-fit: cover;">
+      </div>
+      <div>
+        <small><strong>Criadero:</strong> {{ criaderoData?.nombre }}</small><br>
+        <small><strong>Núcleo zoológico:</strong> {{ criaderoData?.nucleo_zoologico }}</small>
+      </div>
+    </div>
+  </a>
 </div>
-
-<script>
-  function aplicarFiltros() {
-    this.anunciosFiltrados = this.anuncios.filter(anuncio => {
-      const cumpleUbicacion = this.filtros.ubicacion
-        ? anuncio.ubicacion.toLowerCase().includes(this.filtros.ubicacion.toLowerCase())
-        : true;
-
-      const cumplePrecioMin = this.filtros.precioMin
-        ? parseFloat(this.precioMinimo || '0') >= this.filtros.precioMin
-        : true;
-
-      const cumplePrecioMax = this.filtros.precioMax
-        ? parseFloat(this.precioMaximo || '0') <= this.filtros.precioMax
-        : true;
-
-      const cumpleTipoAnimal = this.filtros.tipoAnimal
-        ? (this.filtros.tipoAnimal === 'perro' && anuncio.perro) || 
-          (this.filtros.tipoAnimal === 'gato' && !anuncio.perro)
-        : true;
-
-      const cumpleRaza = this.filtros.raza
-        ? anuncio.raza.toLowerCase().includes(this.filtros.raza.toLowerCase())
-        : true;
-
-      return cumpleUbicacion && cumplePrecioMin && cumplePrecioMax && cumpleTipoAnimal && cumpleRaza;
-    });
-  }
-</script>

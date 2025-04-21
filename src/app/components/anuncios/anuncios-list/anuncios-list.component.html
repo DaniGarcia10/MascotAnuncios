@@ -1,10 +1,49 @@
 <div class="container mt-4">
-    <div *ngIf="anuncios.length > 0; else noAnuncios">
-      <div *ngFor="let anuncio of anuncios">
-        <app-anuncios-resume [anuncio]="anuncio"></app-anuncios-resume>
+  <div class="row">
+    <!-- Filtros -->
+    <div class="col-md-3">
+      <div class="card p-3 mb-4">
+        <h5 class="card-title">Filtros</h5>
+        <form (ngSubmit)="aplicarFiltros()">
+          <div class="mb-3">
+            <label for="tipoAnimal" class="form-label">Tipo de animal</label>
+            <select id="tipoAnimal" [(ngModel)]="filtros.tipoAnimal" name="tipoAnimal" class="form-select">
+              <option value="">Todos</option>
+              <option value="perro">Perro</option>
+              <option value="gato">Gato</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="raza" class="form-label">Raza</label>
+            <input id="raza" [(ngModel)]="filtros.raza" name="raza" class="form-control" placeholder="Ej: Labrador" />
+          </div>
+          <div class="mb-3">
+            <label for="ubicacion" class="form-label">Ubicación</label>
+            <input id="ubicacion" [(ngModel)]="filtros.ubicacion" name="ubicacion" class="form-control" placeholder="Ej: Madrid" />
+          </div>
+          <div class="mb-3">
+            <label for="precioMin" class="form-label">Precio mínimo</label>
+            <input id="precioMin" type="number" [(ngModel)]="filtros.precioMin" name="precioMin" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label for="precioMax" class="form-label">Precio máximo</label>
+            <input id="precioMax" type="number" [(ngModel)]="filtros.precioMax" name="precioMax" class="form-control" />
+          </div>
+          <button type="submit" class="btn-marron w-100">Aplicar filtros</button>
+        </form>
       </div>
     </div>
-    <ng-template #noAnuncios>
-      <p class="text-center text-danger fw-bold">No hay anuncios disponibles.</p>
-    </ng-template>
+
+    <!-- Lista de anuncios -->
+    <div class="col-md-9">
+      <div *ngIf="anunciosFiltrados.length > 0; else noAnuncios">
+        <div *ngFor="let anuncio of anunciosFiltrados">
+          <app-anuncios-resume [anuncio]="anuncio"></app-anuncios-resume>
+        </div>
+      </div>
+      <ng-template #noAnuncios>
+        <p class="text-center text-danger fw-bold">No hay anuncios disponibles.</p>
+      </ng-template>
+    </div>
   </div>
+</div>

@@ -13,6 +13,7 @@ import { MascotasResumeComponent } from '../mascotas-resume/mascotas-resume.comp
 })
 export class MascotasListComponent implements OnInit {
   mascotas: Mascota[] = [];
+  activeSection: string = 'add'; // Sección activa por defecto
 
   constructor(private mascotasService: MascotasService) {}
 
@@ -20,5 +21,9 @@ export class MascotasListComponent implements OnInit {
     this.mascotasService.getMascotas().subscribe(data => {
       this.mascotas = data;
     });
+  }
+
+  setActiveSection(section: string): void {
+    this.activeSection = section;
   }
 }

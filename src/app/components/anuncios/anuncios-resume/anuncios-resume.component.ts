@@ -1,120 +1,59 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { AnunciosService } from '../../../services/anuncios.service';
-import { Anuncio } from '../../../models/Anuncio.model';
+import { Component, Input, OnInit } from '@angular/core';
 import { CriaderoService } from '../../../services/criadero.service';
-import { Criadero } from '../../../models/Criadero.model';
 import { UsuarioService } from '../../../services/usuario.service';
 import { CachorrosService } from '../../../services/cachorros.service';
-import { MascotasService } from '../../../services/mascotas.service';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-
 
 @Component({
   selector: 'app-anuncios-resume',
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './anuncios-resume.component.html',
-  styleUrls: ['./anuncios-resume.component.css']
+  styleUrls: ['./anuncios-resume.component.css'] 
 })
 export class AnunciosResumeComponent implements OnInit {
-  @Input() anuncio!: Anuncio;
-  anuncios: Anuncio[] = [];
-  anunciosFiltrados: Anuncio[] = [];
-  criaderoData?: Criadero;
-  precioMinimo?: string;
-  precioMaximo?: string;
-  padresImagenes: { [key: string]: string } = {};
+  @Input() anuncio: any;
 
-  // Filtros
-  filtros = {
-    ubicacion: '',
-    precioMin: null as number | null,
-    precioMax: null as number | null,
-    tipoAnimal: '',
-    raza: ''
-  };
+  criaderoData: any;
+  precioMinimo: string | null = null;
+  precioMaximo: string | null = null;
 
   constructor(
-    private anunciosService: AnunciosService,
     private usuarioService: UsuarioService,
     private criaderoService: CriaderoService,
-    private cachorrosService: CachorrosService,
-    private mascotasService: MascotasService
+    private cachorrosService: CachorrosService
   ) {}
 
   async ngOnInit() {
-    this.anunciosService.getAnuncios().subscribe(data => {
-      this.anuncios = data;
-      this.anunciosFiltrados = [...this.anuncios]; // Inicialmente, mostrar todos los anuncios
-    });
-
-    if (this.anuncio.id_usuario) {
-      this.usuarioService.getUsuarioById(this.anuncio.id_usuario).then(usuario => {
-        if (usuario?.id_criadero) {
-          this.criaderoService.getCriaderoById(usuario.id_criadero).then(data => {
-            this.criaderoData = data;
-          });
-        }
-      });
+    if (this.anuncio?.id_usuario) {
+      const usuario = await this.usuarioService.getUsuarioById(this.anuncio.id_usuario);
+      if (usuario?.id_criadero) {
+        this.criaderoData = await this.criaderoService.getCriaderoById(usuario.id_criadero);
+      }
     }
 
-    if (this.anuncio.cachorros && this.anuncio.cachorros.length > 0) {
-      this.cachorrosService.getCachorrosByIds(this.anuncio.cachorros).then(cachorros => {
-        const precios = cachorros.map(c => c.precio);
+    if (this.anuncio?.especificar_cachorros) {
+      // Si especificar_cachorros es true, calcula el rango de precios de los cachorros
+      if (this.anuncio?.cachorros?.length > 0) {
+        const cachorros = await this.cachorrosService.getCachorrosByIds(this.anuncio.cachorros);
+        const precios = cachorros.map((c: any) => c.precio);
         this.precioMinimo = Math.min(...precios).toString();
         this.precioMaximo = Math.max(...precios).toString();
-      });
+      }
+    } else {
+      // Si especificar_cachorros es false, usa directamente el precio del anuncio
+      this.precioMinimo = this.anuncio.precio?.toString() || null;
+      this.precioMaximo = null; // No hay rango, solo un precio fijo
     }
-
   }
 
-  aplicarFiltros() {
-    this.anunciosFiltrados = this.anuncios.filter(anuncio => {
-      const cumpleUbicacion = this.filtros.ubicacion
-        ? anuncio.ubicacion.toLowerCase().includes(this.filtros.ubicacion.toLowerCase())
-        : true;
-
-      const cumplePrecioMin = this.filtros.precioMin
-        ? parseFloat(this.precioMinimo || '0') >= this.filtros.precioMin
-        : true;
-
-      const cumplePrecioMax = this.filtros.precioMax
-        ? parseFloat(this.precioMaximo || '0') <= this.filtros.precioMax
-        : true;
-
-      const cumpleTipoAnimal = this.filtros.tipoAnimal
-        ? (this.filtros.tipoAnimal === 'perro' && anuncio.perro) || 
-          (this.filtros.tipoAnimal === 'gato' && !anuncio.perro)
-        : true;
-
-      const cumpleRaza = this.filtros.raza
-        ? anuncio.raza.toLowerCase().includes(this.filtros.raza.toLowerCase())
-        : true;
-
-      return cumpleUbicacion && cumplePrecioMin && cumplePrecioMax && cumpleTipoAnimal && cumpleRaza;
-    });
-  }
-
-  calcularTiempoTranscurrido(fecha: Date): string {
+  calcularTiempoTranscurrido(fechaPublicacion: string): string {
+    const fecha = new Date(fechaPublicacion);
     const ahora = new Date();
-    const diferencia = ahora.getTime() - new Date(fecha).getTime();
-
-    if (diferencia < 0) {
-        return 'Hace unos instantes';
-    }
-
-    const minutos = Math.floor(diferencia / (1000 * 60));
-    if (minutos < 60) {
-        return `${minutos} minutos`;
-    }
-
-    const horas = Math.floor(minutos / 60);
-    if (horas < 24) {
-        return `${horas} horas`;
-    }
-
-    const dias = Math.floor(horas / 24);
-    return `${dias} días`;
+    const diffMs = ahora.getTime() - fecha.getTime();
+    const diffHoras = Math.floor(diffMs / (1000 * 60 * 60));
+    if (diffHoras < 24) return `${diffHoras} horas`;
+    const diffDias = Math.floor(diffHoras / 24);
+    return `${diffDias} días`;
   }
 }

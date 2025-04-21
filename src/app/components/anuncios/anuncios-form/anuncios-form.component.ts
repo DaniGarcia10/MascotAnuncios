@@ -25,10 +25,11 @@ export class AnunciosFormComponent implements OnInit {
     id_usuario: '',
     activo: true,
     ubicacion: '',
-    destacado: false,
     imagenes: [],
     cachorros: [],
-    especificar_cachorros: false
+    especificar_cachorros: false,
+    precio: null,
+    destacado: false
   };
 
   razas: { label: string, value: string }[] = [];

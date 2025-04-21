@@ -1,0 +1,47 @@
+/* Estilo para los títulos de las tarjetas */
+.card-title {
+  color: var(--primary-text-color) !important;
+}
+
+/* Estilo para imágenes con efecto zoom */
+#zoomable-image {
+  transition: transform 0.2s ease-in-out;
+  cursor: grab;
+  user-select: none;
+}
+
+/* Botón marrón reutilizable */
+.btn-marron {
+  background-color: #8b5e3c;
+  color: white;
+  border-radius: 12px;
+  font-weight: 500;
+  padding: 0.6rem;
+  transition: all 0.3s ease-in-out;
+  border: none;
+}
+
+.btn-marron:hover {
+  background-color: #8b5e3c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Ajustes adicionales para las tarjetas de padres */
+.card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.card-title {
+  font-weight: bold;
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 0 0 12px 0;
+}
+
+.img-fluid {
+  border-radius: 12px;
+  object-fit: cover;
+}

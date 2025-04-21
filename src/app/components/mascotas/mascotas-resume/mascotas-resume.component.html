@@ -1,7 +1,10 @@
 <div class="card mb-4 shadow-sm">
   <div class="row g-0">
-    <!-- Parte izquierda: Imagen de la mascota -->
-    <div class="col-md-4">
+    <!-- Imagen de la mascota (izquierda) -->
+    <div class="col-md-4 position-relative">
+      <h5 class="card-title fw-bold position-absolute top-0 start-0 bg-light px-2 py-1">
+        {{ mascota.nombre }}
+      </h5>
       <img *ngIf="mascota.imagenes && mascota.imagenes.length > 0" 
            [src]="mascota.imagenes[0]" 
            class="img-fluid rounded-start w-100 object-fit-cover" 
@@ -12,21 +15,18 @@
       </div>
     </div>
 
-    <!-- Parte derecha: Información de la mascota -->
-    <div class="col-md-8">
-      <div class="card-body">
-        <h5 class="card-title text-primary fw-bold">{{ mascota.nombre }}</h5>
+    <!-- Información de la mascota (centro) -->
+    <div class="col-md-5">
+      <div class="card-body h-100 d-flex flex-column justify-content-center">
         <p class="card-text">{{ mascota.raza }} | {{ mascota.color }} | {{ mascota.sexo }}</p>
         <p class="card-text">{{ mascota.descripcion }}</p>
       </div>
     </div>
-  </div>
 
-  <!-- Parte derecha: Información del padre y la madre -->
-  <div class="row g-0 mt-3">
-    <div class="col-md-4 d-flex flex-row justify-content-between align-items-stretch">
-      <!-- Card del padre -->
-      <div class="card mb-3 position-relative d-flex flex-column" style="width: 48%; height: 250px;">
+    <!-- Padres (derecha, uno encima del otro) -->
+    <div class="col-md-3 d-flex flex-column justify-content-between">
+      <!-- Padre -->
+      <div *ngIf="mascota.id_padre && mascota.id_padre.trim() !== ''" class="card mb-2 position-relative" style="height: 120px;">
         <h6 class="card-title text-primary fw-bold position-absolute top-0 start-0 bg-light px-2 py-1">
           Padre
         </h6>
@@ -37,8 +37,8 @@
              style="object-fit: cover;">
       </div>
 
-      <!-- Card de la madre -->
-      <div class="card position-relative d-flex flex-column" style="width: 48%; height: 250px;">
+      <!-- Madre -->
+      <div *ngIf="mascota.id_madre && mascota.id_madre.trim() !== ''" class="card position-relative" style="height: 120px;">
         <h6 class="card-title text-primary fw-bold position-absolute top-0 start-0 bg-light px-2 py-1">
           Madre
         </h6>
