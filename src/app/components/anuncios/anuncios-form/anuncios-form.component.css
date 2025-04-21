@@ -57,4 +57,8 @@
       border-radius: 10px;
       z-index: 1000; /* opcional si hay solapamiento */
     }
-    
+
+    ::ng-deep .custom-ng-select .ng-placeholder {
+      color: #999; /* Asegúrate de que el color sea visible */
+      font-style: italic;
+    }

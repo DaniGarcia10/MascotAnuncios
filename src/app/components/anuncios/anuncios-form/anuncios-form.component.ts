@@ -15,7 +15,7 @@ export class AnunciosFormComponent implements OnInit {
   anuncio: Anuncio = {
     id: '',
     raza: '',
-    perro: true,
+    perro: null,
     titulo: '',
     descripcion: '',
     fecha_publicacion: new Date(),
@@ -43,6 +43,10 @@ export class AnunciosFormComponent implements OnInit {
   }
   
   updateRazasList(): void {
+    if (this.anuncio.perro === null) {
+      this.filteredRazas = []; // No cargar razas si no se ha seleccionado el tipo
+      return;
+    }
     const tipo = this.anuncio.perro ? 'perros' : 'gatos';
     const razas = this.razasService.getRazasByTipo(tipo);
     console.log('Razas cargadas:', razas);
