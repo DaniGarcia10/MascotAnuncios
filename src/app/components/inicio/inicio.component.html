@@ -9,24 +9,29 @@
             
             <div class="row g-3">
                 <div class="col-md-6">
-                    <input type="radio" id="perros" name="tipo" value="perros" class="btn-check">
+                    <input type="radio" id="perros" name="tipo" value="perros" class="btn-check" (change)="onTipoSeleccionado('perros')">
                     <label for="perros" class="btn btn-outline-light w-100">Perros</label>
                 </div>
                 <div class="col-md-6">
-                    <input type="radio" id="gatos" name="tipo" value="gatos" class="btn-check">
+                    <input type="radio" id="gatos" name="tipo" value="gatos" class="btn-check" (change)="onTipoSeleccionado('gatos')">
                     <label for="gatos" class="btn btn-outline-light w-100">Gatos</label>
                 </div>
             </div>
             <div class="mt-3">
-                <select class="form-select bg-transparent text-white border-light">
-                    <option selected>Selecciona una raza</option>
-                    <option value="1">Labrador</option>
-                    <option value="2">Golden Retriever</option>
-                </select>
+                <div class="dropdown">
+                    <button class="btn btn-dark dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" [disabled]="!razaHabilitada">
+                        {{ razaSeleccionada || 'Selecciona una raza' }}
+                    </button>                      
+                    <ul class="dropdown-menu bg-black" aria-labelledby="dropdownMenuButton">
+                        <li *ngFor="let raza of razas">
+                          <a class="dropdown-item" href="#" (click)="seleccionarRaza(raza); $event.preventDefault()">{{ raza }}</a>
+                        </li>
+                      </ul>                      
+                </div>
             </div>
             <div class="mt-4">
-                <button class="btn btn-light w-100">Buscar</button>
-            </div>
+                <button class="btn btn-light w-100" (click)="buscar()">Buscar</button>
+            </div>              
         </div>
     </div>
 </div>

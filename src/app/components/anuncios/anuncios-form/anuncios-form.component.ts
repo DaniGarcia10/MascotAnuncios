@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Anuncio } from '../../../models/Anuncio.model';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { RazasService } from '../../../services/razas.service';
 import { CommonModule } from '@angular/common';
+import { RAZAS } from '../../../data/razas'; // Importar RAZAS desde el archivo
 
 @Component({
   selector: 'app-anuncios-form',
@@ -35,10 +35,9 @@ export class AnunciosFormComponent implements OnInit {
   razas: { label: string, value: string }[] = [];
   filteredRazas: { label: string, value: string }[] = [];
 
-  constructor(private razasService: RazasService) {}
+  constructor() {}
 
-  async ngOnInit(): Promise<void> {
-    await this.razasService.getRazas(); 
+  ngOnInit(): void {
     this.updateRazasList();
   }
   
@@ -48,7 +47,7 @@ export class AnunciosFormComponent implements OnInit {
       return;
     }
     const tipo = this.anuncio.perro ? 'perros' : 'gatos';
-    const razas = this.razasService.getRazasByTipo(tipo);
+    const razas = RAZAS[tipo];
     console.log('Razas cargadas:', razas);
     this.filteredRazas = (razas || []).map(raza => ({
       label: raza,
@@ -59,7 +58,7 @@ export class AnunciosFormComponent implements OnInit {
   onSearchRaza(event: { term: string; items: any[] }): void {
     const searchTerm = event.term;
     const tipo = this.anuncio.perro ? 'perros' : 'gatos';
-    const allRazas = this.razasService.getRazasByTipo(tipo);
+    const allRazas = RAZAS[tipo];
   
     this.filteredRazas = allRazas
       .filter(raza => raza.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -68,9 +67,7 @@ export class AnunciosFormComponent implements OnInit {
         value: raza
       }));
   }
-  
-  
-  
+
   // Llamar a esta función cuando cambie el tipo
   onTipoChange(): void {
     this.anuncio.raza = ''; 
@@ -88,5 +85,4 @@ export class AnunciosFormComponent implements OnInit {
     console.log('Anuncio publicado:', this.anuncio);
     // Aquí puedes llamar al servicio para guardar el anuncio
   }
-  
 }

@@ -19,8 +19,12 @@
           </div>
           <div class="mb-3">
             <label for="ubicacion" class="form-label">Ubicación</label>
-            <input id="ubicacion" [(ngModel)]="filtros.ubicacion" name="ubicacion" class="form-control" placeholder="Ej: Madrid" />
-          </div>
+            <div class="input-group">
+              <input id="ubicacion" [(ngModel)]="filtros.ubicacion" name="ubicacion" class="form-control" placeholder="Ej: Madrid" />
+              <button type="button" class="btn btn-outline-secondary bi bi-geo-alt-fill" (click)="detectarUbicacion()" title="Detectar ubicación">
+              </button>
+            </div>
+          </div>          
           <div class="mb-3">
             <label for="precioMin" class="form-label">Precio mínimo</label>
             <input id="precioMin" type="number" [(ngModel)]="filtros.precioMin" name="precioMin" class="form-control" />
@@ -36,6 +40,18 @@
 
     <!-- Lista de anuncios -->
     <div class="col-md-9">
+
+      <!-- Ordenar por -->
+      <div class="mb-3">
+        <select class="form-select" [(ngModel)]="ordenSeleccionado" (change)="ordenarAnuncios()">
+          <option value="">Ordenar por...</option>
+          <option value="precioAsc">Precio: Menor a mayor</option>
+          <option value="precioDesc">Precio: Mayor a menor</option>
+          <option value="fechaReciente">Fecha de publicación: Más reciente</option>
+          <option value="fechaAntigua">Fecha de publicación: Más antiguo</option>
+        </select>
+      </div>
+
       <div *ngIf="anunciosFiltrados.length > 0; else noAnuncios">
         <div *ngFor="let anuncio of anunciosFiltrados">
           <app-anuncios-resume [anuncio]="anuncio"></app-anuncios-resume>

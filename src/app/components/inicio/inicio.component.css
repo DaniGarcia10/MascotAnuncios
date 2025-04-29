@@ -1,0 +1,25 @@
+.dropdown-menu {
+    background-color: black;
+    border-color: white;
+}
+
+.dropdown-item {
+    color: white;
+}
+
+.dropdown-item:hover {
+    background-color: white;
+    color: black;
+}
+
+/* Estilo para el botón "Selecciona una raza" */
+.dropdown-toggle {
+    background-color: transparent;
+    color: white;
+    border: 1px solid white;
+}
+
+.dropdown-toggle:hover {
+    background-color: white;
+    color: black;
+}
