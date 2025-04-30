@@ -2,14 +2,16 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CriaderoService } from '../../../services/criadero.service';
 import { UsuarioService } from '../../../services/usuario.service';
 import { CachorrosService } from '../../../services/cachorros.service';
+import { ImagenService } from '../../../services/imagen.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-anuncios-resume',
+  standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './anuncios-resume.component.html',
-  styleUrls: ['./anuncios-resume.component.css'] 
+  styleUrls: ['./anuncios-resume.component.css']
 })
 export class AnunciosResumeComponent implements OnInit {
   @Input() anuncio: any;
@@ -17,11 +19,13 @@ export class AnunciosResumeComponent implements OnInit {
   criaderoData: any;
   precioMinimo: string | null = null;
   precioMaximo: string | null = null;
+  imagenUrlCriadero: string | null = null;
 
   constructor(
     private usuarioService: UsuarioService,
     private criaderoService: CriaderoService,
-    private cachorrosService: CachorrosService
+    private cachorrosService: CachorrosService,
+    private imagenService: ImagenService
   ) {}
 
   async ngOnInit() {
@@ -29,11 +33,15 @@ export class AnunciosResumeComponent implements OnInit {
       const usuario = await this.usuarioService.getUsuarioById(this.anuncio.id_usuario);
       if (usuario?.id_criadero) {
         this.criaderoData = await this.criaderoService.getCriaderoById(usuario.id_criadero);
+
+        if (this.criaderoData?.foto_perfil) {
+          const ruta = `criaderos/${this.criaderoData.foto_perfil}`;
+          this.imagenUrlCriadero = await this.imagenService.obtenerUrlImagen(ruta);
+        }
       }
     }
 
     if (this.anuncio?.especificar_cachorros) {
-      // Si especificar_cachorros es true, calcula el rango de precios de los cachorros
       if (this.anuncio?.cachorros?.length > 0) {
         const cachorros = await this.cachorrosService.getCachorrosByIds(this.anuncio.cachorros);
         const precios = cachorros.map((c: any) => c.precio);
@@ -41,9 +49,8 @@ export class AnunciosResumeComponent implements OnInit {
         this.precioMaximo = Math.max(...precios).toString();
       }
     } else {
-      // Si especificar_cachorros es false, usa directamente el precio del anuncio
       this.precioMinimo = this.anuncio.precio?.toString() || null;
-      this.precioMaximo = null; // No hay rango, solo un precio fijo
+      this.precioMaximo = null;
     }
   }
 

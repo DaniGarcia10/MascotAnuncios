@@ -51,3 +51,12 @@
     color: #444;
   }
   
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+  
+  .registro-wrapper {
+    min-height: 100%;
+  }
+  

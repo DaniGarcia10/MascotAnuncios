@@ -11,13 +11,16 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 text-nowrap">
                 <li class="nav-item dropdown me-3">
-                    <a class="nav-link dropdown-toggle" routerLink="/anuncios" id="navbarDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" routerLink="/anuncios" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-paw"></i> Anuncios
                     </a>
                     <ul class="dropdown-menu dropdown-custom" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" routerLink="/perros">Perros</a></li>
-                        <li><a class="dropdown-item" routerLink="/gatos">Gatos</a></li>
+                        <li>
+                            <a class="dropdown-item" [routerLink]="['/anuncios']" [queryParams]="{ tipoAnimal: 'perro' }">Perros</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" [routerLink]="['/anuncios']" [queryParams]="{ tipoAnimal: 'gato' }">Gatos</a>
+                        </li>
                     </ul>
                 </li>
                 <ng-container *ngIf="isAuthenticated; else guestLinks">

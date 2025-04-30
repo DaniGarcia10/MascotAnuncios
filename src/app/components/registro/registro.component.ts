@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { ImagenService } from '../../services/imagen.service';
+import { Firestore, doc, setDoc, collection, addDoc } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-registro',
@@ -14,8 +15,14 @@ import { ImagenService } from '../../services/imagen.service';
 export class RegistroComponent implements OnInit {
   formRegistro: FormGroup;
   imagenUrl: string | null = null;
+  fotoPerfil: File | null = null;
+  fotoPerfilCriadero: File | null = null;
 
-  constructor(private authService: AuthService, private imagenService: ImagenService) {
+  constructor(
+    private authService: AuthService,
+    private imagenService: ImagenService,
+    private firestore: Firestore
+  ) {
     this.formRegistro = new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.maxLength(30)]),
       apellidos: new FormControl('', [Validators.required, Validators.maxLength(50)]),
@@ -30,29 +37,97 @@ export class RegistroComponent implements OnInit {
           Validators.pattern('^[a-zA-Z0-9]+$'),
           Validators.minLength(12),
           Validators.maxLength(12)
-        ])
+        ]),
+        ubicacion: new FormControl('', [Validators.required, Validators.maxLength(100)])
       })
     });
   }
 
   ngOnInit(): void {
-    // Cargar la imagen registro.jpg
-    this.imagenService.cargarImagenes(['registro2.jpg']).then((urls) => {
-      this.imagenUrl = urls[0];
-    }).catch((error) => {
-      console.error('Error al cargar la imagen:', error);
-    });
+    this.imagenService.cargarImagenes(['registro2.jpg'])
+      .then((urls) => this.imagenUrl = urls[0])
+      .catch((error) => console.error('Error al cargar la imagen:', error));
   }
 
-  onSubmit(): void {
-    const usuario = this.formRegistro.value;
-    console.log('Datos del usuario:', usuario);
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.fotoPerfil = file;
+      console.log('Foto de perfil seleccionada:', file.name);
+    }
+  }
 
-    this.authService.registro(usuario.email, usuario.password).then((response: any) => {
-      console.log('Registro exitoso:', response);
-    }).catch((error: any) => {
-      console.error('Error en el registro:', error);
-    });
+  onFileSelectedCriadero(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.fotoPerfilCriadero = file;
+      console.log('Foto de perfil del criadero seleccionada:', file.name);
+    }
+  }
+
+  async onSubmit(): Promise<void> {
+    const usuario = this.formRegistro.value;
+
+    try {
+      const response: any = await this.authService.registro(usuario.email, usuario.password);
+      const userId = response.user?.uid;
+      console.log('Registro exitoso:', userId);
+
+      let nombreFotoPerfil = '';
+      if (this.fotoPerfil) {
+        const extension = this.fotoPerfil.name.split('.').pop()?.toLowerCase();
+        nombreFotoPerfil = `${userId}.${extension}`;
+        await this.imagenService.subirImagen(this.fotoPerfil, 'usuario', userId);
+        console.log('Foto de perfil subida:', nombreFotoPerfil);
+      }
+
+      let idCriadero: string | null = null;
+
+      if (this.isVendedor()) {
+        const criaderoData = {
+          nombre: usuario.criadero.nombre,
+          nucleo_zoologico: usuario.criadero.nucleo_zoologico,
+          ubicacion: usuario.criadero.ubicacion,
+          foto_perfil: null,
+          fecha_registro: new Date().toISOString()
+        };
+
+        const criaderosRef = collection(this.firestore, 'criaderos');
+        const docRef = await addDoc(criaderosRef, criaderoData);
+        idCriadero = docRef.id;
+
+        if (this.fotoPerfilCriadero) {
+          const extension = this.fotoPerfilCriadero.name.split('.').pop()?.toLowerCase();
+          const nombreFotoCriadero = `${idCriadero}.${extension}`;
+          await this.imagenService.subirImagen(this.fotoPerfilCriadero, 'criadero', idCriadero);
+
+          // Actualizar solo la foto del criadero ya creado
+          await setDoc(doc(this.firestore, 'criaderos', idCriadero), {
+            ...criaderoData,
+            foto_perfil: nombreFotoCriadero
+          });
+        }
+      }
+
+      const usuarioDoc = {
+        nombre: usuario.nombre,
+        apellidos: usuario.apellidos,
+        email: usuario.email,
+        telefono: usuario.telefono,
+        vendedor: usuario.vendedor,
+        id_criadero: idCriadero,
+        foto_perfil: nombreFotoPerfil || null
+      };
+
+      await setDoc(doc(this.firestore, 'usuarios', userId), usuarioDoc);
+
+    } catch (error) {
+      if ((error as any).code === 'auth/email-already-in-use') {
+        alert('Este correo ya está registrado. Intenta con otro.');
+      } else {
+        console.error('Error en el registro:', error);
+      }
+    }
   }
 
   isVendedor(): boolean {

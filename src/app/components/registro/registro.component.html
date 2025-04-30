@@ -1,12 +1,12 @@
-<div class="position-relative vh-100">
+<div class="registro-wrapper position-relative d-flex flex-column flex-grow-1">
   <!-- Imagen de fondo -->
-  <div *ngIf="imagenUrl" class="position-absolute top-0 start-0 w-100 h-100">
+  <div *ngIf="imagenUrl" class="position-absolute top-0 start-0 w-100 h-100 z-n1">
     <img [src]="imagenUrl" alt="Fondo Registro" class="img-fluid w-100 h-100 object-fit-cover">
   </div>
 
   <!-- Contenido principal -->
-  <div class="position-relative z-1 d-flex justify-content-center align-items-center h-100">
-    <div class="card" style="max-width: 600px; width: 100%;">
+  <div class="d-flex justify-content-center align-items-center flex-grow-1 px-3 py-5">
+    <div class="card w-100" style="max-width: 600px;">
       <div class="card-header text-center">
         <h3 class="card-title">Registro</h3>
       </div>
@@ -55,19 +55,16 @@
               <small *ngIf="formRegistro.get('password')?.errors?.['maxlength']">Máximo 20 caracteres permitidos.</small>
             </div>
           </div>
+          <div class="mb-3">
+            <label for="fotoPerfil" class="form-label">Foto de Perfil:</label>
+            <input id="fotoPerfil" type="file" class="form-control" (change)="onFileSelected($event)">
+          </div>
           <div class="form-check mb-3">
             <input id="vendedor" formControlName="vendedor" type="checkbox" class="form-check-input">
             <label for="vendedor" class="form-check-label">¿Eres vendedor?</label>
           </div>
           <div *ngIf="isVendedor()" formGroupName="criadero">
             <h5 class="mt-3">Datos del Criadero</h5>
-            <div class="mb-3">
-              <label for="criadero-nombre" class="form-label">Nombre del Criadero:</label>
-              <input id="criadero-nombre" formControlName="nombre" type="text" class="form-control" placeholder="Ingresa el nombre del criadero">
-              <div *ngIf="formRegistro.get('criadero.nombre')?.invalid && formRegistro.get('criadero.nombre')?.touched" class="text-danger">
-                <small *ngIf="formRegistro.get('criadero.nombre')?.errors?.['maxlength']">Máximo 50 caracteres permitidos.</small>
-              </div>
-            </div>
             <div class="mb-3">
               <label for="nucleo-zoologico" class="form-label">Núcleo Zoológico:</label>
               <input id="nucleo-zoologico" formControlName="nucleo_zoologico" type="text" class="form-control" placeholder="Ingresa el núcleo zoológico">
@@ -77,6 +74,25 @@
                 <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['minlength']">Debe tener exactamente 12 caracteres.</small>
                 <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['maxlength']">Debe tener exactamente 12 caracteres.</small>
               </div>
+            </div>
+            <div class="mb-3">
+              <label for="criadero-nombre" class="form-label">Nombre del Criadero:</label>
+              <input id="criadero-nombre" formControlName="nombre" type="text" class="form-control" placeholder="Ingresa el nombre del criadero">
+              <div *ngIf="formRegistro.get('criadero.nombre')?.invalid && formRegistro.get('criadero.nombre')?.touched" class="text-danger">
+                <small *ngIf="formRegistro.get('criadero.nombre')?.errors?.['maxlength']">Máximo 50 caracteres permitidos.</small>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="criadero-ubicacion" class="form-label">Ubicación del Criadero:</label>
+              <input id="criadero-ubicacion" formControlName="ubicacion" type="text" class="form-control" placeholder="Ingresa la provincia del criadero">
+              <div *ngIf="formRegistro.get('criadero.ubicacion')?.invalid && formRegistro.get('criadero.ubicacion')?.touched" class="text-danger">
+                <small *ngIf="formRegistro.get('criadero.ubicacion')?.errors?.['required']">La ubicación es obligatoria.</small>
+                <small *ngIf="formRegistro.get('criadero.ubicacion')?.errors?.['maxlength']">Máximo 100 caracteres permitidos.</small>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="fotoPerfilCriadero" class="form-label">Foto de Perfil del Criadero:</label>
+              <input id="fotoPerfilCriadero" type="file" class="form-control" (change)="onFileSelectedCriadero($event)">
             </div>
           </div>
           <button type="submit" class="btn btn-marron w-100">Registrarse</button>

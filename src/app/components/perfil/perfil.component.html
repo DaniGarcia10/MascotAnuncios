@@ -17,17 +17,16 @@
   <!-- Contenido principal -->
   <div class="contenido-principal flex-grow-1 p-4 col-12 col-lg-9">
     <div *ngIf="activeSection === 'general'">
-      <!-- Información general -->
       <div class="card mx-auto" style="max-width: 500px; width: 100%;">
         <div class="card-header text-center">
           <h3 class="card-title">Mi Perfil</h3>
         </div>
         <div class="card-body">
           <form [formGroup]="perfilForm" *ngIf="usuario; else noUsuario">
-            <div class="text-center">
+            <div class="text-center mb-3">
               <img 
-                *ngIf="usuario.foto_perfil" 
-                [src]="usuario.foto_perfil" 
+                *ngIf="imagenUrlPerfil" 
+                [src]="imagenUrlPerfil" 
                 alt="Foto de perfil" 
                 class="img-thumbnail"
               />
@@ -62,7 +61,6 @@
     </div>
 
     <div *ngIf="activeSection === 'password'">
-      <!-- Cambiar contraseña -->
       <div class="card mx-auto" style="max-width: 500px; width: 100%;">
         <div class="card-header text-center">
           <h3 class="card-title">Cambiar Contraseña</h3>
@@ -88,13 +86,12 @@
     </div>
 
     <div *ngIf="activeSection === 'criadero'">
-      <!-- Información de mi criadero -->
       <div *ngIf="criadero; else noCriadero" class="card mx-auto" style="max-width: 500px; width: 100%;">
         <div class="card-header text-center">
           <h3 class="card-title">Información del Criadero</h3>
         </div>
         <div class="card-body text-center">
-          <img *ngIf="criadero.foto_perfil" [src]="criadero.foto_perfil" alt="Foto del criadero" class="img-thumbnail mb-3" />
+          <img *ngIf="imagenUrlCriadero" [src]="imagenUrlCriadero" alt="Foto del criadero" class="img-thumbnail mb-3" />
           <h5><strong>Nombre:</strong> {{ criadero.nombre }}</h5>
           <p><strong>Núcleo Zoológico:</strong> {{ criadero.nucleo_zoologico }}</p>
           <p><strong>Ubicación:</strong> {{ criadero.ubicacion }}</p>

@@ -3,6 +3,7 @@ import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ImagenService } from '../../services/imagen.service';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router'; // Importar Router
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,11 @@ import { CommonModule } from '@angular/common';
 export class LoginComponent implements OnInit {
   formLogin: FormGroup;
   imagenUrl: string | null = null; 
-  constructor(private authService: AuthService, private imagenService: ImagenService) {
+  constructor(
+    private authService: AuthService, 
+    private imagenService: ImagenService,
+    private router: Router // Inyectar Router
+  ) {
     this.formLogin = new FormGroup({
       email: new FormControl(),
       password: new FormControl(),
@@ -33,7 +38,7 @@ export class LoginComponent implements OnInit {
   onSubmit(): void {
     const { email, password } = this.formLogin.value;
     this.authService.login(email, password).then((response: any) => {
-      console.log('Login exitoso:', response);
+      this.router.navigate(['/anuncios']); // Redirigir a /anuncios
     }).catch((error: any) => {
       console.error('Error en el login:', error.message);
     });

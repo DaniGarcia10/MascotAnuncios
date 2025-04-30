@@ -2,16 +2,14 @@
   <a [routerLink]="['/anuncio', anuncio.id]" class="text-decoration-none text-dark">
     <div class="row g-0">
       <div class="col-md-4 position-relative">
-        <img *ngIf="anuncio.imagenes?.length"
-             [src]="anuncio.imagenes[0]"
-             class="img-fluid rounded-start w-100 object-fit-cover"
-             alt="Imagen del anuncio"
-             style="height: 100%; max-height: 250px; object-fit: cover;">
+        <img *ngIf="anuncio.imagenes?.length" [src]="anuncio.imagenes[0]"
+          class="img-fluid rounded-start w-100 object-fit-cover" alt="Imagen del anuncio"
+          style="height: 100%; max-height: 250px; object-fit: cover;">
         <div *ngIf="anuncio.imagenes?.length > 1" class="badge-imagenes">
           +{{ anuncio.imagenes.length - 1 }} imágenes más
         </div>
       </div>
-      
+
       <div class="col-md-8">
         <div class="card-body">
           <p class="card-text">
@@ -31,11 +29,8 @@
 
     <div class="card-footer bg-light text-muted d-flex align-items-center">
       <div class="me-3">
-        <img *ngIf="criaderoData?.foto_perfil"
-             [src]="criaderoData.foto_perfil"
-             alt="Foto del criadero"
-             class="border"
-             style="width: 50px; height: 50px; object-fit: cover;">
+        <img *ngIf="imagenUrlCriadero" [src]="imagenUrlCriadero" alt="Foto del criadero" class="border"
+          style="width: 50px; height: 50px; object-fit: cover;">
       </div>
       <div>
         <small><strong>Criadero:</strong> {{ criaderoData?.nombre }}</small><br>

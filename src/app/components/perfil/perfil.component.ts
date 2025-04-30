@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { Auth } from '@angular/fire/auth';
 import { Usuario } from '../../models/Usuario.model';
 import { Criadero } from '../../models/Criadero.model';
-import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { UsuarioService } from '../../services/usuario.service';
 import { CriaderoService } from '../../services/criadero.service';
-import { Auth } from '@angular/fire/auth'; 
+import { ImagenService } from '../../services/imagen.service';
 
 @Component({
   selector: 'app-perfil',
-  standalone: true, 
+  standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.css']
@@ -18,6 +18,9 @@ import { Auth } from '@angular/fire/auth';
 export class PerfilComponent implements OnInit {
   usuario: Usuario | null = null;
   criadero: Criadero | null = null;
+  imagenUrlPerfil: string | null = null;
+  imagenUrlCriadero: string | null = null;
+
   editMode: boolean = false;
   perfilForm: FormGroup;
   passwordForm: FormGroup;
@@ -26,7 +29,8 @@ export class PerfilComponent implements OnInit {
   constructor(
     private auth: Auth,
     private usuarioService: UsuarioService,
-    private criaderoService: CriaderoService
+    private criaderoService: CriaderoService,
+    private imagenService: ImagenService
   ) {
     this.perfilForm = new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.maxLength(30)]),
@@ -45,12 +49,19 @@ export class PerfilComponent implements OnInit {
   ngOnInit(): void {
     const user = this.auth.currentUser;
     if (user) {
-      this.usuarioService.getUsuarioById(user.uid).then((usuario) => {
+      this.usuarioService.getUsuarioById(user.uid).then(async (usuario) => {
         this.usuario = usuario;
+
         if (this.usuario) {
           this.perfilForm.patchValue(this.usuario);
+
+          if (this.usuario.foto_perfil) {
+            const ruta = `usuarios/${this.usuario.foto_perfil}`;
+            this.imagenUrlPerfil = await this.imagenService.obtenerUrlImagen(ruta);
+          }
+
           if (this.usuario.id_criadero) {
-            this.cargarCriadero(this.usuario.id_criadero);
+            await this.cargarCriadero(this.usuario.id_criadero);
           }
         }
       }).catch((err) => {
@@ -61,25 +72,31 @@ export class PerfilComponent implements OnInit {
     }
   }
 
-  cargarCriadero(id: string): void {
-    this.criaderoService.getCriaderoById(id).then((criadero) => {
+  async cargarCriadero(id: string): Promise<void> {
+    try {
+      const criadero = await this.criaderoService.getCriaderoById(id);
       this.criadero = criadero || null;
-    }).catch((err) => {
+
+      if (this.criadero?.foto_perfil) {
+        const ruta = `criaderos/${this.criadero.foto_perfil}`;
+        this.imagenUrlCriadero = await this.imagenService.obtenerUrlImagen(ruta);
+      }
+    } catch (err) {
       console.error('Error al obtener los datos del criadero:', err);
-    });
+    }
   }
 
   toggleEditMode(): void {
     this.editMode = !this.editMode;
     if (!this.editMode && this.perfilForm.valid) {
       console.log('Datos guardados:', this.perfilForm.value);
-      // Aquí puedes agregar lógica para guardar los cambios en la base de datos
+      // Aquí puedes llamar a un método para guardar los cambios si quieres
     }
   }
 
   cancelEdit(): void {
     this.editMode = false;
-    this.perfilForm.reset(this.usuario); // Restaura los valores originales
+    this.perfilForm.reset(this.usuario);
   }
 
   setActiveSection(section: string): void {
@@ -93,7 +110,7 @@ export class PerfilComponent implements OnInit {
         alert('Las contraseñas no coinciden.');
         return;
       }
-      // Lógica para cambiar la contraseña
+      // Aquí va la lógica real para cambiar la contraseña
       console.log('Contraseña cambiada:', nuevaPassword);
     }
   }
