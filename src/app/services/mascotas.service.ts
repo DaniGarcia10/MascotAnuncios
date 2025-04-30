@@ -22,7 +22,8 @@ export class MascotasService {
       // Cargar las imágenes de la mascota si existen
       if (mascota.imagenes && mascota.imagenes.length > 0) {
         console.log('Cargando imágenes para la mascota:', mascota.nombre);
-        mascota.imagenes = await this.imagenService.cargarImagenes(mascota.imagenes);
+        const imagenesConRuta = mascota.imagenes.map(img => `mascotas/${img}`);
+        mascota.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
       }
 
       return mascota;

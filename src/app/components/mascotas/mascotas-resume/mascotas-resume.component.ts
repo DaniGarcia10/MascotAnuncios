@@ -20,10 +20,12 @@ export class MascotasResumeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-  
     // Verifica si la mascota tiene imágenes y carga la primera imagen
     if (this.mascota.imagenes && this.mascota.imagenes.length > 0) {
-      this.imagenService.cargarImagenes([this.mascota.imagenes[0]]).then(urls => {
+      const imagenesConRuta = this.mascota.imagenes.map(img =>
+        img.startsWith('http') ? img : `mascotas/${img}`
+      );
+      this.imagenService.cargarImagenes([imagenesConRuta[0]]).then(urls => {
         console.log('URL de la mascota:', urls[0]); // Verifica la URL generada
         this.mascota.imagenes[0] = urls[0]; // Asigna la URL a la imagen de la mascota
       });
@@ -33,7 +35,10 @@ export class MascotasResumeComponent implements OnInit {
       this.mascotasService.getMascotaById(this.mascota.id_padre).then(padre => {
         console.log('Padre:', padre); // Verifica los datos del padre
         if (padre?.imagenes?.length) {
-          this.imagenService.cargarImagenes([padre.imagenes[0]]).then(urls => {
+          const imagenesConRuta = padre.imagenes.map(img =>
+            img.startsWith('http') ? img : `mascotas/${img}`
+          );
+          this.imagenService.cargarImagenes([imagenesConRuta[0]]).then(urls => {
             console.log('URL del padre:', urls[0]); // Verifica la URL generada
             this.padresImagenes['padre'] = urls[0];
           });
@@ -45,7 +50,10 @@ export class MascotasResumeComponent implements OnInit {
       this.mascotasService.getMascotaById(this.mascota.id_madre).then(madre => {
         console.log('Madre:', madre); // Verifica los datos de la madre
         if (madre?.imagenes?.length) {
-          this.imagenService.cargarImagenes([madre.imagenes[0]]).then(urls => {
+          const imagenesConRuta = madre.imagenes.map(img =>
+            img.startsWith('http') ? img : `mascotas/${img}`
+          );
+          this.imagenService.cargarImagenes([imagenesConRuta[0]]).then(urls => {
             console.log('URL de la madre:', urls[0]); // Verifica la URL generada
             this.padresImagenes['madre'] = urls[0];
           });
