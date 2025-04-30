@@ -14,7 +14,7 @@ import { RAZAS } from '../../../data/razas'; // Importar RAZAS desde el archivo
 export class AnunciosFormComponent implements OnInit {
   anuncio: Anuncio = {
     id: '',
-    raza: '',
+    raza: null,
     perro: null,
     titulo: '',
     descripcion: '',
@@ -70,7 +70,7 @@ export class AnunciosFormComponent implements OnInit {
 
   // Llamar a esta función cuando cambie el tipo
   onTipoChange(): void {
-    this.anuncio.raza = ''; 
+    this.anuncio.raza = null; 
     this.updateRazasList();
   }
 

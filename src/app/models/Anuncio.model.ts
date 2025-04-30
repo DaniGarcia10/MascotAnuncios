@@ -1,6 +1,6 @@
 export interface Anuncio {
     id: string;
-    raza: string;
+    raza: string | null;
     perro: boolean | null;
     titulo: string;
     descripcion: string;

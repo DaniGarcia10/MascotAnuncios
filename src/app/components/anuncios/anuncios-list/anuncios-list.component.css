@@ -29,3 +29,21 @@
   color: #999;
   font-style: italic;
 }
+
+::ng-deep .custom-ng-select.ng-select-focused {
+  border-color: #8b5e3c; /* Marrón de la app */
+  box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.25); /* Efecto de enfoque */
+  outline: none;
+}
+
+select:focus {
+  border-color: #8b5e3c; /* Marrón de la app */
+  box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.25); /* Efecto de enfoque */
+  outline: none;
+}
+
+input:focus {
+  border-color: #8b5e3c; /* Marrón de la app */
+  box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.25); /* Efecto de enfoque */
+  outline: none;
+}

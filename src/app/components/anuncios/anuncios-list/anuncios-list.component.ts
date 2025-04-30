@@ -19,8 +19,8 @@ export class AnunciosListComponent implements OnInit {
   ordenSeleccionado: string = ''; // Guardar el tipo de orden
 
   filtros = {
-    tipoAnimal: '',
-    raza: '',
+    tipoAnimal: null, // Cambiar de '' a null
+    raza: null,       // Cambiar de '' a null
     ubicacion: '',
     precioMin: null,
     precioMax: null
@@ -33,8 +33,8 @@ export class AnunciosListComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      this.filtros.tipoAnimal = params['tipoAnimal'] || '';
-      this.filtros.raza = params['raza'] || '';
+      this.filtros.tipoAnimal = params['tipoAnimal'] ?? null; // Usar null si no hay parámetro
+      this.filtros.raza = params['raza'] ?? null; // Usar null si no hay parámetro
   
       this.anunciosService.getAnuncios().subscribe(data => {
         this.anuncios = data;

@@ -7,16 +7,16 @@
         <form (ngSubmit)="aplicarFiltros()">
           <div class="mb-3">
             <label for="tipoAnimal" class="form-label">Tipo de animal</label>
-            <select 
-              id="tipoAnimal" 
+            <ng-select 
+              [items]="[{label: 'Todos', value: ''}, {label: 'Perro', value: 'perro'}, {label: 'Gato', value: 'gato'}]" 
+              bindLabel="label" 
+              bindValue="value" 
               [(ngModel)]="filtros.tipoAnimal" 
               name="tipoAnimal" 
-              class="form-select" 
-              (ngModelChange)="updateRazasList()">
-              <option value="">Todos</option>
-              <option value="perro">Perro</option>
-              <option value="gato">Gato</option>
-            </select>
+              placeholder="Selecciona tipo de animal" 
+              (change)="updateRazasList()" 
+              class="custom-ng-select form-control">
+            </ng-select>
           </div>
           <div class="mb-3">
             <label for="raza" class="form-label">Raza</label>
