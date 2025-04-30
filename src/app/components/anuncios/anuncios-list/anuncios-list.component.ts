@@ -4,10 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { AnunciosResumeComponent } from '../anuncios-resume/anuncios-resume.component';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { RAZAS } from '../../../data/razas'; // Importar las razas
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-anuncios-list',
-  imports: [FormsModule, AnunciosResumeComponent, CommonModule],
+  imports: [FormsModule, AnunciosResumeComponent, CommonModule, NgSelectModule], // Agregar NgSelectModule aquí
   templateUrl: './anuncios-list.component.html',
   styleUrls: ['./anuncios-list.component.css'],
 })
@@ -16,7 +18,6 @@ export class AnunciosListComponent implements OnInit {
   anunciosFiltrados: any[] = [];
   ordenSeleccionado: string = ''; // Guardar el tipo de orden
 
-
   filtros = {
     tipoAnimal: '',
     raza: '',
@@ -24,6 +25,9 @@ export class AnunciosListComponent implements OnInit {
     precioMin: null,
     precioMax: null
   };
+
+  razas: { label: string, value: string }[] = [];
+  filteredRazas: { label: string, value: string }[] = [];
 
   constructor(private anunciosService: AnunciosService, private route: ActivatedRoute) {}
 
@@ -34,11 +38,37 @@ export class AnunciosListComponent implements OnInit {
   
       this.anunciosService.getAnuncios().subscribe(data => {
         this.anuncios = data;
+        this.updateRazasList(); // Actualizar la lista de razas
         this.aplicarFiltros(); // Aplicar filtros directamente
       });
     });
   }
   
+  updateRazasList(): void {
+    if (!this.filtros.tipoAnimal) {
+      this.filteredRazas = []; // No cargar razas si no se selecciona el tipo
+      return;
+    }
+    const tipo = this.filtros.tipoAnimal === 'perro' ? 'perros' : 'gatos';
+    const razas = RAZAS[tipo];
+    this.filteredRazas = (razas || []).map(raza => ({
+      label: raza,
+      value: raza
+    }));
+  }
+
+  onSearchRaza(event: { term: string; items: any[] }): void {
+    const searchTerm = event.term; // Extraer el término de búsqueda
+    const tipo = this.filtros.tipoAnimal === 'perro' ? 'perros' : 'gatos';
+    const allRazas = RAZAS[tipo];
+
+    this.filteredRazas = allRazas
+      .filter(raza => raza.toLowerCase().includes(searchTerm.toLowerCase()))
+      .map(raza => ({
+        label: raza,
+        value: raza
+      }));
+  }
 
   aplicarFiltros(): void {
     this.anunciosFiltrados = this.anuncios.filter(anuncio => {
@@ -62,7 +92,7 @@ export class AnunciosListComponent implements OnInit {
         : true;
 
       const cumpleRaza = this.filtros.raza
-        ? normalize(anuncio.raza || '').toLowerCase().includes(normalize(this.filtros.raza).toLowerCase())
+        ? normalize(anuncio.raza || '').toLowerCase() === normalize(this.filtros.raza).toLowerCase()
         : true;
 
       return cumpleUbicacion && cumplePrecioMin && cumplePrecioMax && cumpleTipoAnimal && cumpleRaza;

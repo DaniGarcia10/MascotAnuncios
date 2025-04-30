@@ -22,11 +22,11 @@
                     <button class="btn btn-dark dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" [disabled]="!razaHabilitada">
                         {{ razaSeleccionada || 'Selecciona una raza' }}
                     </button>                      
-                    <ul class="dropdown-menu bg-black" aria-labelledby="dropdownMenuButton">
+                    <ul class="dropdown-menu bg-black" aria-labelledby="dropdownMenuButton" style="max-height: 200px; overflow-y: auto;">
                         <li *ngFor="let raza of razas">
-                          <a class="dropdown-item" href="#" (click)="seleccionarRaza(raza); $event.preventDefault()">{{ raza }}</a>
+                            <a class="dropdown-item" href="#" (click)="seleccionarRaza(raza); $event.preventDefault()">{{ raza }}</a>
                         </li>
-                      </ul>                      
+                    </ul>                      
                 </div>
             </div>
             <div class="mt-4">
