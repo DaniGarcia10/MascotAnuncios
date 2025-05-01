@@ -50,10 +50,6 @@ export class AnunciosDetailComponent implements OnInit {
       this.anunciosService.getAnuncios().subscribe(async anuncios => {
         this.anuncio = anuncios.find(a => a.id === id);
 
-        if (this.anuncio?.imagenes && this.anuncio.imagenes.length > 0) {
-          this.padresImagenes['padre'] = this.anuncio.imagenes[0];
-        }
-
         if (this.anuncio?.id_padre) {
           const padre = await this.mascotasService.getMascotaById(this.anuncio.id_padre);
           if (padre?.imagenes?.length) {
@@ -81,6 +77,12 @@ export class AnunciosDetailComponent implements OnInit {
             const criadero = await this.criaderoService.getCriaderoById(id_criadero);
             if (criadero) {
               this.criaderoData = criadero;
+
+              // Cargar la foto del criadero si existe
+              if (criadero.foto_perfil) {
+                const ruta = `criaderos/${criadero.foto_perfil}`;
+                criadero.foto_perfil = await this.imagenService.obtenerUrlImagen(ruta);
+              }
             }
           } else {
             console.warn('No se encontró el id del criadero asociado al usuario.');
@@ -111,8 +113,8 @@ export class AnunciosDetailComponent implements OnInit {
           }
         } else {
           // Si especificar_cachorros es false, usa directamente el precio del anuncio
-          this.precioMinimo = this.anuncio?.precio?.toString() || null;
-          this.precioMaximo = null; // No hay rango, solo un precio fijo
+          this.precioMinimo = null;
+          this.precioMaximo = null;
         }
       });
     }

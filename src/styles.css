@@ -6,6 +6,16 @@
     --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
 }
 
+body {
+    background-color: #f5f0e6;
+    background-image: 
+      radial-gradient(#f0eadb 1px, transparent 0),
+      radial-gradient(#f0eadb 1px, transparent 0);
+    background-size: 4px 4px;
+    background-position: 0 0, 2px 2px;
+}
+  
+
 .btn-default {
     background-color: #8b5e3c;
     border-color: #8b5e3c;

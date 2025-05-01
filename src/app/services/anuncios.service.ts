@@ -22,8 +22,12 @@ export class AnunciosService {
             if (anuncio.fecha_publicacion) {
               anuncio.fecha_publicacion = new Date(anuncio.fecha_publicacion);
             }
-            if (anuncio.imagenes && anuncio.imagenes.length > 0) { // Cambiado de id_imagenes a imagenes
-              anuncio.imagenes = await this.imagenService.cargarImagenes(anuncio.imagenes);
+            if (anuncio.imagenes && anuncio.imagenes.length > 0) {
+              // Agregar el prefijo 'anuncios/' si no es una URL completa
+              const imagenesConRuta = anuncio.imagenes.map((img: string) =>
+                img.startsWith('http') ? img : `anuncios/${img}`
+              );
+              anuncio.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
             }
             console.log('Datos del anuncio:', anuncio);
             return anuncio;

@@ -88,8 +88,14 @@
       <!-- Card: Precio -->
       <div class="card shadow-sm text-center mb-3">
         <div class="card-body">
-          <h4 class="card-title fw-bold text-primary mb-0" *ngIf="precioMinimo && precioMaximo">
-            {{ precioMinimo && precioMaximo ? precioMinimo + '€ - ' + precioMaximo + '€' : (anuncio.precio) + '€' }}
+          <h4 class="card-title fw-bold text-primary mb-0">
+            <!-- Mostrar rango de precios o precio único -->
+            <ng-container *ngIf="anuncio?.especificar_cachorros; else precioUnico">
+              {{ precioMinimo && precioMaximo ? precioMinimo + '€ - ' + precioMaximo + '€' : '' }}
+            </ng-container>
+            <ng-template #precioUnico>
+              {{ anuncio?.precio }}€
+            </ng-template>
           </h4>
         </div>
         <button class="btn btn-primary btn-marron w-100 mb-2" data-bs-toggle="modal" data-bs-target="#telefonoModal">
