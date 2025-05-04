@@ -90,7 +90,9 @@
               <input id="fotoPerfilCriadero" type="file" class="form-control" (change)="onFileSelectedCriadero($event)">
             </div>
           </div>
-          <button type="submit" class="btn-default w-100">Registrarse</button>
+          <button type="submit" class="btn-default w-100" [disabled]="isSubmitting">
+            {{ isSubmitting ? 'Registrando...' : 'Registrarse' }}
+          </button>
         </form>
       </div>
     </div>

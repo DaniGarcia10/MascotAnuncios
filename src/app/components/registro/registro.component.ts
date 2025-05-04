@@ -17,6 +17,7 @@ export class RegistroComponent implements OnInit {
   imagenUrl: string | null = null;
   fotoPerfil: File | null = null;
   fotoPerfilCriadero: File | null = null;
+  isSubmitting: boolean = false; // Nueva variable
 
   constructor(
     private authService: AuthService,
@@ -66,6 +67,9 @@ export class RegistroComponent implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
+    if (this.isSubmitting) return; // Evitar múltiples envíos
+    this.isSubmitting = true;
+
     const usuario = this.formRegistro.value;
 
     try {
@@ -127,6 +131,8 @@ export class RegistroComponent implements OnInit {
       } else {
         console.error('Error en el registro:', error);
       }
+    } finally {
+      this.isSubmitting = false; // Restablecer el estado si es necesario
     }
   }
 

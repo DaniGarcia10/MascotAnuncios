@@ -20,6 +20,7 @@ export class AnunciosFormComponent implements OnInit {
   provincias = PROVINCIAS_ESPAÑA;
   filteredRazas: { label: string; value: string }[] = [];
   especificarPadres: boolean = false;
+  isSubmitting: boolean = false; // Nueva variable
 
   constructor(
     private fb: FormBuilder,
@@ -113,8 +114,12 @@ export class AnunciosFormComponent implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
+    if (this.isSubmitting) return; // Evitar múltiples envíos
+    this.isSubmitting = true;
+
     if (this.formAnuncio.invalid) {
       this.formAnuncio.markAllAsTouched();
+      this.isSubmitting = false;
       return;
     }
 
@@ -156,6 +161,8 @@ export class AnunciosFormComponent implements OnInit {
       console.log('Anuncio y cachorros publicados correctamente.');
     } catch (error) {
       console.error('Error al publicar el anuncio:', error);
+    } finally {
+      this.isSubmitting = false; // Restablecer el estado si es necesario
     }
   }
 }

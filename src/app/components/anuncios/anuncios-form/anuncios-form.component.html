@@ -136,7 +136,9 @@
             </div>
           </div>
         
-          <button type="submit" class="btn-default w-100">Publicar Anuncio</button>
+          <button type="submit" class="btn-default w-100" [disabled]="isSubmitting">
+            {{ isSubmitting ? 'Publicando...' : 'Publicar Anuncio' }}
+          </button>
         </form>        
       </div>
     </div>
