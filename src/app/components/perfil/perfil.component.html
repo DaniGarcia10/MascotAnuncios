@@ -15,13 +15,13 @@
   </div>
 
   <!-- Contenido principal -->
-  <div class="contenido-principal flex-grow-1 p-4 col-12 col-lg-9">
+  <div class="contenido-principal flex-grow-1 p-4 col-12 col-lg-9 ">
     <div *ngIf="activeSection === 'general'">
-      <div class="card mx-auto" style="max-width: 500px; width: 100%;">
-        <div class="card-header text-center">
-          <h3 class="card-title">Mi Perfil</h3>
+      <div class="card custom-card mx-auto">
+        <div class="card-header custom-card-header text-center">
+          <h3 class="card-title-grande">Mi Perfil</h3>
         </div>
-        <div class="card-body">
+        <div class="card-body custom-card-body">
           <form [formGroup]="perfilForm" *ngIf="usuario; else noUsuario">
             <div class="text-center mb-3">
               <img 
@@ -33,24 +33,24 @@
             </div>
             <div class="mb-3">
               <label for="nombre" class="form-label"><strong>Nombre:</strong></label>
-              <input id="nombre" formControlName="nombre" class="form-control" [readonly]="!editMode" />
+              <input id="nombre" formControlName="nombre" placeholder="Introduzca su nombre" class="form-control" [readonly]="!editMode" />
             </div>
             <div class="mb-3">
               <label for="apellidos" class="form-label"><strong>Apellidos:</strong></label>
-              <input id="apellidos" formControlName="apellidos" class="form-control" [readonly]="!editMode" />
+              <input id="apellidos" formControlName="apellidos" placeholder="Introduzca sus apellidos" class="form-control" [readonly]="!editMode" />
             </div>
             <div class="mb-3">
               <label for="email" class="form-label"><strong>Email:</strong></label>
-              <input id="email" formControlName="email" class="form-control" [readonly]="!editMode" />
+              <input id="email" formControlName="email" placeholder="Introduzca su email" class="form-control" [readonly]="!editMode" />
             </div>
             <div class="mb-3">
               <label for="telefono" class="form-label"><strong>Teléfono:</strong></label>
-              <input id="telefono" formControlName="telefono" class="form-control" [readonly]="!editMode" />
+              <input id="telefono" formControlName="telefono" placeholder="Introduzca su teléfono" class="form-control" [readonly]="!editMode" />
             </div>
             <div class="d-flex justify-content-center mt-4">
-              <button *ngIf="editMode" type="button" class="btn btn-secondary me-2" (click)="cancelEdit()">Cancelar</button>
-              <button *ngIf="editMode" type="submit" class="btn btn-marron">Guardar</button>
-              <button *ngIf="!editMode" type="button" class="btn btn-marron" (click)="toggleEditMode()">Modificar Perfil</button>
+              <button *ngIf="editMode" type="button" class="btn btn-danger m-2 w-50" (click)="cancelEdit()">Cancelar</button>
+              <button *ngIf="editMode" type="submit" class="btn-default m-2 w-50">Guardar</button>
+              <button *ngIf="!editMode" type="button" class="btn-default m-2 w-50" (click)="toggleEditMode()">Modificar Perfil</button>
             </div>
           </form>
           <ng-template #noUsuario>
@@ -61,11 +61,11 @@
     </div>
 
     <div *ngIf="activeSection === 'password'">
-      <div class="card mx-auto" style="max-width: 500px; width: 100%;">
-        <div class="card-header text-center">
-          <h3 class="card-title">Cambiar Contraseña</h3>
+      <div class="card mx-auto custom-card">
+        <div class="card-header custom-card-header text-center">
+          <h3 class="card-title-grande">Cambiar Contraseña</h3>
         </div>
-        <div class="card-body">
+        <div class="card-body custom-card-body">
           <form [formGroup]="passwordForm" (ngSubmit)="cambiarPassword()">
             <div class="mb-3">
               <label for="passwordActual" class="form-label"><strong>Contraseña actual:</strong></label>
@@ -79,18 +79,18 @@
               <label for="confirmarPassword" class="form-label"><strong>Confirmar nueva contraseña:</strong></label>
               <input id="confirmarPassword" formControlName="confirmarPassword" type="password" class="form-control" />
             </div>
-            <button type="submit" class="btn btn-marron w-100">Cambiar Contraseña</button>
+            <button type="submit" class="btn-default w-100">Cambiar Contraseña</button>
           </form>
         </div>
       </div>
     </div>
 
     <div *ngIf="activeSection === 'criadero'">
-      <div *ngIf="criadero; else noCriadero" class="card mx-auto" style="max-width: 500px; width: 100%;">
-        <div class="card-header text-center">
-          <h3 class="card-title">Información del Criadero</h3>
+      <div *ngIf="criadero; else noCriadero" class="card custom-card mx-auto">
+        <div class="card-header custom-card-header text-center">
+          <h3 class="card-title-grande">Información del Criadero</h3>
         </div>
-        <div class="card-body text-center">
+        <div class="card-body custom-card-body text-center">
           <img *ngIf="imagenUrlCriadero" [src]="imagenUrlCriadero" alt="Foto del criadero" class="img-thumbnail mb-3" />
           <h5><strong>Nombre:</strong> {{ criadero.nombre }}</h5>
           <p><strong>Núcleo Zoológico:</strong> {{ criadero.nucleo_zoologico }}</p>

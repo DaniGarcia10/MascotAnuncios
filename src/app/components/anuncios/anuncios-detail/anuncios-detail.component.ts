@@ -94,13 +94,17 @@ export class AnunciosDetailComponent implements OnInit {
         // Obtener el precio según especificar_cachorros
         if (this.anuncio?.especificar_cachorros) {
           // Si especificar_cachorros es true, calcula el rango de precios de los cachorros
-          if (this.anuncio?.cachorros && this.anuncio.cachorros.length > 0) {
-            const cachorros = await this.cachorrosService.getCachorrosByIds(this.anuncio.cachorros);
+          if (this.anuncio?.id) {
+            const cachorros = await this.cachorrosService.getCachorrosByAnuncioId(this.anuncio.id);
 
             // Cargar las imágenes de cada cachorro
             for (const cachorro of cachorros) {
               if (cachorro.imagenes && cachorro.imagenes.length > 0) {
-                cachorro.imagenes = await this.imagenService.cargarImagenes(cachorro.imagenes);
+                // Asegurarse de que las rutas incluyan el prefijo 'cachorros/'
+                const imagenesConRuta = cachorro.imagenes.map((img: string) =>
+                  img.startsWith('http') ? img : `cachorros/${img}`
+                );
+                cachorro.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
               }
             }
 

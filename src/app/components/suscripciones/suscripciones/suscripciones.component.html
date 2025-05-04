@@ -15,10 +15,10 @@
     <div class="contenido-principal flex-grow-1 p-4 col-12 col-lg-9">
       <!-- Contratar suscripción -->
       <div *ngIf="activeSection === 'contratar'">
-        <h3 class="mb-4">Contratar suscripción</h3>
         <div class="formulario-suscripcion">
           <form [formGroup]="suscripcionForm" (ngSubmit)="crearSuscripcion()">
             <div class="mb-3">
+              <h3 class="mb-4 card-title-grande">Contratar suscripción</h3>
               <label for="duracion" class="form-label"><strong>Duración:</strong></label>
               <ng-select 
                 [items]="duracionOptions" 
@@ -35,7 +35,7 @@
               <input type="datetime-local" id="fecha_alta" formControlName="fecha_alta" class="form-control" required />
             </div>
             <div class="d-flex justify-content-end">
-              <button type="submit" class="btn btn-marron" [disabled]="suscripcionForm.invalid">
+              <button type="submit" class="btn-default" [disabled]="suscripcionForm.invalid">
                 Ir al pago
               </button>
             </div>
@@ -45,8 +45,8 @@
   
       <!-- Ver suscripción -->
       <div *ngIf="activeSection === 'ver'">
-        <h3 class="mb-4">Detalles de la suscripción</h3>
         <div *ngIf="suscripcion$ | async as suscripcion; else noSuscripcion" class="detalles-suscripcion">
+          <h3 class="mb-4 card-title-grande">Detalles de la suscripción</h3>
           <p>
             <strong>Activa: </strong>
             <span *ngIf="suscripcion.activa; else inactiva">

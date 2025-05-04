@@ -12,7 +12,7 @@ export class UsuarioService {
 
   constructor(private firestore: Firestore) {}
 
-  // Guarda usuario en Realtime Database (si lo usas)
+  // Guarda usuario
   saveUser(userId: string, data: any): Promise<void> {
     const userRef = ref(this.database, `${this.COLLECTION_NAME}/${userId}`);
     return set(userRef, data);

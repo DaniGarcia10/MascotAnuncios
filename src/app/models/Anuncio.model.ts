@@ -10,9 +10,8 @@ export interface Anuncio {
     edad: string;
     id_usuario: string;
     activo: boolean;
-    ubicacion: string;
+    ubicacion: string | null;
     imagenes: string[];
-    cachorros: any[];
     especificar_cachorros: boolean;
     precio: number | null;
     destacado: boolean;

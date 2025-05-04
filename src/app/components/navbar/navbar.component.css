@@ -13,7 +13,12 @@
 }
 
 .dropdown-item {
-    color: var(--primary-text-color);
+    color: var(--primary-text-color)!;
+}
+
+.dropdown-item:hover {
+    background-color: var(--accent-color) !important;
+    color: white;
 }
 
 .logo-img {

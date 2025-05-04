@@ -16,11 +16,13 @@ import { NgSelectModule } from '@ng-select/ng-select';
 export class AnunciosListComponent implements OnInit {
   anuncios: any[] = [];
   anunciosFiltrados: any[] = [];
-  ordenSeleccionado: string = ''; // Guardar el tipo de orden
+  ordenSeleccionado: string | null = null;
+  mostrarFiltros: boolean = false;
+  esMovil: boolean = false;
 
   filtros = {
-    tipoAnimal: null, // Cambiar de '' a null
-    raza: null,       // Cambiar de '' a null
+    tipoAnimal: null,
+    raza: null,   
     ubicacion: '',
     precioMin: null,
     precioMax: null
@@ -32,6 +34,11 @@ export class AnunciosListComponent implements OnInit {
   constructor(private anunciosService: AnunciosService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    this.esMovil = window.innerWidth < 768; // Detecta si es móvil
+    window.addEventListener('resize', () => {
+      this.esMovil = window.innerWidth < 768; // Actualiza al cambiar el tamaño de la ventana
+    });
+
     this.route.queryParams.subscribe(params => {
       this.filtros.tipoAnimal = params['tipoAnimal'] ?? null; // Usar null si no hay parámetro
       this.filtros.raza = params['raza'] ?? null; // Usar null si no hay parámetro

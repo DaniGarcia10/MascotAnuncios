@@ -32,7 +32,7 @@ export class SuscripcionesComponent implements OnInit {
     private usuarioService: UsuarioService,
     private authService: AuthService // Inyectar AuthService aquí
   ) {
-    const now = new Date().toISOString().slice(0, 16); // Formato compatible con datetime-local
+    const now = new Date().toLocaleString('sv-SE', { timeZone: 'Europe/Madrid' }).slice(0, 16); // Formato compatible con datetime-local
     this.suscripcionForm = new FormGroup({
       duracion: new FormControl('', [Validators.required, Validators.min(1)]),
       fecha_alta: new FormControl(now, [Validators.required]), // Fecha actual por defecto

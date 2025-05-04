@@ -1,65 +1,3 @@
-.card {
-    border: none;
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    background: #fdfdfd;
-}
-
-.card-header {
-    background-color: transparent;
-    border-bottom: none;
-    padding-top: 1.5rem;
-}
-
-.card-title {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #333;
-}
-
-.form-label {
-    font-weight: 500;
-    color: #444;
-}
-
-.form-control {
-    border-radius: 10px;
-    border: 1px solid #ccc;
-}
-
-.form-control:focus {
-    border-color: #a1866f;
-    box-shadow: 0 0 0 0.2rem rgba(161, 134, 111, 0.25);
-}
-
-.form-control-sm {
-    font-size: 0.875rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 8px;
-}
-
-.form-control-sm:focus {
-    border-color: #a1866f;
-    box-shadow: 0 0 0 0.2rem rgba(161, 134, 111, 0.25);
-}
-
-.btn-marron {
-    background-color: #8b5e3c;
-    color: white;
-    border-radius: 12px;
-    font-weight: 500;
-    padding: 0.6rem;
-  }
-
-.btn-marron:hover {
-    background-color: #8b5e3c;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.card-body {
-    padding: 2rem;
-}
 
 .img-thumbnail {
     border-radius: 50%;
@@ -68,20 +6,6 @@
     object-fit: cover;
     margin: 1rem auto;
     display: block;
-}
-
-.perfil-img {
-    border-radius: 50%;
-    width: 450px;
-    height: 450px; 
-    object-fit: cover;
-    margin-top: 1rem;
-}
-
-.menu-lateral {
-    width: 250px;
-    background-color: #f8f9fa;
-    border-right: 1px solid #ddd;
 }
 
 .list-group-item {
@@ -101,14 +25,4 @@
     background-color: #8b5e3c;
     color: white;
     font-weight: bold;
-}
-
-
-@media (max-width: 768px) {
-  .menu-lateral {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #ddd;
-  }
-
 }

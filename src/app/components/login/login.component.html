@@ -2,21 +2,21 @@
 
   <!-- Contenido principal -->
   <div class="position-relative z-1 d-flex justify-content-center align-items-start h-100 pt-5">
-    <div class="card" style="max-width: 500px; width: 100%;">
-      <div class="card-header text-center">
-        <h3 class="card-title">Iniciar Sesión</h3>
+    <div class="card custom-card" style="max-width: 500px; width: 100%;">
+      <div class="card-header custom-card-header text-center">
+        <h3 class="card-title-grande">Iniciar Sesión</h3>
       </div>
-      <div class="card-body">
+      <div class="card-body custom-card-body">
         <form [formGroup]="formLogin" (ngSubmit)="onSubmit()">
           <div class="mb-3">
             <label for="email" class="form-label">Correo electrónico:</label>
-            <input id="email" formControlName="email" type="email" class="form-control" placeholder="Ingresa tu correo" required>
+            <input id="email" formControlName="email" type="email" class="form-control" placeholder="Introduce tu correo" required>
           </div>
           <div class="mb-3">
             <label for="password" class="form-label">Contraseña:</label>
-            <input id="password" formControlName="password" type="password" class="form-control" placeholder="Ingresa tu contraseña" required>
+            <input id="password" formControlName="password" type="password" class="form-control" placeholder="Introduce tu contraseña" required>
           </div>
-          <button type="submit" class="btn btn-marron w-100">Iniciar sesión</button>
+          <button type="submit" class="btn-default w-100">Iniciar sesión</button>
         </form>
       </div>
     </div>

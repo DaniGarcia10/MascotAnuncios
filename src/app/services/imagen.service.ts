@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
-import { v4 as uuidv4 } from 'uuid';
 import { Storage } from '@angular/fire/storage';
+import { push, child, Database, ref as dbRef } from '@angular/fire/database';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ImagenService {
 
-  constructor(private storage: Storage) { }
+  constructor(private storage: Storage, private database: Database) { }
 
   async obtenerUrlImagen(ruta: string): Promise<string> {
     const imageRef = ref(this.storage, ruta);
@@ -26,6 +26,9 @@ export class ImagenService {
   }
 
   private validarExtension(file: File): string {
+    if (!(file instanceof File)) {
+      throw new Error('El archivo proporcionado no es válido.');
+    }
     const extension = file.name.split('.').pop()?.toLowerCase();
     const extensionesValidas = ['jpg', 'jpeg', 'png', 'webp'];
     if (!extension || !extensionesValidas.includes(extension)) {
@@ -42,7 +45,15 @@ export class ImagenService {
     const extension = this.validarExtension(file);
     let ruta: string;
     let nombreArchivo: string;
-  
+
+    // Generar un ID único con Firebase
+    const uniqueIdRef = push(child(dbRef(this.database), 'unique-ids'));
+    const uniqueId = uniqueIdRef.key;
+
+    if (!uniqueId) {
+      throw new Error('No se pudo generar un ID único.');
+    }
+
     if (tipo === 'usuario') {
       nombreArchivo = `${id}.${extension}`;
       ruta = `usuarios/${nombreArchivo}`;
@@ -50,26 +61,24 @@ export class ImagenService {
       nombreArchivo = `${id}.${extension}`;
       ruta = `criaderos/${nombreArchivo}`;
     } else if (tipo === 'anuncio') {
-      nombreArchivo = `${uuidv4()}.${extension}`;
+      nombreArchivo = `${uniqueId}.${extension}`;
       ruta = `anuncios/${id}/${nombreArchivo}`;
     } else if (tipo === 'mascota') {
-      nombreArchivo = `${uuidv4()}.${extension}`;
+      nombreArchivo = `${uniqueId}.${extension}`;
       ruta = `mascotas/${id}/${nombreArchivo}`;
     } else if (tipo === 'cachorro') {
-      nombreArchivo = `${uuidv4()}.${extension}`;
+      nombreArchivo = `${uniqueId}.${extension}`;
       ruta = `cachorros/${id}/${nombreArchivo}`;
     } else {
       throw new Error('Tipo de imagen no válido.');
     }
-  
+
     const storageRef = ref(this.storage, ruta);
     await uploadBytes(storageRef, file);
 
-
     console.log(`Imagen subida: ${ruta}`);
-  
-    return nombreArchivo;
 
+    return nombreArchivo;
   }
 
 }

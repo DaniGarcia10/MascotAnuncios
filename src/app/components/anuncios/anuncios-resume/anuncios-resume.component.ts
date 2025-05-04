@@ -42,8 +42,10 @@ export class AnunciosResumeComponent implements OnInit {
     }
 
     if (this.anuncio?.especificar_cachorros) {
-      if (this.anuncio?.cachorros?.length > 0) {
-        const cachorros = await this.cachorrosService.getCachorrosByIds(this.anuncio.cachorros);
+      if (this.anuncio?.id) {
+        const cachorros = await this.cachorrosService.getCachorrosByAnuncioId(this.anuncio.id);
+
+        // Calcular el rango de precios
         const precios = cachorros.map((c: any) => c.precio);
         this.precioMinimo = Math.min(...precios).toString();
         this.precioMaximo = Math.max(...precios).toString();
@@ -54,13 +56,19 @@ export class AnunciosResumeComponent implements OnInit {
     }
   }
 
-  calcularTiempoTranscurrido(fechaPublicacion: string): string {
-    const fecha = new Date(fechaPublicacion);
+  calcularTiempoTranscurrido(fecha: Date): string {
     const ahora = new Date();
-    const diffMs = ahora.getTime() - fecha.getTime();
-    const diffHoras = Math.floor(diffMs / (1000 * 60 * 60));
-    if (diffHoras < 24) return `${diffHoras} horas`;
-    const diffDias = Math.floor(diffHoras / 24);
-    return `${diffDias} días`;
+    const diferencia = ahora.getTime() - new Date(fecha).getTime();
+
+    if (diferencia < 0) return 'Hace unos instantes';
+
+    const minutos = Math.floor(diferencia / (1000 * 60));
+    if (minutos < 60) return `${minutos} minutos`;
+
+    const horas = Math.floor(minutos / 60);
+    if (horas < 24) return `${horas} horas`;
+
+    const dias = Math.floor(horas / 24);
+    return `${dias} días`;
   }
 }

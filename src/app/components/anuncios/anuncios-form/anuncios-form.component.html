@@ -1,69 +1,143 @@
-<div class="position-relative ">
-  <!-- Contenedor principal -->
+<div class="position-relative mt-5 mb-5">
   <div class="position-relative z-1 d-flex justify-content-center align-items-center min-vh-100">
-    <div class="card" style="max-width: 600px; width: 100%;">
-      <div class="card-header text-center">
-        <h3 class="card-title">Publicar Anuncio</h3>
+    <div class="card custom-card">
+      <div class="card-header custom-card-header text-center">
+        <h3 class="card-title-grande">Publicar Anuncio</h3>
       </div>
-      <div class="card-body">
-        <form (ngSubmit)="onSubmit()" #anuncioForm="ngForm">
-          <!-- TIPO: Perro o Gato -->
+      <div class="card-body custom-card-body">
+        <form [formGroup]="formAnuncio" (ngSubmit)="onSubmit()">
+          <!-- Tipo -->
           <div class="mb-3">
             <label class="form-label">Tipo:</label>
-            <ng-select [items]="[{label: 'Perro', value: true}, {label: 'Gato', value: false}]" bindLabel="label"
-              bindValue="value" [(ngModel)]="anuncio.perro" name="perro" placeholder="Selecciona tipo"
-              (change)="onTipoChange()" class="custom-ng-select form-control">
+            <ng-select [items]="[{label: 'Perro', value: true}, {label: 'Gato', value: false}]"
+                       bindLabel="label" bindValue="value"
+                       formControlName="perro"
+                       placeholder="Selecciona tipo"
+                       class="custom-ng-select">
             </ng-select>
+            <div *ngIf="formAnuncio.get('perro')?.invalid && formAnuncio.get('perro')?.touched" class="text-danger">Tipo es obligatorio.</div>
           </div>
-
-          <!-- RAZA: según el tipo seleccionado -->
+        
+          <!-- Raza -->
           <div class="mb-3">
-            <label for="raza" class="form-label">Raza:</label>
-            <ng-select [items]="filteredRazas" bindLabel="label" bindValue="value" [(ngModel)]="anuncio.raza"
-              name="raza" placeholder="Selecciona una raza" [searchable]="true" (search)="onSearchRaza($event)"
-              class="custom-ng-select form-control">
+            <label class="form-label">Raza:</label>
+            <ng-select [items]="filteredRazas"
+                       bindLabel="label" bindValue="value"
+                       formControlName="raza"
+                       placeholder="Selecciona raza"
+                       class="custom-ng-select">
             </ng-select>
+            <div *ngIf="formAnuncio.get('raza')?.invalid && formAnuncio.get('raza')?.touched" class="text-danger">Raza es obligatoria.</div>
           </div>
-
+        
+          <!-- Título -->
           <div class="mb-3">
-            <label for="titulo" class="form-label">Título:</label>
-            <input id="titulo" name="titulo" type="text" class="form-control" [(ngModel)]="anuncio.titulo"
-              placeholder="Ingresa el título del anuncio" required>
+            <label class="form-label">Título:</label>
+            <input type="text" class="form-control" placeholder="Ingresa el título"
+                   formControlName="titulo">
+            <div *ngIf="formAnuncio.get('titulo')?.invalid && formAnuncio.get('titulo')?.touched" class="text-danger">Título es obligatorio.</div>
           </div>
-
+        
+          <!-- Provincia -->
           <div class="mb-3">
-            <label for="descripcion" class="form-label">Descripción:</label>
-            <textarea id="descripcion" name="descripcion" class="form-control" [(ngModel)]="anuncio.descripcion"
-              placeholder="Describe tu anuncio" required></textarea>
+            <label class="form-label">Provincia:</label>
+            <ng-select [items]="provincias"
+                       formControlName="ubicacion"
+                       placeholder="Selecciona provincia"
+                       class="custom-ng-select">
+            </ng-select>
+            <div *ngIf="formAnuncio.get('ubicacion')?.invalid && formAnuncio.get('ubicacion')?.touched" class="text-danger">Provincia es obligatoria.</div>
           </div>
 
+          <!-- Precio -->
           <div class="mb-3">
-            <label for="edad" class="form-label">Edad:</label>
-            <input id="edad" name="edad" type="text" class="form-control" [(ngModel)]="anuncio.edad"
-              placeholder="Ingresa la edad">
+            <label class="form-label">Precio:</label>
+            <input type="number" class="form-control" formControlName="precio">
           </div>
-
+        
+          <!-- Imágenes -->
           <div class="mb-3">
-            <label for="ubicacion" class="form-label">Ubicación:</label>
-            <input id="ubicacion" name="ubicacion" type="text" class="form-control" [(ngModel)]="anuncio.ubicacion"
-              placeholder="Ingresa la ubicación">
+            <label class="form-label">Imágenes:</label>
+            <input type="file" class="form-control" (change)="onFileSelected($event)" multiple>
+            <div *ngIf="formAnuncio.get('imagenes')?.invalid && formAnuncio.get('imagenes')?.touched" class="text-danger">Debe subir al menos una imagen.</div>
           </div>
 
-          <div class="mb-3">
-            <label for="imagenes" class="form-label">Imágenes:</label>
-            <input id="imagenes" name="imagenes" type="file" class="form-control" (change)="onFileSelected($event)"
-              multiple>
-          </div>
-
+          <!-- Checkbox para especificar padres -->
           <div class="form-check mb-3">
-            <input id="especificar_cachorros" name="especificar" type="checkbox" class="form-check-input"
-              [(ngModel)]="anuncio.especificar_cachorros">
-            <label for="especificar" class="form-check-label">¿Especificar cachorros?</label>
+            <input type="checkbox" class="form-check-input" formControlName="especificarPadres" id="especificarPadres">
+            <label for="especificarPadres" class="form-check-label">¿Especificar padres?</label>
           </div>
 
-          <button type="submit" class="btn btn-marron w-100" [disabled]="!anuncioForm.form.valid">Publicar
-            Anuncio</button>
-        </form>
+          <!-- Campos ID Padre e ID Madre -->
+          <div *ngIf="formAnuncio.get('especificarPadres')?.value">
+            <div class="mb-3">
+              <label class="form-label">ID Padre:</label>
+              <input type="text" class="form-control" formControlName="id_padre">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">ID Madre:</label>
+              <input type="text" class="form-control" formControlName="id_madre">
+            </div>
+          </div>
+        
+          <!-- Checkbox cachorros -->
+          <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" formControlName="especificar_cachorros" id="especificarCachorros">
+            <label for="especificarCachorros" class="form-check-label">¿Anunciar cachorros individualmente?</label>
+          </div>
+        
+          <!-- Selección número de cachorros -->
+          <div *ngIf="formAnuncio.get('especificar_cachorros')?.value">
+            <div class="mb-3">
+              <label class="form-label">Número de cachorros:</label>
+              <select class="form-select" (change)="setNumeroCachorros($event)">
+                <option *ngFor="let num of [1,2,3,4,5,6,7,8,9,10]" [value]="num">{{ num }}</option>
+              </select>
+            </div>
+        
+            <!-- Campos dinámicos de cachorros -->
+            <div formArrayName="cachorros">
+              <div *ngFor="let cachorro of cachorros.controls; let i = index" [formGroupName]="i" class="border p-3 mb-3">
+                <h5>Cachorro {{ i + 1 }}</h5>
+        
+                <div class="mb-3">
+                  <label class="form-label">Color:</label>
+                  <input type="text" class="form-control" formControlName="color">
+                </div>
+        
+                <div class="mb-3">
+                  <label class="form-label">Sexo:</label>
+                  <select class="form-select" formControlName="sexo">
+                    <option value="">Selecciona sexo</option>
+                    <option value="Macho">Macho</option>
+                    <option value="Hembra">Hembra</option>
+                  </select>
+                  <div *ngIf="cachorro.get('sexo')?.invalid && cachorro.get('sexo')?.touched" class="text-danger">El sexo es obligatorio.</div>
+                </div>
+        
+                <div class="mb-3">
+                  <label class="form-label">Precio:</label>
+                  <input type="number" class="form-control" formControlName="precio">
+                  <div *ngIf="cachorro.get('precio')?.invalid && cachorro.get('precio')?.touched" class="text-danger">El precio es obligatorio.</div>
+                </div>
+        
+                <div class="mb-3">
+                  <label class="form-label">Descripción:</label>
+                  <textarea class="form-control" formControlName="descripcion"></textarea>
+                </div>
+        
+                <div class="mb-3">
+                  <label class="form-label">Imágenes:</label>
+                  <input type="file" class="form-control" (change)="onCachorroFileSelected($event, i)" multiple>
+                  <div *ngIf="cachorro.get('imagenes')?.invalid && cachorro.get('imagenes')?.touched" class="text-danger">Debe subir al menos una imagen.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <button type="submit" class="btn-default w-100">Publicar Anuncio</button>
+        </form>        
       </div>
     </div>
   </div>

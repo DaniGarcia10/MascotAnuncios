@@ -1,49 +1,47 @@
-.btn-marron {
-    background-color: #8b5e3c;
-    color: white;
-    border-radius: 12px;
-    font-weight: 500;
-    padding: 0.6rem;
-    transition: all 0.3s ease-in-out;
+.flecha.rotada {
+    display: inline-block;
+    transition: transform 0.3s ease;
+    transform: rotate(180deg);
+}
+
+.filtros-header, .ordenar-por {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+    color: #6b4226;
+}
+
+.filtros-header span.flecha, .ordenar-por {
+    margin-left: 0.5rem;
+}
+
+/* Personalización del ng-select */
+.ordenar-por ng-select {
+    background-color: transparent;
     border: none;
-  }
-  
-  .btn-marron:hover {
-    background-color: #8b5e3c;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-::ng-deep .custom-ng-select .ng-option:hover {
-  background-color: #8b5e3c;
-  color: white;
+    font-weight: bold;
+    color: #6b4226;
+    font-style: normal;
+    width: auto;
+    box-shadow: none;
+    
 }
 
-::ng-deep .custom-ng-select .ng-dropdown-panel {
-  background-color: white !important;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+/* Ajustar el ancho del desplegable sin afectar el contenedor */
+::ng-deep .ordenar-por ng-select .ng-dropdown-panel {
+    width: auto; /* Permite que el desplegable se ajuste automáticamente */
+    z-index: 1050; /* Asegura que el desplegable esté por encima de otros elementos */
+    right: 0; /* Alinea el desplegable hacia la izquierda */
+    left: auto; /* Evita que se desplace hacia la izquierda */
 }
 
-::ng-deep .custom-ng-select .ng-placeholder {
-  color: #999;
-  font-style: italic;
+/* Sobrescribir el estilo del placeholder */
+::ng-deep .ordenar-por ng-select .ng-placeholder {
+    color: #6b4226;
+    font-style: normal; 
 }
 
-::ng-deep .custom-ng-select.ng-select-focused {
-  border-color: #8b5e3c; /* Marrón de la app */
-  box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.25); /* Efecto de enfoque */
-  outline: none;
-}
-
-select:focus {
-  border-color: #8b5e3c; /* Marrón de la app */
-  box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.25); /* Efecto de enfoque */
-  outline: none;
-}
-
-input:focus {
-  border-color: #8b5e3c; /* Marrón de la app */
-  box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.25); /* Efecto de enfoque */
-  outline: none;
+.filtros-header span.flecha {
+    color: #6b4226;
 }

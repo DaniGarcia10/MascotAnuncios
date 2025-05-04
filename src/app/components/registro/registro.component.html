@@ -1,11 +1,11 @@
 <div class="registro-wrapper position-relative d-flex flex-column flex-grow-1">
   <!-- Contenido principal -->
   <div class="d-flex justify-content-center align-items-center flex-grow-1 px-3 py-5">
-    <div class="card w-100" style="max-width: 600px;">
-      <div class="card-header text-center">
-        <h3 class="card-title">Registro</h3>
+    <div class="card custom-card w-100" style="max-width: 600px;">
+      <div class="card-header custom-card-header text-center">
+        <h3 class="card-title-grande">Registro</h3>
       </div>
-      <div class="card-body">
+      <div class="card-body custom-card-body">
         <form [formGroup]="formRegistro" (ngSubmit)="onSubmit()">
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre:</label>
@@ -90,7 +90,7 @@
               <input id="fotoPerfilCriadero" type="file" class="form-control" (change)="onFileSelectedCriadero($event)">
             </div>
           </div>
-          <button type="submit" class="btn btn-marron w-100">Registrarse</button>
+          <button type="submit" class="btn-default w-100">Registrarse</button>
         </form>
       </div>
     </div>
