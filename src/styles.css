@@ -184,3 +184,25 @@ form .form-control::placeholder {
   font-style: italic;
 }
 
+/* ===== Estilo para el snackbar ===== */
+
+.snackbar-success {
+  background-color: var(--primary-text-color); /* fondo marrón */
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.snackbar-error {
+  background-color: #c0392b; /* fondo rojo oscuro */
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.mat-mdc-button-persistent-ripple::before {
+  background-color: transparent !important;
+  opacity: 0.1 !important;
+}
+
+

@@ -1,28 +1,32 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ImagenService } from '../../services/imagen.service';
 import { Firestore, doc, setDoc, collection, addDoc } from '@angular/fire/firestore';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-registro',
   templateUrl: './registro.component.html',
   styleUrls: ['./registro.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule]
+  imports: [ReactiveFormsModule, CommonModule, MatSnackBarModule]
 })
 export class RegistroComponent implements OnInit {
   formRegistro: FormGroup;
   imagenUrl: string | null = null;
   fotoPerfil: File | null = null;
   fotoPerfilCriadero: File | null = null;
-  isSubmitting: boolean = false; // Nueva variable
+  isSubmitting: boolean = false;
 
   constructor(
     private authService: AuthService,
     private imagenService: ImagenService,
-    private firestore: Firestore
+    private firestore: Firestore,
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {
     this.formRegistro = new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.maxLength(30)]),
@@ -67,7 +71,7 @@ export class RegistroComponent implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
-    if (this.isSubmitting) return; // Evitar múltiples envíos
+    if (this.isSubmitting) return;
     this.isSubmitting = true;
 
     const usuario = this.formRegistro.value;
@@ -105,7 +109,6 @@ export class RegistroComponent implements OnInit {
           const nombreFotoCriadero = `${idCriadero}.${extension}`;
           await this.imagenService.subirImagen(this.fotoPerfilCriadero, 'criadero', idCriadero);
 
-          // Actualizar solo la foto del criadero ya creado
           await setDoc(doc(this.firestore, 'criaderos', idCriadero), {
             ...criaderoData,
             foto_perfil: nombreFotoCriadero
@@ -125,14 +128,28 @@ export class RegistroComponent implements OnInit {
 
       await setDoc(doc(this.firestore, 'usuarios', userId), usuarioDoc);
 
+      //Mostrar mensaje bonito y redirigir
+      this.snackBar.open('¡Registro exitoso!', 'Cerrar', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+
+      this.router.navigate(['/anuncios']);
+
     } catch (error) {
       if ((error as any).code === 'auth/email-already-in-use') {
-        alert('Este correo ya está registrado. Intenta con otro.');
+        this.snackBar.open('Este correo ya está registrado. Intenta con otro.', 'Cerrar', {
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error']
+        });
       } else {
         console.error('Error en el registro:', error);
       }
     } finally {
-      this.isSubmitting = false; // Restablecer el estado si es necesario
+      this.isSubmitting = false;
     }
   }
 
