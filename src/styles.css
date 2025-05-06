@@ -153,6 +153,16 @@ form .card {
   padding: 2rem;
 }
 
+.card.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card.clickable:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary-text-color);
+}
+
 form .form-control:focus {
   border-color: #a1866f;
   box-shadow: 0 0 0 0.2rem rgba(161, 134, 111, 0.25);
@@ -191,6 +201,7 @@ form .form-control::placeholder {
   color: white;
   font-weight: bold;
   border-radius: 5px;
+  margin-top: 13% !important;
 }
 
 .snackbar-error {
@@ -198,11 +209,14 @@ form .form-control::placeholder {
   color: white;
   font-weight: bold;
   border-radius: 5px;
+  margin-top: 13% !important;
 }
 
 .mat-mdc-button-persistent-ripple::before {
   background-color: transparent !important;
   opacity: 0.1 !important;
 }
+
+
 
 

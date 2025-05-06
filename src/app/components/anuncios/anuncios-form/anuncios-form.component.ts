@@ -8,12 +8,15 @@ import { Firestore, collection, addDoc } from '@angular/fire/firestore';
 import { ImagenService } from '../../../services/imagen.service';
 import { AuthService } from '../../../services/auth.service';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+
 @Component({
   selector: 'app-anuncios-form',
   standalone: true,
   templateUrl: './anuncios-form.component.html',
   styleUrls: ['./anuncios-form.component.css'],
-  imports: [CommonModule, ReactiveFormsModule, NgSelectModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgSelectModule, FormsModule, MatSnackBarModule],
 })
 export class AnunciosFormComponent implements OnInit {
   formAnuncio!: FormGroup;
@@ -26,7 +29,9 @@ export class AnunciosFormComponent implements OnInit {
     private fb: FormBuilder,
     private firestore: Firestore,
     private imagenService: ImagenService,
-    private authService: AuthService 
+    private authService: AuthService,
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -158,7 +163,15 @@ export class AnunciosFormComponent implements OnInit {
         await addDoc(cachorrosRef, { ...cachorro, id_anuncio });
       }
 
-      console.log('Anuncio y cachorros publicados correctamente.');
+      // Mostrar mensaje de éxito y redirigir
+      this.snackBar.open('¡Anuncio publicado exitosamente!', 'Cerrar', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+      this.router.navigate(['/mis-anuncios']);
+
     } catch (error) {
       console.error('Error al publicar el anuncio:', error);
     } finally {

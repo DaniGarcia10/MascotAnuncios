@@ -70,4 +70,9 @@ export class AuthService {
     });
   }
 
+  getUsuarioId(): string | null {
+    const user = this.auth.currentUser;
+    return user ? user.uid : null; // Retorna el UID del usuario autenticado o null si no está autenticado
+  }
+
 }

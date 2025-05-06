@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, collectionData } from '@angular/fire/firestore';
-import { getDownloadURL, ref, Storage } from '@angular/fire/storage';
+import { Firestore, collection, collectionData, doc, deleteDoc } from '@angular/fire/firestore';
+import { Storage } from '@angular/fire/storage';
 import { Observable, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Anuncio } from '../models/Anuncio.model';
@@ -36,4 +36,11 @@ export class AnunciosService {
       )
     );
   }
+
+  eliminarAnuncio(id: string): Observable<void> {
+    const anuncioRef = doc(this.firestore, `anuncios/${id}`);
+    return from(deleteDoc(anuncioRef));
+  }
+  
+
 }
