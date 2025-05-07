@@ -13,7 +13,8 @@
                        bindLabel="label" bindValue="value"
                        formControlName="perro"
                        placeholder="Selecciona tipo"
-                       class="custom-ng-select">
+                       class="custom-ng-select"
+                         [searchable]="false">>
             </ng-select>
             <div *ngIf="formAnuncio.get('perro')?.invalid && formAnuncio.get('perro')?.touched" class="text-danger">Tipo es obligatorio.</div>
           </div>
@@ -37,6 +38,23 @@
                    formControlName="titulo">
             <div *ngIf="formAnuncio.get('titulo')?.invalid && formAnuncio.get('titulo')?.touched" class="text-danger">Título es obligatorio.</div>
           </div>
+
+          <!-- Edad -->
+          <div class="mb-3">
+            <label class="form-label">Edad:</label>
+            <div class="d-flex">
+              <input type="number" class="form-control me-2" placeholder="Ingresa la edad" formControlName="edadValor">
+              <ng-select [items]="['meses', 'semanas']"
+                         bindLabel="this"
+                         bindValue="this"
+                         formControlName="edadUnidad"
+                         placeholder="Semanas/Meses"
+                         class="custom-ng-select"
+                         [searchable]="false">
+              </ng-select>
+            </div>
+            <div *ngIf="formAnuncio.get('edadValor')?.invalid && formAnuncio.get('edadValor')?.touched" class="text-danger">Edad es obligatoria.</div>
+          </div>
         
           <!-- Provincia -->
           <div class="mb-3">
@@ -52,7 +70,7 @@
           <!-- Precio -->
           <div class="mb-3">
             <label class="form-label">Precio:</label>
-            <input type="number" class="form-control" formControlName="precio">
+            <input type="number" class="form-control" formControlName="precio" placeholder="Precio en €" min="0">
           </div>
         
           <!-- Imágenes -->

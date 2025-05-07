@@ -44,6 +44,8 @@ export class AnunciosFormComponent implements OnInit {
       id_padre: [null],
       id_madre: [null],
       edad: [''],
+      edadValor: [null, Validators.required],
+      edadUnidad: [null, Validators.required],
       id_usuario: [''], 
       activo: [true],
       ubicacion: [null, Validators.required],
@@ -129,6 +131,12 @@ export class AnunciosFormComponent implements OnInit {
     }
 
     const anuncioData = { ...this.formAnuncio.value };
+
+    // Concatenar edadValor y edadUnidad en el campo edad
+    anuncioData.edad = `${anuncioData.edadValor} ${anuncioData.edadUnidad}`;
+    delete anuncioData.edadValor;
+    delete anuncioData.edadUnidad;
+
     const imagenesAnuncio = anuncioData.imagenes as File[]; 
     const cachorrosData = anuncioData.cachorros || [];
     delete anuncioData.cachorros;

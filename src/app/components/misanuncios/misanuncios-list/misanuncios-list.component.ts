@@ -26,7 +26,13 @@ export class MisanunciosListComponent implements OnInit {
       if (user) {
         const usuarioId = user.uid;
         this.anunciosService.getAnuncios().subscribe(data => {
-          this.anunciosFiltrados = data.filter(anuncio => anuncio.id_usuario === usuarioId);
+          this.anunciosFiltrados = data
+            .filter(anuncio => anuncio.id_usuario === usuarioId)
+            .sort((a, b) => {
+              const fechaA = a.fecha_publicacion ? new Date(a.fecha_publicacion).getTime() : 0;
+              const fechaB = b.fecha_publicacion ? new Date(b.fecha_publicacion).getTime() : 0;
+              return fechaB - fechaA; // Orden descendente (más reciente primero)
+            });
         });
       } else {
         this.anunciosFiltrados = [];
