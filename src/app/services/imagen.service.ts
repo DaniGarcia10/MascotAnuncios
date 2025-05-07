@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { Storage } from '@angular/fire/storage';
 import { push, child, Database, ref as dbRef } from '@angular/fire/database';
 
@@ -80,5 +80,42 @@ export class ImagenService {
 
     return nombreArchivo;
   }
+
+  async eliminarImagenes(
+    tipo: 'usuario' | 'criadero' | 'anuncio' | 'mascota' | 'cachorro',
+    imagenes: string[]
+  ): Promise<void> {
+    let rutaBase: string;
+  
+    if (tipo === 'usuario') {
+      rutaBase = 'usuarios';
+    } else if (tipo === 'criadero') {
+      rutaBase = 'criaderos';
+    } else if (tipo === 'anuncio') {
+      rutaBase = 'anuncios';
+    } else if (tipo === 'mascota') {
+      rutaBase = `mascotas`;
+    } else if (tipo === 'cachorro') {
+      rutaBase = `cachorros`;
+    } else {
+      throw new Error('Tipo de imagen no válido.');
+    }
+  
+    for (const imagen of imagenes) {
+      const nombre = imagen.startsWith('http')
+        ? decodeURIComponent(imagen.split('/').pop()?.split('?')[0] ?? '')
+        : imagen;
+
+      const storageRef = ref(this.storage, nombre);
+  
+      try {
+        await deleteObject(storageRef);
+        console.log(`Imagen eliminada: ${nombre}`);
+      } catch (error) {
+        console.error(`Error al eliminar la imagen ${nombre}:`, error);
+      }
+    }
+  }
+  
 
 }

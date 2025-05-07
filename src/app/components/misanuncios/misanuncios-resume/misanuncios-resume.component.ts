@@ -5,6 +5,7 @@ import { CachorrosService } from '../../../services/cachorros.service';
 import { ImagenService } from '../../../services/imagen.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { AnunciosService } from '../../../services/anuncios.service'; 
 
 @Component({
   selector: 'app-misanuncios-resume',
@@ -27,7 +28,8 @@ export class MisanunciosResumeComponent implements OnInit {
     private criaderoService: CriaderoService,
     private cachorrosService: CachorrosService,
     private imagenService: ImagenService,
-    private router: Router // Añadido para redirección
+    private router: Router,
+    private anunciosService: AnunciosService 
   ) {}
 
   async ngOnInit() {
@@ -83,6 +85,17 @@ export class MisanunciosResumeComponent implements OnInit {
   }
 
   eliminarAnuncio(id: number): void {
-    console.log(`Eliminar anuncio con ID: ${id}`);
+    const confirmacion = confirm('¿Estás seguro de que deseas eliminar este anuncio?');
+    if (confirmacion) {
+      const imagenes = this.anuncio?.imagenes || []; 
+      this.anunciosService.eliminarAnuncio(id.toString(), imagenes).subscribe({
+        next: () => {
+          console.log(`Anuncio con ID ${id} eliminado exitosamente.`);
+        },
+        error: (err) => {
+          console.error(`Error al eliminar el anuncio con ID ${id}:`, err);
+        }
+      });
+    }
   }
 }
