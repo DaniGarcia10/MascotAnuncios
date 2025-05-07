@@ -21,8 +21,12 @@
               {{ precioMinimo && precioMaximo ? precioMinimo + '€ - ' + precioMaximo + '€' : anuncio.precio + '€' }}
             </strong>
           </p>
-          <p class="card-text">{{ anuncio.raza }} | {{ anuncio.edad }} | {{ anuncio.ubicacion }}</p>
+          <span class="badge bg-secondary">{{ anuncio.raza }}</span>
           <p class="card-text">{{ anuncio.descripcion }}</p>
+          <ul class="list-unstyled mb-0 small">
+            <li><i class="bi bi-cake"></i> {{ anuncio.edad }}</li>
+            <li><i class="bi bi-geo-alt"></i> {{ anuncio.ubicacion }}</li>
+          </ul> 
         </div>
       </div>
     </div>

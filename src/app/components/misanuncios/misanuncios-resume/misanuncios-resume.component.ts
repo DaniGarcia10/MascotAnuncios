@@ -4,7 +4,7 @@ import { UsuarioService } from '../../../services/usuario.service';
 import { CachorrosService } from '../../../services/cachorros.service';
 import { ImagenService } from '../../../services/imagen.service';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-misanuncios-resume',
@@ -20,12 +20,14 @@ export class MisanunciosResumeComponent implements OnInit {
   precioMinimo: string | null = null;
   precioMaximo: string | null = null;
   imagenUrlCriadero: string | null = null;
+  anuncioSeleccionado: number | null = null;
 
   constructor(
     private usuarioService: UsuarioService,
     private criaderoService: CriaderoService,
     private cachorrosService: CachorrosService,
-    private imagenService: ImagenService
+    private imagenService: ImagenService,
+    private router: Router // Añadido para redirección
   ) {}
 
   async ngOnInit() {
@@ -70,5 +72,17 @@ export class MisanunciosResumeComponent implements OnInit {
 
     const dias = Math.floor(horas / 24);
     return `${dias} días`;
+  }
+
+  seleccionarAnuncio(id: number): void {
+    this.anuncioSeleccionado = this.anuncioSeleccionado === id ? null : id;
+  }
+
+  editarAnuncio(id: number): void {
+    this.router.navigate(['/mis-anuncios', id]); // Redirige a la ruta del anuncio
+  }
+
+  eliminarAnuncio(id: number): void {
+    console.log(`Eliminar anuncio con ID: ${id}`);
   }
 }

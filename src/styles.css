@@ -159,9 +159,11 @@ form .card {
 }
 
 .card.clickable:hover {
+  background-color: #f8f9fa; /* gris muy claro */
   transform: translateY(-5px);
-  border-color: var(--primary-text-color);
+  border: 3px solid var(--primary-text-color);
 }
+
 
 form .form-control:focus {
   border-color: #a1866f;
