@@ -121,28 +121,32 @@
         
                 <div class="mb-3">
                   <label class="form-label">Color:</label>
-                  <input type="text" class="form-control" formControlName="color">
+                  <input type="text" class="form-control" formControlName="color" placeholder="Ingresa el color">
                 </div>
         
                 <div class="mb-3">
                   <label class="form-label">Sexo:</label>
-                  <select class="form-select" formControlName="sexo">
-                    <option value="">Selecciona sexo</option>
-                    <option value="Macho">Macho</option>
-                    <option value="Hembra">Hembra</option>
-                  </select>
+                  <ng-select [items]="['Macho', 'Hembra']"
+                             bindLabel="this"
+                             bindValue="this"
+                             formControlName="sexo"
+                             placeholder="Selecciona sexo"
+                             class="custom-ng-select"
+                             [searchable]="false"
+                             [clearable]="false">
+                  </ng-select>
                   <div *ngIf="cachorro.get('sexo')?.invalid && cachorro.get('sexo')?.touched" class="text-danger">El sexo es obligatorio.</div>
                 </div>
         
                 <div class="mb-3">
                   <label class="form-label">Precio:</label>
-                  <input type="number" class="form-control" formControlName="precio">
+                  <input type="number" class="form-control" formControlName="precio" placeholder="Ingresa el precio">
                   <div *ngIf="cachorro.get('precio')?.invalid && cachorro.get('precio')?.touched" class="text-danger">El precio es obligatorio.</div>
                 </div>
         
                 <div class="mb-3">
                   <label class="form-label">Descripción:</label>
-                  <textarea class="form-control" formControlName="descripcion"></textarea>
+                  <textarea class="form-control" formControlName="descripcion" placeholder="Ingresa una descripción"></textarea>
                 </div>
         
                 <div class="mb-3">

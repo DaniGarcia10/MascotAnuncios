@@ -1,37 +1,45 @@
-<div class="position-relative vh-100">
-    <div *ngIf="imagenUrl" class="position-absolute top-0 start-0 w-100 h-100">
+<div class="container-fluid p-0 m-0 overflow-hidden">
+    <div class="position-relative min-vh-100 overflow-hidden">
+      <!-- Imagen de fondo -->
+      <div *ngIf="imagenUrl" class="position-absolute top-0 start-0 w-100 h-100">
         <img [src]="imagenUrl" alt="Inicio" class="img-fluid w-100 h-100 object-fit-cover">
-    </div>
-    <div class="position-relative z-1 d-flex justify-content-end align-items-start h-100 p-4">
+      </div>
+  
+      <!-- Contenido encima de la imagen -->
+      <div class="position-relative z-1 d-flex justify-content-end align-items-start min-vh-100 p-4">
         <div class="card bg-transparent p-4 shadow-lg border-0 mt-4 text-white" style="max-width: 400px; backdrop-filter: blur(10px);">
-            <h1 class="fw-bold text-white text-center">Encuentra tu compañero ideal</h1>
-            <p class="text-white-50 text-center">Conecta con criadores y protectoras de confianza</p>
-            
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <input type="radio" id="perros" name="tipo" value="perros" class="btn-check" (change)="onTipoSeleccionado('perros')">
-                    <label for="perros" class="btn btn-outline-light w-100">Perros</label>
-                </div>
-                <div class="col-md-6">
-                    <input type="radio" id="gatos" name="tipo" value="gatos" class="btn-check" (change)="onTipoSeleccionado('gatos')">
-                    <label for="gatos" class="btn btn-outline-light w-100">Gatos</label>
-                </div>
+          <h1 class="fw-bold text-white text-center">Encuentra tu compañero ideal</h1>
+          <p class="text-white-50 text-center">Conecta con criadores y protectoras de confianza</p>
+  
+          <div class="row g-3">
+            <div class="col-md-6">
+              <input type="radio" id="perros" name="tipo" value="perros" class="btn-check" (change)="onTipoSeleccionado('perros')">
+              <label for="perros" class="btn btn-outline-light w-100">Perros</label>
             </div>
-            <div class="mt-3">
-                <div class="dropdown">
-                    <button class="btn btn-dark dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" [disabled]="!razaHabilitada">
-                        {{ razaSeleccionada || 'Selecciona una raza' }}
-                    </button>                      
-                    <ul class="dropdown-menu bg-black" aria-labelledby="dropdownMenuButton" style="max-height: 200px; overflow-y: auto;">
-                        <li *ngFor="let raza of razas">
-                            <a class="dropdown-item" href="#" (click)="seleccionarRaza(raza); $event.preventDefault()">{{ raza }}</a>
-                        </li>
-                    </ul>                      
-                </div>
+            <div class="col-md-6">
+              <input type="radio" id="gatos" name="tipo" value="gatos" class="btn-check" (change)="onTipoSeleccionado('gatos')">
+              <label for="gatos" class="btn btn-outline-light w-100">Gatos</label>
             </div>
-            <div class="mt-4">
-                <button class="btn btn-light w-100" (click)="buscar()">Buscar</button>
-            </div>              
+          </div>
+  
+          <div class="mt-3">
+            <div class="dropdown">
+              <button class="btn btn-dark dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" [disabled]="!razaHabilitada">
+                {{ razaSeleccionada || 'Selecciona una raza' }}
+              </button>
+              <ul class="dropdown-menu bg-black" aria-labelledby="dropdownMenuButton" style="max-height: 200px; overflow-y: auto;">
+                <li *ngFor="let raza of razas">
+                  <a class="dropdown-item" href="#" (click)="seleccionarRaza(raza); $event.preventDefault()">{{ raza }}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+  
+          <div class="mt-4">
+            <button class="btn btn-light w-100" (click)="buscar()">Buscar</button>
+          </div>
         </div>
+      </div>
     </div>
-</div>
+  </div>
+  

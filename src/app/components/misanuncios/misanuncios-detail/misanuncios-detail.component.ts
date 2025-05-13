@@ -91,7 +91,7 @@ export class MisanunciosDetailComponent implements OnInit {
             for (const cachorro of cachorros) {
               if (cachorro.imagenes && cachorro.imagenes.length > 0) {
                 const imagenesConRuta = cachorro.imagenes.map((img: string) =>
-                  img.startsWith('http') ? img : `cachorros/${img}`
+                  img.startsWith('http') ? img : `cachorros/${this.anuncio?.id}/${img}`
                 );
                 cachorro.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
               }

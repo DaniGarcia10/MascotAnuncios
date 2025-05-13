@@ -9,18 +9,6 @@ export class CachorrosService {
 
   constructor(private firestore: Firestore) { }
 
-  async getCachorrosByIds(ids: string[]): Promise<Cachorro[]> {
-    const cachorros: Cachorro[] = [];
-    for (const id of ids) {
-      const docRef = doc(this.firestore, 'cachorros', id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        cachorros.push(docSnap.data() as Cachorro);
-      }
-    }
-    return cachorros;
-  }
-
   async getCachorrosByAnuncioId(idAnuncio: string): Promise<Cachorro[]> {
     const cachorros: Cachorro[] = [];
     const cachorrosCollection = collection(this.firestore, 'cachorros');
@@ -28,7 +16,7 @@ export class CachorrosService {
     const querySnapshot = await getDocs(q);
 
     querySnapshot.forEach(doc => {
-      cachorros.push(doc.data() as Cachorro);
+      cachorros.push({ ...doc.data(), id: doc.id } as Cachorro);
     });
 
     return cachorros;

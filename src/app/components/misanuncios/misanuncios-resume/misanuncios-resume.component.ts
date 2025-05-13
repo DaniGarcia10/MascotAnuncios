@@ -87,8 +87,7 @@ export class MisanunciosResumeComponent implements OnInit {
   eliminarAnuncio(id: number): void {
     const confirmacion = confirm('¿Estás seguro de que deseas eliminar este anuncio?');
     if (confirmacion) {
-      const imagenes = this.anuncio?.imagenes || []; 
-      this.anunciosService.eliminarAnuncio(id.toString(), imagenes).subscribe({
+      this.anunciosService.eliminarAnuncio(id.toString()).subscribe({
         next: () => {
           console.log(`Anuncio con ID ${id} eliminado exitosamente.`);
         },
@@ -98,4 +97,5 @@ export class MisanunciosResumeComponent implements OnInit {
       });
     }
   }
+  
 }

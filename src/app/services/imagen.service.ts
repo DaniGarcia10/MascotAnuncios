@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { Storage } from '@angular/fire/storage';
 import { push, child, Database, ref as dbRef } from '@angular/fire/database';
+import { listAll } from '@angular/fire/storage';
 
 @Injectable({
   providedIn: 'root'
@@ -83,6 +84,7 @@ export class ImagenService {
 
   async eliminarImagenes(
     tipo: 'usuario' | 'criadero' | 'anuncio' | 'mascota' | 'cachorro',
+    id: string,
     imagenes: string[]
   ): Promise<void> {
     let rutaBase: string;
@@ -92,11 +94,11 @@ export class ImagenService {
     } else if (tipo === 'criadero') {
       rutaBase = 'criaderos';
     } else if (tipo === 'anuncio') {
-      rutaBase = 'anuncios';
+      rutaBase = `anuncios/${id}`;
     } else if (tipo === 'mascota') {
-      rutaBase = `mascotas`;
+      rutaBase = `mascotas/${id}`;
     } else if (tipo === 'cachorro') {
-      rutaBase = `cachorros`;
+      rutaBase = `cachorros/${id}`;
     } else {
       throw new Error('Tipo de imagen no válido.');
     }
@@ -105,14 +107,35 @@ export class ImagenService {
       const nombre = imagen.startsWith('http')
         ? decodeURIComponent(imagen.split('/').pop()?.split('?')[0] ?? '')
         : imagen;
-
-      const storageRef = ref(this.storage, nombre);
+  
+      const rutaCompleta = `${rutaBase}/${nombre}`;
+      const storageRef = ref(this.storage, rutaCompleta);
   
       try {
         await deleteObject(storageRef);
-        console.log(`Imagen eliminada: ${nombre}`);
+        console.log(`Imagen eliminada: ${rutaCompleta}`);
       } catch (error) {
-        console.error(`Error al eliminar la imagen ${nombre}:`, error);
+        console.error(`Error al eliminar la imagen ${rutaCompleta}:`, error);
+      }
+    }
+  } 
+
+  async eliminarCarpeta(
+    tipo: 'anuncio' | 'cachorro',
+    id: string
+  ): Promise<void> {
+    const folderRef = ref(this.storage, `${tipo}s/${id}/`);
+  
+    try {
+      const listado = await listAll(folderRef);
+      const eliminaciones = listado.items.map((item) => deleteObject(item));
+      await Promise.all(eliminaciones);
+      console.log(`Carpeta ${tipo}s/${id} eliminada con éxito.`);
+    } catch (error: any) {
+      if (error.code !== 'storage/object-not-found') {
+        console.error(`Error al eliminar carpeta ${tipo}s/${id}:`, error);
+      } else {
+        console.warn(`Nada que borrar en ${tipo}s/${id}`);
       }
     }
   }

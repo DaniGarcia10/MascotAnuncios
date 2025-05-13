@@ -100,9 +100,9 @@ export class AnunciosDetailComponent implements OnInit {
             // Cargar las imágenes de cada cachorro
             for (const cachorro of cachorros) {
               if (cachorro.imagenes && cachorro.imagenes.length > 0) {
-                // Asegurarse de que las rutas incluyan el prefijo 'cachorros/'
+                // Actualizar las rutas al nuevo formato
                 const imagenesConRuta = cachorro.imagenes.map((img: string) =>
-                  img.startsWith('http') ? img : `cachorros/${img}`
+                  img.startsWith('http') ? img : `cachorros/${this.anuncio?.id}/${img}`
                 );
                 cachorro.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
               }

@@ -4,12 +4,13 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { CommonModule } from '@angular/common';
 import { RAZAS } from '../../../data/razas';
 import { PROVINCIAS_ESPAÑA } from '../../../data/provincias';
-import { Firestore, collection, addDoc } from '@angular/fire/firestore';
+import { Firestore, collection } from '@angular/fire/firestore';
 import { ImagenService } from '../../../services/imagen.service';
 import { AuthService } from '../../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { AnunciosService } from '../../../services/anuncios.service';
 
 @Component({
   selector: 'app-anuncios-form',
@@ -31,7 +32,8 @@ export class AnunciosFormComponent implements OnInit {
     private imagenService: ImagenService,
     private authService: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private anunciosService: AnunciosService
   ) {}
 
   ngOnInit(): void {
@@ -70,7 +72,22 @@ export class AnunciosFormComponent implements OnInit {
     });
 
     this.formAnuncio.get('especificar_cachorros')?.valueChanges.subscribe(value => {
-      if (!value) this.clearCachorros();
+      if (value) {
+        if (this.cachorros.length === 0) {
+          this.cachorros.push(
+            this.fb.group({
+              color: [''],
+              sexo: ['', Validators.required],
+              precio: [null, Validators.required],
+              disponible: [true],
+              descripcion: [''],
+              imagenes: [[], Validators.required],
+            })
+          );
+        }
+      } else {
+        this.clearCachorros();
+      }
     });
   }
 
@@ -130,48 +147,8 @@ export class AnunciosFormComponent implements OnInit {
       return;
     }
 
-    const anuncioData = { ...this.formAnuncio.value };
-
-    // Concatenar edadValor y edadUnidad en el campo edad
-    anuncioData.edad = `${anuncioData.edadValor} ${anuncioData.edadUnidad}`;
-    delete anuncioData.edadValor;
-    delete anuncioData.edadUnidad;
-
-    const imagenesAnuncio = anuncioData.imagenes as File[]; 
-    const cachorrosData = anuncioData.cachorros || [];
-    delete anuncioData.cachorros;
-
     try {
-      // Subir imágenes del anuncio
-      const imagenesAnuncioUrls = await Promise.all(
-        imagenesAnuncio.map(async (file) => {
-          return await this.imagenService.subirImagen(file, 'anuncio', '');
-        })
-      );
-      anuncioData.imagenes = imagenesAnuncioUrls;
-
-      // Guardar anuncio en Firestore
-      const anunciosRef = collection(this.firestore, 'anuncios');
-      const anuncioDocRef = await addDoc(anunciosRef, anuncioData);
-      const id_anuncio = anuncioDocRef.id;
-
-      // Subir datos de cachorros si existen
-      for (const [index, cachorro] of cachorrosData.entries()) {
-        const imagenesCachorro = cachorro.imagenes as File[];
-
-        // Subir imágenes de los cachorros
-        const imagenesCachorroUrls = await Promise.all(
-          imagenesCachorro.map(async (file) => {
-            return await this.imagenService.subirImagen(file, 'cachorro', '');
-          })
-        );
-        cachorro.imagenes = imagenesCachorroUrls;
-
-        const cachorrosRef = collection(this.firestore, 'cachorros');
-        await addDoc(cachorrosRef, { ...cachorro, id_anuncio });
-      }
-
-      // Mostrar mensaje de éxito y redirigir
+      await this.anunciosService.subirAnuncio(this.formAnuncio.value);
       this.snackBar.open('¡Anuncio publicado exitosamente!', 'Cerrar', {
         duration: 3000,
         horizontalPosition: 'center',
@@ -179,11 +156,10 @@ export class AnunciosFormComponent implements OnInit {
         panelClass: ['snackbar-success']
       });
       this.router.navigate(['/mis-anuncios']);
-
     } catch (error) {
       console.error('Error al publicar el anuncio:', error);
     } finally {
-      this.isSubmitting = false; // Restablecer el estado si es necesario
+      this.isSubmitting = false;
     }
   }
 }
