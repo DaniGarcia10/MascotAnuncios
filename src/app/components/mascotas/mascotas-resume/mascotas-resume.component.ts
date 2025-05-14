@@ -41,7 +41,7 @@ export class MascotasResumeComponent implements OnInit {
 
     if (this.mascota.id_padre && this.mascota.id_padre.trim() !== '') {
       this.mascotasService.getMascotaById(this.mascota.id_padre).then(padre => {
-        console.log('Padre:', padre); // Verifica los datos del padre
+        console.log('Padre:', padre); 
         if (padre?.imagenes?.length) {
           const imagenesConRuta = padre.imagenes.map(img =>
             img.startsWith('http') ? img : `mascotas/${user.uid}/${img}`

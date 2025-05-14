@@ -89,13 +89,43 @@
           <!-- Campos ID Padre e ID Madre -->
           <div *ngIf="formAnuncio.get('especificarPadres')?.value">
             <div class="mb-3">
-              <label class="form-label">ID Padre:</label>
-              <input type="text" class="form-control" formControlName="id_padre">
+              <label class="form-label">Padre:</label>
+              <ng-select [items]="machos"
+                         bindLabel="nombre"
+                         bindValue="id"
+                         placeholder="Selecciona un padre"
+                         class="custom-ng-select"
+                         (change)="seleccionarPadre($event)">
+                <ng-template ng-option-tmp let-item="item">
+                  <div class="d-flex align-items-center">
+                    <img [src]="item.imagenes[0]" alt="Foto" class="me-2" width="40" height="40">
+                    <div>
+                      <div>{{ item.nombre }}</div>
+                      <small>{{ item.raza }} - {{ item.color }}</small>
+                    </div>
+                  </div>
+                </ng-template>
+              </ng-select>
             </div>
 
             <div class="mb-3">
-              <label class="form-label">ID Madre:</label>
-              <input type="text" class="form-control" formControlName="id_madre">
+              <label class="form-label">Madre:</label>
+              <ng-select [items]="hembras"
+                         bindLabel="nombre"
+                         bindValue="id"
+                         placeholder="Selecciona una madre"
+                         class="custom-ng-select"
+                         (change)="seleccionarMadre($event)">
+                <ng-template ng-option-tmp let-item="item">
+                  <div class="d-flex align-items-center">
+                    <img [src]="item.imagenes[0]" alt="Foto" class="me-2" width="40" height="40">
+                    <div>
+                      <div>{{ item.nombre }}</div>
+                      <small>{{ item.raza }} - {{ item.color }}</small>
+                    </div>
+                  </div>
+                </ng-template>
+              </ng-select>
             </div>
           </div>
         

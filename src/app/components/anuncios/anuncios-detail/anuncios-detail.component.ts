@@ -128,7 +128,7 @@ export class AnunciosDetailComponent implements OnInit {
     const ahora = new Date();
     const diferencia = ahora.getTime() - new Date(fecha).getTime();
 
-    if (diferencia < 0) return 'Hace unos instantes';
+    if (diferencia < 1) return 'Hace unos instantes';
 
     const minutos = Math.floor(diferencia / (1000 * 60));
     if (minutos < 60) return `${minutos} minutos`;

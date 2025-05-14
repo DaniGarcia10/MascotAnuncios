@@ -9,4 +9,5 @@ export interface Mascota {
     imagenes: string[];
     id_padre: string | null;
     id_madre: string | null;
-  }
+    id_usuario: string;
+}

@@ -11,6 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AnunciosService } from '../../../services/anuncios.service';
+import { MascotasService } from '../../../services/mascotas.service';
+import { Mascota } from '../../../models/Mascota.model';
 
 @Component({
   selector: 'app-anuncios-form',
@@ -25,6 +27,9 @@ export class AnunciosFormComponent implements OnInit {
   filteredRazas: { label: string; value: string }[] = [];
   especificarPadres: boolean = false;
   isSubmitting: boolean = false; // Nueva variable
+  mascotasUsuario: Mascota[] = []; // Lista de mascotas del usuario
+  machos: Mascota[] = []; // Mascotas machos
+  hembras: Mascota[] = []; // Mascotas hembras
 
   constructor(
     private fb: FormBuilder,
@@ -33,7 +38,8 @@ export class AnunciosFormComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private snackBar: MatSnackBar,
-    private anunciosService: AnunciosService
+    private anunciosService: AnunciosService,
+    private mascotasService: MascotasService
   ) {}
 
   ngOnInit(): void {
@@ -63,6 +69,7 @@ export class AnunciosFormComponent implements OnInit {
     this.authService.getUserDataAuth().subscribe(({ user }) => {
       if (user) {
         this.formAnuncio.get('id_usuario')?.setValue(user.uid); 
+        this.cargarMascotasUsuario(user.uid);
       }
     });
 
@@ -89,6 +96,52 @@ export class AnunciosFormComponent implements OnInit {
         this.clearCachorros();
       }
     });
+  }
+
+  cargarMascotasUsuario(userId: string): void {
+    this.mascotasService.getMascotas().subscribe({
+      next: async (mascotas) => {
+        this.mascotasUsuario = mascotas.filter((mascota) => mascota.id_usuario === userId);
+
+        // Procesar imágenes de las mascotas
+        this.mascotasUsuario = await Promise.all(
+          this.mascotasUsuario.map(async (mascota) => {
+            if (mascota.imagenes && mascota.imagenes.length > 0) {
+              const imagenesConRuta = mascota.imagenes.map((img) =>
+                img.startsWith('http') ? img : `mascotas/${userId}/${img}`
+              );
+              try {
+                const urls = await this.imagenService.cargarImagenes(imagenesConRuta);
+                mascota.imagenes = urls; 
+              } catch (error) {
+                console.error(`Error al cargar imágenes de la mascota ${mascota.nombre}:`, error);
+              }
+            }
+            return mascota;
+          })
+        );
+
+        // Filtrar machos y hembras
+        this.machos = this.mascotasUsuario.filter((mascota) => mascota.sexo?.toLowerCase() === 'macho');
+        this.hembras = this.mascotasUsuario.filter((mascota) => mascota.sexo?.toLowerCase() === 'hembra');
+      },
+      error: (err) => {
+        console.error('Error al cargar las mascotas del usuario:', err);
+      },
+    });
+  }
+
+  private seleccionarMascota(event: any, controlName: string): void {
+    const id = typeof event === 'string' ? event : event?.id; // Asegurarse de obtener solo el ID
+    this.formAnuncio.get(controlName)?.setValue(id);
+  }
+
+  seleccionarPadre(event: any): void {
+    this.seleccionarMascota(event, 'id_padre');
+  }
+
+  seleccionarMadre(event: any): void {
+    this.seleccionarMascota(event, 'id_madre');
   }
 
   updateRazasList(): void {
