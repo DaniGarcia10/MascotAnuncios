@@ -1,0 +1,15 @@
+<div class="d-flex flex-column flex-lg-row">
+  <div class="col-md-12 p-3">
+    <div *ngIf="anuncios.length > 0; else noAnuncios" class="row row-cols-1 row-cols-md-2 g-3">
+      <div *ngFor="let anuncio of anuncios" class="col">
+        <app-favoritos-resume 
+          [anuncio]="anuncio"
+          (click)="verAnuncio(anuncio)">
+        </app-favoritos-resume>
+      </div>
+    </div>
+    <ng-template #noAnuncios>
+      <p class="text-center text-danger fw-bold">No hay anuncios disponibles.</p>
+    </ng-template>
+  </div>
+</div>

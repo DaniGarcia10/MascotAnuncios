@@ -27,12 +27,6 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Cargar la imagen login.jpg
-    this.imagenService.cargarImagenes(['login.jpg']).then((urls) => {
-      this.imagenUrl = urls[0];
-    }).catch((error) => {
-      console.error('Error al cargar la imagen:', error);
-    });
   }
 
   onSubmit(): void {

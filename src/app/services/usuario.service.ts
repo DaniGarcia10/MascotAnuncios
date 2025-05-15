@@ -26,10 +26,8 @@ export class UsuarioService {
 
       if (userDocSnap.exists()) {
         const usuarioData = userDocSnap.data() as Usuario;
-        console.log('Datos del usuario obtenidos de Firestore:', usuarioData);
         return usuarioData;
       } else {
-        console.warn('Usuario no encontrado en Firestore');
         return null;
       }
     } catch (error) {
@@ -48,7 +46,6 @@ export class UsuarioService {
         const usuarioData = userDocSnap.data() as Usuario;
         return usuarioData.id_criadero || null;
       } else {
-        console.warn('Usuario no encontrado');
         return null;
       }
     } catch (error) {

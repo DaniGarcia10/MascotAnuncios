@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, collectionData, doc, deleteDoc, addDoc, updateDoc } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, doc, deleteDoc, addDoc, updateDoc, query, where } from '@angular/fire/firestore';
 import { Storage, ref, deleteObject } from '@angular/fire/storage';
 import { Observable, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -35,7 +35,29 @@ export class AnunciosService {
               );
               anuncio.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
             }
-            console.log('Datos del anuncio:', anuncio);
+            return anuncio;
+          })
+        ))
+      )
+    );
+  }
+
+  getAnunciosPorUsuario(usuarioId: string): Observable<Anuncio[]> {
+    const anunciosCollection = collection(this.firestore, 'anuncios');
+    const anunciosQuery = query(anunciosCollection, where('id_usuario', '==', usuarioId));
+    return collectionData(anunciosQuery, { idField: 'id' }).pipe(
+      switchMap((anuncios: any[]) =>
+        from(Promise.all(
+          anuncios.map(async (anuncio) => {
+            if (anuncio.fecha_publicacion) {
+              anuncio.fecha_publicacion = new Date(anuncio.fecha_publicacion);
+            }
+            if (anuncio.imagenes && anuncio.imagenes.length > 0) {
+              const imagenesConRuta = anuncio.imagenes.map((img: string) =>
+                img.startsWith('http') ? img : `anuncios/${anuncio.id}/${img}`
+              );
+              anuncio.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
+            }
             return anuncio;
           })
         ))

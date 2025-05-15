@@ -41,6 +41,31 @@ export class MascotasService {
     }
   }
 
+  /**
+   * Obtiene una mascota por su ID y el ID del usuario propietario (para anuncios).
+   * @param id ID de la mascota
+   * @param idUsuario ID del usuario propietario de la mascota
+   */
+  async getMascotaByIdAndUsuario(id: string, idUsuario: string): Promise<Mascota | undefined> {
+    const mascotaDocRef = doc(this.firestore, this.COLLECTION_NAME, id);
+    const mascotaDocSnap = await getDoc(mascotaDocRef);
+
+    if (mascotaDocSnap.exists()) {
+      const mascota = mascotaDocSnap.data() as Mascota;
+
+      // Cargar las imágenes de la mascota usando el idUsuario proporcionado
+      if (mascota.imagenes && mascota.imagenes.length > 0) {
+        const imagenesConRuta = mascota.imagenes.map(img => `mascotas/${idUsuario}/${img}`);
+        mascota.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
+      }
+
+      return mascota;
+    } else {
+      console.warn('Mascota no encontrada');
+      return undefined;
+    }
+  }
+
   getMascotas(): Observable<Mascota[]> {
     const mascotasCollection = collection(this.firestore, this.COLLECTION_NAME);
     return collectionData(mascotasCollection, { idField: 'id' }) as Observable<Mascota[]>;

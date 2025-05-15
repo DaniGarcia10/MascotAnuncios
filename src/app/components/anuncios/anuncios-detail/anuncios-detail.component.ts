@@ -50,15 +50,15 @@ export class AnunciosDetailComponent implements OnInit {
       this.anunciosService.getAnuncios().subscribe(async anuncios => {
         this.anuncio = anuncios.find(a => a.id === id);
 
-        if (this.anuncio?.id_padre) {
-          const padre = await this.mascotasService.getMascotaById(this.anuncio.id_padre);
+        if (this.anuncio?.id_padre && this.anuncio?.id_usuario) {
+          const padre = await this.mascotasService.getMascotaByIdAndUsuario(this.anuncio.id_padre, this.anuncio.id_usuario);
           if (padre?.imagenes?.length) {
             this.padresImagenes['padre'] = padre.imagenes[0];
           }
         }
 
-        if (this.anuncio?.id_madre) {
-          const madre = await this.mascotasService.getMascotaById(this.anuncio.id_madre);
+        if (this.anuncio?.id_madre && this.anuncio?.id_usuario) {
+          const madre = await this.mascotasService.getMascotaByIdAndUsuario(this.anuncio.id_madre, this.anuncio.id_usuario);
           if (madre?.imagenes?.length) {
             this.padresImagenes['madre'] = madre.imagenes[0];
           }
