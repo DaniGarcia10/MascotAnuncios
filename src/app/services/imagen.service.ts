@@ -31,7 +31,7 @@ export class ImagenService {
       throw new Error('El archivo proporcionado no es válido.');
     }
     const extension = file.name.split('.').pop()?.toLowerCase();
-    const extensionesValidas = ['jpg', 'jpeg', 'png', 'webp'];
+    const extensionesValidas = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
     if (!extension || !extensionesValidas.includes(extension)) {
       throw new Error('Formato de imagen no compatible.');
     }
@@ -40,7 +40,7 @@ export class ImagenService {
 
   async subirImagen(
     file: File,
-    tipo: 'usuario' | 'criadero' | 'anuncio' | 'mascota' | 'cachorro',
+    tipo: 'usuario' | 'criadero' | 'anuncio' | 'mascota' | 'cachorro' | 'documentacion',
     id: string
   ): Promise<string> {
     const extension = this.validarExtension(file);
@@ -70,6 +70,9 @@ export class ImagenService {
     } else if (tipo === 'cachorro') {
       nombreArchivo = `${uniqueId}.${extension}`;
       ruta = `cachorros/${id}/${nombreArchivo}`;
+    } else if (tipo === 'documentacion') {
+      nombreArchivo = `${uniqueId}.${extension}`;
+      ruta = `documentacion/${id}/${nombreArchivo}`;
     } else {
       throw new Error('Tipo de imagen no válido.');
     }

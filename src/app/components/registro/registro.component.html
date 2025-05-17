@@ -72,8 +72,9 @@
             </div>
             <div class="mb-3">
               <label for="criadero-nombre" class="form-label">Nombre del Criadero:</label>
-              <input id="criadero-nombre" formControlName="nombre" type="text" class="form-control" placeholder="Ingresa el nombre del criadero">
+              <input id="criadero-nombre" formControlName="nombre" type="text" class="form-control" placeholder="Ingresa el nombre del criadero" required>
               <div *ngIf="formRegistro.get('criadero.nombre')?.invalid && formRegistro.get('criadero.nombre')?.touched" class="text-danger">
+                <small *ngIf="formRegistro.get('criadero.nombre')?.errors?.['required']">El nombre del criadero es obligatorio.</small>
                 <small *ngIf="formRegistro.get('criadero.nombre')?.errors?.['maxlength']">Máximo 50 caracteres permitidos.</small>
               </div>
             </div>
@@ -88,6 +89,46 @@
             <div class="mb-3">
               <label for="fotoPerfilCriadero" class="form-label">Foto de Perfil del Criadero:</label>
               <input id="fotoPerfilCriadero" type="file" class="form-control" (change)="onFileSelectedCriadero($event)">
+              <div *ngIf="isVendedor() && !fotoPerfilCriadero && isSubmitting" class="text-danger">
+                <small>La foto de perfil del criadero es obligatoria.</small>
+              </div>
+            </div>
+            <!-- Bloque de verificación de criadero profesional -->
+            <div class="mt-4 p-3 border rounded">
+              <h5 class="mb-2">Verificación de Criadero Profesional</h5>
+              <p class="mb-2">
+                Para poder publicar anuncios necesitamos verificar tu identidad y autorización legal, para así garantizar la confianza de los compradores.<br>
+                Revisaremos tu documentación en menos de 24 horas.
+              </p>
+              <div class="mb-2">
+                <span class="fw-bold">📑 Documentación obligatoria:</span>
+                <ul class="mb-1">
+                  <li>DNI/NIE del titular (anverso y reverso en una sola imagen o PDF)</li>
+                  <li>Número de Núcleo Zoológico (NNZ) válido</li>
+                  <li>Certificado de inscripción en el Registro de Núcleos Zoológicos</li>
+                </ul>
+              </div>
+              <div class="mb-2">
+                <span class="fw-bold">📤 Sube tus archivos:</span><br>
+                <input type="file" class="form-control mt-1" multiple accept=".pdf,.jpg,.jpeg,.png" (change)="onDocumentacionFilesSelected($event)">
+                <small class="text-muted">
+                  Formatos admitidos: PDF, JPG, PNG<br>
+                  Tamaño máximo: 20 MB por archivo
+                </small>
+                <div *ngIf="isVendedor() && documentacionFiles.length === 0 && isSubmitting" class="text-danger mt-1">
+                  <small>La documentación del criadero es obligatoria.</small>
+                </div>
+              </div>
+              <div class="mb-2">
+                <span class="fw-bold">✅ Importante:</span>
+                <ul class="mb-1">
+                  <li>La información debe coincidir con el titular de la cuenta.</li>
+                  <li>Nos reservamos el derecho de rechazar documentos ilegibles o inválidos.</li>
+                </ul>
+              </div>
+              <div>
+                Una vez verificado, tus anuncios aparecerán como “Criadero verificado” y podrás destacar tus cachorros.
+              </div>
             </div>
           </div>
           <button type="submit" class="btn-default w-100" [disabled]="isSubmitting">
