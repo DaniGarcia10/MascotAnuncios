@@ -10,6 +10,10 @@ import { UsuarioService } from '../../../services/usuario.service';
 import { CachorrosService } from '../../../services/cachorros.service'; 
 import { Cachorro } from '../../../models/Cachorro.model';
 import { ImagenService } from '../../../services/imagen.service';
+import { FavoritosService } from '../../../services/favoritos.service';
+import { AuthService } from '../../../services/auth.service';
+import { doc, setDoc, updateDoc, arrayUnion, arrayRemove, getDoc } from '@angular/fire/firestore';
+import { Firestore } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-anuncios-detail',
@@ -34,6 +38,10 @@ export class AnunciosDetailComponent implements OnInit {
   precioMinimo?: string | null;
   precioMaximo?: string | null; 
 
+  esFavorito: boolean = false;
+  private idAnuncioActual: string | null = null;
+  private usuarioId: string | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private anunciosService: AnunciosService,
@@ -41,12 +49,21 @@ export class AnunciosDetailComponent implements OnInit {
     private usuarioService: UsuarioService,
     private criaderoService: CriaderoService,
     private cachorrosService: CachorrosService,
-    private imagenService: ImagenService
+    private imagenService: ImagenService,
+    private favoritosService: FavoritosService,
+    private authService: AuthService,
+    private firestore: Firestore
   ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    this.idAnuncioActual = id;
+    this.usuarioId = this.authService.getUsuarioId();
     if (id) {
+      // Consultar favoritos antes de cargar el anuncio
+      this.favoritosService.getFavoritosIds().subscribe(ids => {
+        this.esFavorito = ids.includes(id);
+      });
       this.anunciosService.getAnuncios().subscribe(async anuncios => {
         this.anuncio = anuncios.find(a => a.id === id);
 
@@ -242,5 +259,30 @@ export class AnunciosDetailComponent implements OnInit {
   denunciarAnuncio() {
     // Esto puedes sustituirlo por una lógica real con modal o llamada a API
     alert('Gracias por tu reporte. Revisaremos este anuncio.');
+  }
+
+  async toggleFavorito() {
+    if (!this.usuarioId || !this.idAnuncioActual) return;
+    const docRef = doc(this.firestore, `favoritos/${this.usuarioId}`);
+    const snapshot = await getDoc(docRef);
+    if (this.esFavorito) {
+      // Quitar de favoritos
+      if (snapshot.exists()) {
+        await updateDoc(docRef, {
+          id_anuncio: arrayRemove(this.idAnuncioActual)
+        });
+      }
+      this.esFavorito = false;
+    } else {
+      // Añadir a favoritos
+      if (snapshot.exists()) {
+        await updateDoc(docRef, {
+          id_anuncio: arrayUnion(this.idAnuncioActual)
+        });
+      } else {
+        await setDoc(docRef, { id_anuncio: [this.idAnuncioActual] });
+      }
+      this.esFavorito = true;
+    }
   }
 }

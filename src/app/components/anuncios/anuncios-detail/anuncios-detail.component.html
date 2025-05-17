@@ -2,9 +2,22 @@
   <div class="row">
     <!-- Contenido principal del anuncio -->
     <div class="col-12 col-lg-9 mb-4">
-      <div class="card shadow-sm">
+      <div class="card shadow-sm position-relative">
+        <!-- Botón corazón en la esquina superior derecha -->
+        <button
+          class="btn btn-favorito position-absolute top-0 end-0 m-3 p-0"
+          (click)="toggleFavorito()"
+          [attr.aria-pressed]="esFavorito"
+          style="background: transparent; border: none;"
+        >
+          <i
+            class="bi"
+            [ngClass]="esFavorito ? 'bi-heart-fill' : 'bi-heart'"
+            style="font-size: 2rem; color: var(--primary-text-color); transition: color 0.2s;"
+          ></i>
+        </button>
         <div class="card-body">
-          <h2 class="card-title fw-bold">{{ anuncio.titulo }}</h2>
+          <h2 class="card-title fw-bold pe-5">{{ anuncio.titulo }}</h2>
           <p class="card-text mb-2">
             <i class="bi bi-geo-alt me-1"></i>{{ anuncio.ubicacion }} - <i class="bi bi-clock me-1"></i>{{ calcularTiempoTranscurrido(anuncio.fecha_publicacion) }}
           </p>

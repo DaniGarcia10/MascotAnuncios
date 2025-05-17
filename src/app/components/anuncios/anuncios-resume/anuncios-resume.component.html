@@ -24,7 +24,10 @@
           <p class="card-text mb-1 text-truncate">
             <i class="bi bi-clock me-1"></i>{{ calcularTiempoTranscurrido(anuncio.fecha_publicacion) }}
           </p>
-          <h5 class="card-title fw-bold fs-6 mb-1 text-truncate">{{ anuncio.titulo }}</h5>
+          <h5 class="card-title fw-bold fs-6 mb-1 text-truncate"
+              style="overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+            {{ anuncio.titulo }}
+          </h5>
           <p class="card-text mb-1 text-truncate">
             <strong>
               {{ precioMinimo && precioMaximo ? precioMinimo + '€ - ' + precioMaximo + '€' : anuncio.precio + '€' }}

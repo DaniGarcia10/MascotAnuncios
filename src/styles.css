@@ -45,7 +45,6 @@ body {
   box-shadow: 0 4px 12px var(--hover-shadow);
 }
 
-
 .img-contenedor {
   position: relative;
   height: 250px;
@@ -121,6 +120,7 @@ ng-select.ng-select-focused {
 
 .card-title {
   color: var(--primary-text-color) !important;
+  padding-right: 2rem; /* Espacio para el botón corazón */
 }
 
 .card-title-grande {
@@ -163,7 +163,6 @@ form .card {
   transform: translateY(-5px);
   border: 3px solid var(--primary-text-color);
 }
-
 
 form .form-control:focus {
   border-color: #a1866f;
