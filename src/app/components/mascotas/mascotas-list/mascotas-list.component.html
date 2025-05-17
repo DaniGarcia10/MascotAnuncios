@@ -2,21 +2,146 @@
   <!-- Menú lateral -->
   <div class="menu-lateral p-3 col-12 col-lg-3">
     <ul class="list-group">
+      <li class="list-group-item" [class.active]="activeSection === 'ver'" (click)="setActiveSection('ver')">
+        Ver mascotas
+      </li>
       <li class="list-group-item" [class.active]="activeSection === 'add'" (click)="setActiveSection('add')">
         Añadir mascota
-      </li>
-      <li class="list-group-item" [class.active]="activeSection === 'edit'" (click)="setActiveSection('edit')">
-        Editar mascota
-      </li>
-      <li class="list-group-item" [class.active]="activeSection === 'delete'" (click)="setActiveSection('delete')">
-        Eliminar mascota
       </li>
     </ul>
   </div>
 
   <!-- Contenido principal -->
   <div class="contenido-principal flex-grow-1 p-4 col-12 col-lg-9">
-    <div class="container mt-4">
+    <!-- Formulario de añadir mascota -->
+    <div *ngIf="activeSection === 'add'" class="container mt-4">
+      <div class="d-flex justify-content-center align-items-center flex-grow-1 px-3 py-5">
+        <div class="card custom-card w-100" style="max-width: 600px;">
+          <div class="card-header custom-card-header text-center">
+            <h3 class="card-title-grande">Añadir Mascota</h3>
+          </div>
+          <div class="card-body custom-card-body">
+            <form [formGroup]="formMascota" (ngSubmit)="onSubmitMascota()">
+              <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre:</label>
+                <input id="nombre" formControlName="nombre" type="text" class="form-control"
+                  placeholder="Nombre de la mascota" required>
+                <div *ngIf="formMascota.get('nombre')?.invalid && formMascota.get('nombre')?.touched"
+                  class="text-danger">
+                  <small *ngIf="formMascota.get('nombre')?.errors?.['required']">El nombre es obligatorio.</small>
+                  <small *ngIf="formMascota.get('nombre')?.errors?.['maxlength']">Máximo 30 caracteres.</small>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="tipo" class="form-label">Tipo:</label>
+                <ng-select
+                  [items]="[{label: 'Perro', value: true}, {label: 'Gato', value: false}]"
+                  bindLabel="label"
+                  bindValue="value"
+                  formControlName="perro"
+                  placeholder="Selecciona tipo"
+                  class="custom-ng-select"
+                  [searchable]="false">
+                </ng-select>
+                <div *ngIf="formMascota.get('perro')?.invalid && formMascota.get('perro')?.touched" class="text-danger">
+                  <small>El tipo es obligatorio.</small>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="raza" class="form-label">Raza:</label>
+                <ng-select
+                  [items]="filteredRazas"
+                  bindLabel="label"
+                  bindValue="value"
+                  formControlName="raza"
+                  placeholder="Selecciona raza"
+                  class="custom-ng-select"
+                  [disabled]="!formMascota.get('perro')?.value">
+                </ng-select>
+                <div *ngIf="formMascota.get('raza')?.invalid && formMascota.get('raza')?.touched" class="text-danger">
+                  <small>La raza es obligatoria.</small>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="color" class="form-label">Color:</label>
+                <input id="color" formControlName="color" type="text" class="form-control" placeholder="Introduzca el color" required>
+                <div *ngIf="formMascota.get('color')?.invalid && formMascota.get('color')?.touched" class="text-danger">
+                  <small *ngIf="formMascota.get('color')?.errors?.['required']">El color es obligatorio.</small>
+                  <small *ngIf="formMascota.get('color')?.errors?.['maxlength']">Máximo 20 caracteres.</small>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="sexo" class="form-label">Sexo:</label>
+                <ng-select
+                  [items]="['Macho', 'Hembra']"
+                  bindLabel="this"
+                  bindValue="this"
+                  formControlName="sexo"
+                  placeholder="Selecciona el sexo"
+                  class="custom-ng-select"
+                  [searchable]="false"
+                  [clearable]="false">
+                </ng-select>
+                <div *ngIf="formMascota.get('sexo')?.invalid && formMascota.get('sexo')?.touched" class="text-danger">
+                  <small>El sexo es obligatorio.</small>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción:</label>
+                <textarea id="descripcion" formControlName="descripcion" class="form-control" rows="3"
+                  placeholder="Descripción"></textarea>
+                <div *ngIf="formMascota.get('descripcion')?.invalid && formMascota.get('descripcion')?.touched"
+                  class="text-danger">
+                  <small *ngIf="formMascota.get('descripcion')?.errors?.['maxlength']">Máximo 200 caracteres.</small>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="imagenes" class="form-label">Imágenes:</label>
+                <input id="imagenes" type="file" class="form-control" (change)="onFileSelectedMascota($event)" multiple>
+                <div *ngIf="isSubmittingMascota && (!imagenesMascota || imagenesMascota.length === 0)" class="text-danger">
+                  <small>Debes añadir al menos una imagen.</small>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Padre:</label>
+                <ng-select [items]="machos" bindLabel="nombre" bindValue="id" placeholder="Selecciona un padre"
+                  class="custom-ng-select" (change)="seleccionarPadre($event)">
+                  <ng-template ng-option-tmp let-item="item">
+                    <div class="d-flex align-items-center">
+                      <img [src]="item.imagenes[0]" alt="Foto" class="me-2" width="40" height="40">
+                      <div>
+                        <div>{{ item.nombre }}</div>
+                        <small>{{ item.raza }} - {{ item.color }}</small>
+                      </div>
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+              <div class="mb-3">
+                <label for="madre" class="form-label">Madre:</label>
+                <ng-select [items]="hembras" bindLabel="nombre" bindValue="id" placeholder="Selecciona una madre"
+                  class="custom-ng-select" (change)="seleccionarMadre($event)">
+                  <ng-template ng-option-tmp let-item="item">
+                    <div class="d-flex align-items-center">
+                      <img [src]="item.imagenes[0]" alt="Foto" class="me-2" width="40" height="40">
+                      <div>
+                        <div>{{ item.nombre }}</div>
+                        <small>{{ item.raza }} - {{ item.color }}</small>
+                      </div>
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+              <button type="submit" class="btn-default w-100" [disabled]="isSubmittingMascota">
+                {{ isSubmittingMascota ? 'Añadiendo...' : 'Añadir Mascota' }}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Lista de mascotas -->
+    <div *ngIf="activeSection === 'ver'" class="container mt-4">
       <div *ngIf="mascotas.length > 0; else noMascotas">
         <div *ngFor="let mascota of mascotas">
           <app-mascotas-resume [mascota]="mascota"></app-mascotas-resume>

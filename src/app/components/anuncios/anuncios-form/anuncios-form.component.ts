@@ -194,8 +194,63 @@ export class AnunciosFormComponent implements OnInit {
     if (this.isSubmitting) return; // Evitar múltiples envíos
     this.isSubmitting = true;
 
-    if (this.formAnuncio.invalid) {
-      this.formAnuncio.markAllAsTouched();
+    const errores: string[] = [];
+    const controls = this.formAnuncio.controls;
+
+    if (controls['perro'].invalid) {
+      errores.push('El tipo (perro/gato) es obligatorio.');
+      controls['perro'].markAsTouched();
+    }
+    if (controls['raza'].invalid) {
+      errores.push('La raza es obligatoria.');
+      controls['raza'].markAsTouched();
+    }
+    if (controls['titulo'].invalid) {
+      errores.push('El título es obligatorio.');
+      controls['titulo'].markAsTouched();
+    }
+    if (controls['edadValor'].invalid) {
+      errores.push('La edad es obligatoria.');
+      controls['edadValor'].markAsTouched();
+    }
+    if (controls['edadUnidad'].invalid) {
+      errores.push('La unidad de edad es obligatoria.');
+      controls['edadUnidad'].markAsTouched();
+    }
+    if (controls['ubicacion'].invalid) {
+      errores.push('La provincia es obligatoria.');
+      controls['ubicacion'].markAsTouched();
+    }
+    if (!controls['imagenes'].value || controls['imagenes'].value.length === 0) {
+      errores.push('Debe subir al menos una imagen.');
+      controls['imagenes'].markAsTouched();
+    }
+
+    // Validación de cachorros si corresponde
+    if (controls['especificar_cachorros'].value && this.cachorros.length > 0) {
+      this.cachorros.controls.forEach((cachorro, i) => {
+        if (cachorro.get('sexo')?.invalid) {
+          errores.push(`El sexo del cachorro ${i + 1} es obligatorio.`);
+          cachorro.get('sexo')?.markAsTouched();
+        }
+        if (cachorro.get('precio')?.invalid) {
+          errores.push(`El precio del cachorro ${i + 1} es obligatorio.`);
+          cachorro.get('precio')?.markAsTouched();
+        }
+        if (!cachorro.get('imagenes')?.value || cachorro.get('imagenes')?.value.length === 0) {
+          errores.push(`Debe subir al menos una imagen para el cachorro ${i + 1}.`);
+          cachorro.get('imagenes')?.markAsTouched();
+        }
+      });
+    }
+
+    if (errores.length > 0) {
+      this.snackBar.open(errores.join(' '), 'Cerrar', {
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+        duration: 6000
+      });
       this.isSubmitting = false;
       return;
     }
