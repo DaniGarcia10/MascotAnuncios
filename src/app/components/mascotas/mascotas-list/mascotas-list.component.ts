@@ -9,7 +9,8 @@ import { AuthService } from '../../../services/auth.service';
 import { ImagenService } from '../../../services/imagen.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Firestore, collection, addDoc } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, doc, deleteDoc } from '@angular/fire/firestore';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mascotas-list',
@@ -28,6 +29,7 @@ export class MascotasListComponent implements OnInit {
   mascotasUsuario: Mascota[] = [];
   machos: Mascota[] = [];
   hembras: Mascota[] = [];
+  mascotaDetalle: Mascota | null = null;
 
   constructor(
     private mascotasService: MascotasService,
@@ -35,7 +37,8 @@ export class MascotasListComponent implements OnInit {
     private authService: AuthService,
     private imagenService: ImagenService,
     private snackBar: MatSnackBar, // Añadir MatSnackBar
-    private firestore: Firestore // Agregar Firestore para guardar la mascota
+    private firestore: Firestore, // Agregar Firestore para guardar la mascota
+    private router: Router // Añadir Router para navegación
   ) {
     this.formMascota = this.fb.group({
       nombre: ['', [Validators.required, Validators.maxLength(30)]],
@@ -115,7 +118,7 @@ export class MascotasListComponent implements OnInit {
 
   filtrarPadres(): void {
     const tipo = this.formMascota.get('perro')?.value;
-    this.machos = this.mascotasUsuario.filter(m => m.perro === tipo && m.sexo?.toLowerCase() === 'macho');
+s    this.machos = this.mascotasUsuario.filter(m => m.perro === tipo && m.sexo?.toLowerCase() === 'macho');
     this.hembras = this.mascotasUsuario.filter(m => m.perro === tipo && m.sexo?.toLowerCase() === 'hembra');
   }
 
@@ -170,10 +173,10 @@ export class MascotasListComponent implements OnInit {
 
     if (errores.length > 0) {
       this.snackBar.open(errores.join(' '), 'Cerrar', {
+        duration: 6000,
         horizontalPosition: 'center',
         verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-        duration: 6000
+        panelClass: ['snackbar-error']
       });
       this.isSubmittingMascota = false;
       return;
@@ -184,7 +187,12 @@ export class MascotasListComponent implements OnInit {
       const userData = await this.authService.getUserDataAuth().toPromise();
       const user: any = userData && (userData as any).user ? (userData as any).user : null;
       if (!user) {
-        this.snackBar.open('Usuario no autenticado.', 'Cerrar', { duration: 4000 });
+        this.snackBar.open('Usuario no autenticado.', 'Cerrar', {
+          duration: 4000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error']
+        });
         this.isSubmittingMascota = false;
         return;
       }
@@ -219,10 +227,10 @@ export class MascotasListComponent implements OnInit {
       await addDoc(collection(this.firestore, 'mascotas'), mascota);
 
       this.snackBar.open('Mascota añadida correctamente.', 'Cerrar', {
+        duration: 3000,
         horizontalPosition: 'center',
         verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-        duration: 4000
+        panelClass: ['snackbar-success']
       });
 
       this.isSubmittingMascota = false;
@@ -233,13 +241,54 @@ export class MascotasListComponent implements OnInit {
       this.activeSection = 'ver';
     } catch (error) {
       this.snackBar.open('Error al guardar la mascota.', 'Cerrar', {
+        duration: 6000,
         horizontalPosition: 'center',
         verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-        duration: 6000
+        panelClass: ['snackbar-error']
       });
       this.isSubmittingMascota = false;
       console.error(error);
     }
+  }
+
+  mostrarDetallesMascota(mascota: Mascota) {
+    this.mascotaDetalle = mascota;
+  }
+
+  cerrarDetallesMascota() {
+    this.mascotaDetalle = null;
+  }
+
+  async eliminarMascotaDetalle() {
+    if (!this.mascotaDetalle || !this.mascotaDetalle.id) return;
+    const confirmacion = confirm(`¿Deseas eliminar a ${this.mascotaDetalle.nombre}?`);
+    if (!confirmacion) return;
+    const mascotaRef = doc(this.firestore, 'mascotas', this.mascotaDetalle.id);
+    try {
+      await deleteDoc(mascotaRef);
+      this.snackBar.open('Mascota eliminada correctamente.', 'Cerrar', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+      this.cerrarDetallesMascota();
+    } catch (err) {
+      this.snackBar.open('Error al eliminar la mascota.', 'Cerrar', {
+        duration: 4000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+    }
+  }
+
+  editarMascotaDetalle() {
+    if (!this.mascotaDetalle || !this.mascotaDetalle.id) {
+      return;
+    }
+    const id = this.mascotaDetalle.id;
+    this.cerrarDetallesMascota();
+    this.router.navigate(['/mascotas', id]);
   }
 }

@@ -13,6 +13,7 @@ import { SuscripcionesComponent } from './components/suscripciones/suscripciones
 import { MisanunciosListComponent } from './components/misanuncios/misanuncios-list/misanuncios-list.component';
 import { MisanunciosDetailComponent } from './components/misanuncios/misanuncios-detail/misanuncios-detail.component';
 import { FavoritosListComponent } from './components/favoritos/favoritos-list/favoritos-list.component';
+import { MascotasDetailComponent } from './components/mascotas/mascotas-detail/mascotas-detail.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -24,6 +25,7 @@ export const routes: Routes = [
   { path: 'mis-anuncios', component: MisanunciosListComponent },
   { path: 'mis-anuncios/:id', component: MisanunciosDetailComponent },
   { path: 'mascotas', component: MascotasListComponent },
+  { path: 'mascotas/:id', component: MascotasDetailComponent },
   { path: 'publicar', component: AnunciosFormComponent },
   { path: 'favoritos', component: FavoritosListComponent },
   { path: 'suscripciones', component: SuscripcionesComponent },
