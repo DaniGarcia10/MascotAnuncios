@@ -1,52 +1,39 @@
-<div class="card mb-4 shadow-sm">
-  <div class="row g-0">
-    <!-- Imagen de la mascota (izquierda) -->
-    <div class="col-md-4 position-relative">
-      <h5 class="card-title fw-bold position-absolute top-0 start-0 bg-light px-2 py-1">
-        {{ mascota.nombre }}
-      </h5>
-      <img *ngIf="mascota.imagenes && mascota.imagenes.length > 0" 
-           [src]="mascota.imagenes[0]" 
-           class="img-fluid rounded-start w-100 object-fit-cover" 
-           alt="Imagen de la mascota" 
-           style="height: 100%; max-height: 250px;">
-      <div *ngIf="mascota.imagenes.length > 1" class="mt-2 text-center">
-        <small class="text-muted">+{{ mascota.imagenes.length - 1 }} imágenes más</small>
-      </div>
+<div class="mb-3">
+  <div class="card shadow-sm text-center" style="font-size: 0.85rem;">
+    
+    <!-- Imagen principal cuadrada -->
+    <div style="width: 100%; height: 110px; overflow: hidden;">
+      <img *ngIf="mascota.imagenes?.length"
+           [src]="mascota.imagenes[0]"
+           class="w-100 h-100 object-fit-cover"
+           alt="Mascota">
     </div>
 
-    <!-- Información de la mascota (centro) -->
-    <div class="col-md-5">
-      <div class="card-body h-100 d-flex flex-column justify-content-center">
-        <p class="card-text">{{ mascota.raza }} | {{ mascota.color }} | {{ mascota.sexo }}</p>
-        <p class="card-text">{{ mascota.descripcion }}</p>
-      </div>
-    </div>
+    <!-- Información -->
+    <div class="p-2">
+      <h6 class="fw-bold mb-1 text-truncate">{{ mascota.nombre }}</h6>
+      <p class="mb-1 small text-muted text-truncate">{{ mascota.raza }} | {{ mascota.color }} | {{ mascota.sexo }}</p>
+      <p class="mb-1 small text-truncate">{{ mascota.descripcion }}</p>
 
-    <!-- Padres (derecha, uno encima del otro) -->
-    <div class="col-md-3 d-flex flex-column justify-content-between">
-      <!-- Padre -->
-      <div *ngIf="mascota.id_padre && mascota.id_padre.trim() !== ''" class="card mb-2 position-relative" style="height: 120px;">
-        <h6 class="card-title text-primary fw-bold position-absolute top-0 start-0 bg-light px-2 py-1">
-          Padre
-        </h6>
-        <img *ngIf="padresImagenes['padre']" 
-             [src]="padresImagenes['padre']" 
-             alt="Imagen del padre" 
-             class="img-fluid w-100 h-100" 
-             style="object-fit: cover;">
-      </div>
+      <!-- Padres en fila -->
+      <div class="d-flex justify-content-center gap-3 mt-2">
+        <!-- Padre -->
+        <div *ngIf="padresImagenes['padre']" class="text-center">
+          <img [src]="padresImagenes['padre']"
+               class="rounded-circle border"
+               style="width: 50px; height: 50px; object-fit: cover;"
+               alt="Padre">
+          <div class="small mt-1">Padre</div>
+        </div>
 
-      <!-- Madre -->
-      <div *ngIf="mascota.id_madre && mascota.id_madre.trim() !== ''" class="card position-relative" style="height: 120px;">
-        <h6 class="card-title text-primary fw-bold position-absolute top-0 start-0 bg-light px-2 py-1">
-          Madre
-        </h6>
-        <img *ngIf="padresImagenes['madre']" 
-             [src]="padresImagenes['madre']" 
-             alt="Imagen de la madre" 
-             class="img-fluid w-100 h-100" 
-             style="object-fit: cover;">
+        <!-- Madre -->
+        <div *ngIf="padresImagenes['madre']" class="text-center">
+          <img [src]="padresImagenes['madre']"
+               class="rounded-circle border"
+               style="width: 50px; height: 50px; object-fit: cover;"
+               alt="Madre">
+          <div class="small mt-1">Madre</div>
+        </div>
       </div>
     </div>
   </div>

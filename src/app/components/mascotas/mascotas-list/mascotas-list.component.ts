@@ -9,6 +9,7 @@ import { AuthService } from '../../../services/auth.service';
 import { ImagenService } from '../../../services/imagen.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Firestore, collection, addDoc } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-mascotas-list',
@@ -33,7 +34,8 @@ export class MascotasListComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private imagenService: ImagenService,
-    private snackBar: MatSnackBar // Añadir MatSnackBar
+    private snackBar: MatSnackBar, // Añadir MatSnackBar
+    private firestore: Firestore // Agregar Firestore para guardar la mascota
   ) {
     this.formMascota = this.fb.group({
       nombre: ['', [Validators.required, Validators.maxLength(30)]],
@@ -82,9 +84,20 @@ export class MascotasListComponent implements OnInit {
     this.filteredRazas = [];
     this.formMascota.get('perro')?.valueChanges.subscribe(() => {
       this.updateRazasList();
+      // Habilitar o deshabilitar el control 'raza' según si hay tipo seleccionado
+      const tipo = this.formMascota.get('perro')?.value;
+      if (tipo === null || tipo === undefined) {
+        this.formMascota.get('raza')?.disable();
+      } else {
+        this.formMascota.get('raza')?.enable();
+      }
       this.formMascota.get('raza')?.setValue(null);
       this.filtrarPadres();
     });
+
+    // Inicialmente deshabilitar el control 'raza'
+    this.formMascota.get('raza')?.disable();
+
     this.formMascota.get('sexo')?.valueChanges.subscribe(() => {
       this.filtrarPadres();
     });
@@ -124,7 +137,7 @@ export class MascotasListComponent implements OnInit {
     }
   }
 
-  onSubmitMascota(): void {
+  async onSubmitMascota(): Promise<void> {
     this.isSubmittingMascota = true;
 
     // Validación de campos obligatorios
@@ -166,12 +179,67 @@ export class MascotasListComponent implements OnInit {
       return;
     }
 
-    // Aquí iría la lógica para guardar la mascota
-    setTimeout(() => {
+    // Lógica para guardar la mascota y subir imágenes
+    try {
+      const userData = await this.authService.getUserDataAuth().toPromise();
+      const user: any = userData && (userData as any).user ? (userData as any).user : null;
+      if (!user) {
+        this.snackBar.open('Usuario no autenticado.', 'Cerrar', { duration: 4000 });
+        this.isSubmittingMascota = false;
+        return;
+      }
+
+      // Subir imágenes al storage en la carpeta mascotas/{uid}/
+      const imagenesNombres: string[] = [];
+      for (const file of this.imagenesMascota) {
+        const nombreArchivo = await this.imagenService.subirImagen(
+          file,
+          'mascota',
+          user.uid
+        );
+        imagenesNombres.push(nombreArchivo);
+      }
+
+      // Construir objeto mascota
+      const mascota: any = {
+        nombre: controls['nombre'].value,
+        perro: controls['perro'].value,
+        raza: controls['raza'].value,
+        color: controls['color'].value,
+        sexo: controls['sexo'].value,
+        descripcion: controls['descripcion'].value,
+        id_padre: controls['id_padre'].value || '',
+        id_madre: controls['id_madre'].value || '',
+        imagenes: imagenesNombres,
+        id_usuario: user.uid,
+        fecha_creacion: new Date()
+      };
+
+      // Guardar mascota en Firestore
+      await addDoc(collection(this.firestore, 'mascotas'), mascota);
+
+      this.snackBar.open('Mascota añadida correctamente.', 'Cerrar', {
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+        duration: 4000
+      });
+
       this.isSubmittingMascota = false;
       this.formMascota.reset({ perro: true, sexo: 'Macho' });
       this.imagenesMascota = [];
-      // Podrías mostrar un mensaje de éxito aquí
-    }, 1000);
+      this.updateRazasList();
+      this.filtrarPadres();
+      this.activeSection = 'ver';
+    } catch (error) {
+      this.snackBar.open('Error al guardar la mascota.', 'Cerrar', {
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+        duration: 6000
+      });
+      this.isSubmittingMascota = false;
+      console.error(error);
+    }
   }
 }

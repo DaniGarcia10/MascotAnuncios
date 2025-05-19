@@ -166,7 +166,7 @@ export class AnunciosListComponent implements OnInit {
             } else if (data.address?.village) {
               this.filtros.ubicacion = data.address.village;
             } else {
-              this.filtros.ubicacion = data.display_name; // fallback
+              this.filtros.ubicacion = data.display_name;
             }
           })
           .catch((error) => {

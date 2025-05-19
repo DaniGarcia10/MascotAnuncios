@@ -3,7 +3,7 @@
   <div class="menu-lateral p-3 col-12 col-lg-3">
     <ul class="list-group">
       <li class="list-group-item" [class.active]="activeSection === 'ver'" (click)="setActiveSection('ver')">
-        Ver mascotas
+        Lista de mascotas
       </li>
       <li class="list-group-item" [class.active]="activeSection === 'add'" (click)="setActiveSection('add')">
         Añadir mascota
@@ -143,8 +143,10 @@
     <!-- Lista de mascotas -->
     <div *ngIf="activeSection === 'ver'" class="container mt-4">
       <div *ngIf="mascotas.length > 0; else noMascotas">
-        <div *ngFor="let mascota of mascotas">
-          <app-mascotas-resume [mascota]="mascota"></app-mascotas-resume>
+        <div class="row g-3">
+          <div class="col-12 col-md-6 col-lg-4 col-xl-3 col-xxl-2" *ngFor="let mascota of mascotas">
+            <app-mascotas-resume [mascota]="mascota"></app-mascotas-resume>
+          </div>
         </div>
       </div>
       <ng-template #noMascotas>
