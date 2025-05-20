@@ -98,8 +98,6 @@ export class MascotasListComponent implements OnInit {
       this.filtrarPadres();
     });
 
-    // Ya no es necesario: this.formMascota.get('raza')?.disable();
-
     // Actualizar machos y hembras al cambiar el sexo (por si acaso)
     this.formMascota.get('sexo')?.valueChanges.subscribe(() => {
       this.filtrarPadres();
@@ -146,7 +144,9 @@ export class MascotasListComponent implements OnInit {
   }
 
   async onSubmitMascota(): Promise<void> {
-    if (this.isSubmittingMascota) return;
+    if (this.isSubmittingMascota) {
+      return;
+    }
     this.isSubmittingMascota = true;
 
     // Validación de campos obligatorios
@@ -188,74 +188,86 @@ export class MascotasListComponent implements OnInit {
       return;
     }
 
-    try {
-      const userData = await this.authService.getUserDataAuth().toPromise();
-      const user: any = userData && (userData as any).user ? (userData as any).user : null;
-      if (!user) {
-        this.snackBar.open('Usuario no autenticado.', 'Cerrar', {
+    // Cambia el await por una suscripción
+    this.authService.getUserDataAuth().subscribe({
+      next: async ({ user }) => {
+        if (!user) {
+          this.snackBar.open('Usuario no autenticado.', 'Cerrar', {
+            duration: 4000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error']
+          });
+          this.isSubmittingMascota = false;
+          return;
+        }
+
+        try {
+          // Subir imágenes nuevas y obtener nombres de archivo
+          let imagenesNombres: string[] = [];
+          if (this.imagenesMascota && this.imagenesMascota.length > 0) {
+            for (const file of this.imagenesMascota) {
+              const nombreArchivo = await this.imagenService.subirImagen(
+                file,
+                'mascota',
+                user.uid
+              );
+              imagenesNombres.push(nombreArchivo);
+            }
+          }
+
+          // Construir objeto mascota
+          const mascota: any = {
+            nombre: controls['nombre'].value,
+            perro: controls['perro'].value,
+            raza: controls['raza'].value,
+            color: controls['color'].value,
+            sexo: controls['sexo'].value,
+            descripcion: controls['descripcion'].value,
+            id_padre: controls['id_padre'].value || '',
+            id_madre: controls['id_madre'].value || '',
+            imagenes: imagenesNombres,
+            id_usuario: user.uid,
+            fecha_creacion: new Date()
+          };
+
+          // Guardar mascota en Firestore
+          await addDoc(collection(this.firestore, 'mascotas'), mascota);
+
+          this.snackBar.open('Mascota añadida correctamente.', 'Cerrar', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-success']
+          });
+
+          this.formMascota.reset({ perro: true, sexo: 'Macho' });
+          this.imagenesMascota = [];
+          this.updateRazasList();
+          this.filtrarPadres();
+          this.activeSection = 'ver';
+        } catch (error) {
+          this.snackBar.open('Error al guardar la mascota.', 'Cerrar', {
+            duration: 6000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error']
+          });
+          console.error(error);
+        } finally {
+          this.isSubmittingMascota = false;
+        }
+      },
+      error: (err) => {
+        this.snackBar.open('Error al obtener usuario.', 'Cerrar', {
           duration: 4000,
           horizontalPosition: 'center',
           verticalPosition: 'top',
           panelClass: ['snackbar-error']
         });
         this.isSubmittingMascota = false;
-        return;
       }
-
-      // Subir imágenes nuevas y obtener nombres de archivo
-      let imagenesNombres: string[] = [];
-      if (this.imagenesMascota && this.imagenesMascota.length > 0) {
-        for (const file of this.imagenesMascota) {
-          const nombreArchivo = await this.imagenService.subirImagen(
-            file,
-            'mascota',
-            user.uid
-          );
-          imagenesNombres.push(nombreArchivo);
-        }
-      }
-
-      // Construir objeto mascota
-      const mascota: any = {
-        nombre: controls['nombre'].value,
-        perro: controls['perro'].value,
-        raza: controls['raza'].value,
-        color: controls['color'].value,
-        sexo: controls['sexo'].value,
-        descripcion: controls['descripcion'].value,
-        id_padre: controls['id_padre'].value || '',
-        id_madre: controls['id_madre'].value || '',
-        imagenes: imagenesNombres,
-        id_usuario: user.uid,
-        fecha_creacion: new Date()
-      };
-
-      // Guardar mascota en Firestore
-      await addDoc(collection(this.firestore, 'mascotas'), mascota);
-
-      this.snackBar.open('Mascota añadida correctamente.', 'Cerrar', {
-        duration: 3000,
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success']
-      });
-
-      this.formMascota.reset({ perro: true, sexo: 'Macho' });
-      this.imagenesMascota = [];
-      this.updateRazasList();
-      this.filtrarPadres();
-      this.activeSection = 'ver';
-    } catch (error) {
-      this.snackBar.open('Error al guardar la mascota.', 'Cerrar', {
-        duration: 6000,
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error']
-      });
-      console.error(error);
-    } finally {
-      this.isSubmittingMascota = false;
-    }
+    });
   }
 
   mostrarDetallesMascota(mascota: Mascota) {
@@ -272,6 +284,29 @@ export class MascotasListComponent implements OnInit {
     if (!confirmacion) return;
     const mascotaRef = doc(this.firestore, 'mascotas', this.mascotaDetalle.id);
     try {
+      // Eliminar imágenes del storage antes de eliminar el documento
+      if (this.mascotaDetalle.imagenes && this.mascotaDetalle.imagenes.length > 0) {
+        // Extraer nombres de archivo de las URLs o nombres simples
+        const imagenesNombres = this.mascotaDetalle.imagenes.map(img => {
+          try {
+            if (img.includes('%2F')) {
+              return decodeURIComponent(img.split('%2F').pop()?.split('?')[0] || img);
+            }
+            if (img.includes('/')) {
+              return decodeURIComponent(img.split('/').pop()?.split('?')[0] || img);
+            }
+            return img;
+          } catch {
+            return img;
+          }
+        });
+        await this.imagenService.eliminarImagenes(
+          'mascota',
+          this.mascotaDetalle.id_usuario,
+          imagenesNombres
+        );
+      }
+
       await deleteDoc(mascotaRef);
       this.snackBar.open('Mascota eliminada correctamente.', 'Cerrar', {
         duration: 3000,
