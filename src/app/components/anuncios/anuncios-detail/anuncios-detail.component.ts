@@ -29,8 +29,15 @@ export class AnunciosDetailComponent implements OnInit {
   cachorros: Cachorro[] = [];
   imagenSeleccionada: number = 0;
   cachorroSeleccionado: number | null = null;
-  imagenCachorroSeleccionada: number = 0; // NUEVO: índice de imagen seleccionada del cachorro
+  imagenCachorroSeleccionada: number = 0; 
   estiloImagenModal: { [key: string]: string } = {
+    width: 'auto',
+    height: 'auto',
+    maxWidth: '100%',
+    maxHeight: '100%',
+  };
+  // Para el zoom de la imagen del cachorro
+  estiloImagenCachorroModal: { [key: string]: string } = {
     width: 'auto',
     height: 'auto',
     maxWidth: '100%',
@@ -238,6 +245,64 @@ export class AnunciosDetailComponent implements OnInit {
     };
   }
 
+  ajustarEstiloImagenCachorro(event: Event) {
+    const imagen = event.target as HTMLImageElement;
+    if (imagen.naturalWidth > imagen.naturalHeight) {
+      this.estiloImagenCachorroModal = {
+        width: '100%',
+        height: 'auto',
+        objectFit: 'contain',
+      };
+    } else {
+      this.estiloImagenCachorroModal = {
+        width: 'auto',
+        height: '100%',
+        objectFit: 'contain',
+      };
+    }
+    this.prepararZoomCachorro(imagen);
+  }
+
+  prepararZoomCachorro(imagen: HTMLImageElement) {
+    let scale = 1;
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let lastTranslateX = 0;
+    let lastTranslateY = 0;
+
+    imagen.onwheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.1 : -0.1;
+      scale = Math.min(Math.max(1, scale + delta), 5);
+      imagen.style.transform = `scale(${scale}) translate(${lastTranslateX}px, ${lastTranslateY}px)`;
+    };
+
+    imagen.onmousedown = (e: MouseEvent) => {
+      if (scale <= 1) return;
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      imagen.style.cursor = 'grabbing';
+    };
+
+    window.onmouseup = () => {
+      isDragging = false;
+      imagen.style.cursor = 'grab';
+    };
+
+    window.onmousemove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      lastTranslateX += dx;
+      lastTranslateY += dy;
+      imagen.style.transform = `scale(${scale}) translate(${lastTranslateX}px, ${lastTranslateY}px)`;
+      startX = e.clientX;
+      startY = e.clientY;
+    };
+  }
+
   mostrarTelefono = false;
 
   verTelefono() {
@@ -290,7 +355,7 @@ export class AnunciosDetailComponent implements OnInit {
 
   abrirModalCachorro(idx: number) {
     this.cachorroSeleccionado = idx;
-    this.imagenCachorroSeleccionada = 0; // Siempre empieza por la primera imagen
+    this.imagenCachorroSeleccionada = 0;
     const modal = document.getElementById('modalCachorro');
     if (modal) {
       // @ts-ignore
@@ -325,12 +390,5 @@ export class AnunciosDetailComponent implements OnInit {
     this.imagenCachorroSeleccionada = idx;
   }
 
-  abrirModalCachorroFullscreen() {
-    const modal = document.getElementById('modalCachorroFullscreen');
-    if (modal) {
-      // @ts-ignore
-      const bsModal = bootstrap.Modal.getOrCreateInstance(modal);
-      bsModal.show();
-    }
-  }
+  // Elimina el método abrirModalCachorroFullscreen y fullscreenActivo
 }
