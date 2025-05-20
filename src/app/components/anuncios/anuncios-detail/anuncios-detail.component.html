@@ -78,7 +78,7 @@
             <div class="card shadow-sm position-relative">
               <div class="position-relative">
                 <img [src]="cachorro.imagenes[0]" class="card-img-top" alt="Imagen del cachorro"
-                  style="object-fit: cover; height: 200px; cursor:pointer;" (click)="abrirModalCachorro(idx)">
+                  style="object-fit: cover; height: 200px; cursor:pointer;" (click)="abrirModalImagen('cachorro', idx)">
                 <div *ngIf="cachorro.imagenes && cachorro.imagenes.length > 1"
                   class="position-absolute bottom-0 end-0 m-1 px-2 py-1 bg-dark text-white rounded small"
                   style="z-index: 10;">
@@ -98,42 +98,45 @@
         </div>
       </div>
 
-      <!-- Modal para imagen grande de cachorro -->
-      <!-- Modal para imagen de cachorro (pantalla completa directa) -->
+      <!-- Modal para imagen grande de cachorro/padre/madre -->
       <div class="modal fade" id="modalCachorro" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
           <div class="modal-content bg-transparent border-0 shadow-none">
             <div class="modal-body p-0 d-flex flex-column align-items-center justify-content-center bg-transparent"
               style="height: 100vh;">
 
-              <ng-container *ngIf="cachorroSeleccionado !== null">
+              <ng-container *ngIf="imagenesModal.length > 0">
+                <!-- Título -->
+                <div class="w-100 text-center text-white mb-2" style="font-size: 1.3rem;">
+                  {{ tituloModal }}
+                </div>
                 <!-- Imagen principal con navegación -->
                 <div class="position-relative w-100 d-flex justify-content-center align-items-center" style="flex: 1;">
 
                   <!-- Flecha izquierda -->
                   <button class="btn btn-light position-absolute start-0 top-50 translate-middle-y ms-2 z-3"
-                    (click)="anteriorImagenCachorro()">
+                    (click)="anteriorImagenCachorro()" [disabled]="imagenesModal.length < 2">
                     <i class="bi bi-chevron-left fs-3"></i>
                   </button>
 
                   <!-- Imagen -->
-                  <img *ngIf="cachorros[cachorroSeleccionado]?.imagenes?.[imagenCachorroSeleccionada]"
-                    [src]="cachorros[cachorroSeleccionado].imagenes[imagenCachorroSeleccionada]"
+                  <img *ngIf="imagenesModal[imagenCachorroSeleccionada]"
+                    [src]="imagenesModal[imagenCachorroSeleccionada]"
                     class="object-fit-contain"
                     style="max-width: 100vw; max-height: 90vh; width: auto; height: auto;"
-                    alt="Imagen cachorro grande"
+                    alt="Imagen grande"
                     (load)="ajustarEstiloImagenCachorro($event)">
 
                   <!-- Flecha derecha -->
                   <button class="btn btn-light position-absolute end-0 top-50 translate-middle-y me-2 z-3"
-                    (click)="siguienteImagenCachorro()">
+                    (click)="siguienteImagenCachorro()" [disabled]="imagenesModal.length < 2">
                     <i class="bi bi-chevron-right fs-3"></i>
                   </button>
                 </div>
 
                 <!-- Miniaturas -->
-                <div class="d-flex justify-content-center flex-wrap mt-3">
-                  <img *ngFor="let img of cachorros[cachorroSeleccionado].imagenes; let i = index" [src]="img"
+                <div class="d-flex justify-content-center flex-wrap mt-3" *ngIf="imagenesModal.length > 1">
+                  <img *ngFor="let img of imagenesModal; let i = index" [src]="img"
                     (click)="seleccionarImagenCachorro(i)" [class.border-primary]="i === imagenCachorroSeleccionada"
                     class="img-thumbnail m-1" style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;">
                 </div>
@@ -202,24 +205,34 @@
       </div>
 
       <!-- Card: Padre -->
-      <div *ngIf="padresImagenes['padre']" class="card shadow-sm mb-3">
+      <div *ngIf="padresImagenes['padre']?.length" class="card shadow-sm mb-3">
         <div class="position-relative" style="height: 130px;">
           <h6 class="card-title fw-bold position-absolute top-0 start-0 bg-light px-2 py-1 m-2 rounded">
             Padre
           </h6>
-          <img [src]="padresImagenes['padre']" alt="Imagen del padre" class="img-fluid w-100 h-100"
-            style="object-fit: contain;">
+          <img [src]="padresImagenes['padre'][0]" alt="Imagen del padre" class="img-fluid w-100 h-100"
+            style="object-fit: contain; cursor:pointer;" (click)="abrirModalImagen('padre')">
+          <div *ngIf="padresImagenes['padre'].length > 1"
+            class="position-absolute bottom-0 end-0 m-1 px-2 py-1 bg-dark text-white rounded small"
+            style="z-index: 10;">
+            +{{ padresImagenes['padre'].length - 1 }} imágenes más
+          </div>
         </div>
       </div>
 
       <!-- Card: Madre -->
-      <div *ngIf="padresImagenes['madre']" class="card shadow-sm mb-3">
+      <div *ngIf="padresImagenes['madre']?.length" class="card shadow-sm mb-3">
         <div class="position-relative" style="height: 130px;">
           <h6 class="card-title fw-bold position-absolute top-0 start-0 bg-light px-2 py-1 m-2 rounded">
             Madre
           </h6>
-          <img [src]="padresImagenes['madre']" alt="Imagen de la madre" class="img-fluid w-100 h-100"
-            style="object-fit: contain;">
+          <img [src]="padresImagenes['madre'][0]" alt="Imagen de la madre" class="img-fluid w-100 h-100"
+            style="object-fit: contain; cursor:pointer;" (click)="abrirModalImagen('madre')">
+          <div *ngIf="padresImagenes['madre'].length > 1"
+            class="position-absolute bottom-0 end-0 m-1 px-2 py-1 bg-dark text-white rounded small"
+            style="z-index: 10;">
+            +{{ padresImagenes['madre'].length - 1 }} imágenes más
+          </div>
         </div>
       </div>
 

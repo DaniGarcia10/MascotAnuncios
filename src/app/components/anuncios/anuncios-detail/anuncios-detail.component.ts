@@ -24,12 +24,17 @@ import { Firestore } from '@angular/fire/firestore';
 export class AnunciosDetailComponent implements OnInit {
   anuncio?: Anuncio;
   criaderoData?: Criadero;
-  padresImagenes: { [key: string]: string } = {};
+  padresImagenes: { [key: string]: string[] } = {}; 
   usuario?: { telefono: string; nombre: string };
   cachorros: Cachorro[] = [];
   imagenSeleccionada: number = 0;
   cachorroSeleccionado: number | null = null;
   imagenCachorroSeleccionada: number = 0; 
+  // NUEVO: para saber si el modal es de padre/madre
+  tipoModalImagen: 'cachorro' | 'padre' | 'madre' | null = null;
+  imagenesModal: string[] = [];
+  tituloModal: string = '';
+
   estiloImagenModal: { [key: string]: string } = {
     width: 'auto',
     height: 'auto',
@@ -79,14 +84,19 @@ export class AnunciosDetailComponent implements OnInit {
         if (this.anuncio?.id_padre && this.anuncio?.id_usuario) {
           const padre = await this.mascotasService.getMascotaByIdAndUsuario(this.anuncio.id_padre, this.anuncio.id_usuario);
           if (padre?.imagenes?.length) {
-            this.padresImagenes['padre'] = padre.imagenes[0];
+            // Si las imágenes no son URLs completas, ajusta la ruta
+            this.padresImagenes['padre'] = await this.imagenService.cargarImagenes(
+              padre.imagenes.map((img: string) => img.startsWith('http') ? img : `mascotas/${this.anuncio?.id_padre}/${img}`)
+            );
           }
         }
 
         if (this.anuncio?.id_madre && this.anuncio?.id_usuario) {
           const madre = await this.mascotasService.getMascotaByIdAndUsuario(this.anuncio.id_madre, this.anuncio.id_usuario);
           if (madre?.imagenes?.length) {
-            this.padresImagenes['madre'] = madre.imagenes[0];
+            this.padresImagenes['madre'] = await this.imagenService.cargarImagenes(
+              madre.imagenes.map((img: string) => img.startsWith('http') ? img : `mascotas/${this.anuncio?.id_madre}/${img}`)
+            );
           }
         }
 
@@ -353,8 +363,21 @@ export class AnunciosDetailComponent implements OnInit {
     }
   }
 
-  abrirModalCachorro(idx: number) {
-    this.cachorroSeleccionado = idx;
+  abrirModalImagen(tipo: 'cachorro' | 'padre' | 'madre', idx?: number) {
+    this.tipoModalImagen = tipo;
+    if (tipo === 'cachorro' && idx !== undefined) {
+      this.cachorroSeleccionado = idx;
+      this.imagenesModal = this.cachorros[idx]?.imagenes || [];
+      this.tituloModal = `${this.cachorros[idx]?.color || ''} - ${this.cachorros[idx]?.sexo || ''}`;
+    } else if (tipo === 'padre') {
+      this.cachorroSeleccionado = null;
+      this.imagenesModal = this.padresImagenes['padre'] || [];
+      this.tituloModal = 'Padre';
+    } else if (tipo === 'madre') {
+      this.cachorroSeleccionado = null;
+      this.imagenesModal = this.padresImagenes['madre'] || [];
+      this.tituloModal = 'Madre';
+    }
     this.imagenCachorroSeleccionada = 0;
     const modal = document.getElementById('modalCachorro');
     if (modal) {
@@ -365,22 +388,16 @@ export class AnunciosDetailComponent implements OnInit {
   }
 
   anteriorImagenCachorro() {
-    if (
-      this.cachorroSeleccionado !== null &&
-      this.cachorros[this.cachorroSeleccionado]?.imagenes?.length
-    ) {
-      const total = this.cachorros[this.cachorroSeleccionado].imagenes.length;
+    if (this.imagenesModal.length) {
+      const total = this.imagenesModal.length;
       this.imagenCachorroSeleccionada =
         (this.imagenCachorroSeleccionada - 1 + total) % total;
     }
   }
 
   siguienteImagenCachorro() {
-    if (
-      this.cachorroSeleccionado !== null &&
-      this.cachorros[this.cachorroSeleccionado]?.imagenes?.length
-    ) {
-      const total = this.cachorros[this.cachorroSeleccionado].imagenes.length;
+    if (this.imagenesModal.length) {
+      const total = this.imagenesModal.length;
       this.imagenCachorroSeleccionada =
         (this.imagenCachorroSeleccionada + 1) % total;
     }
