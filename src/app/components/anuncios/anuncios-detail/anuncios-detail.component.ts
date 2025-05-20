@@ -28,6 +28,8 @@ export class AnunciosDetailComponent implements OnInit {
   usuario?: { telefono: string; nombre: string };
   cachorros: Cachorro[] = [];
   imagenSeleccionada: number = 0;
+  cachorroSeleccionado: number | null = null;
+  imagenCachorroSeleccionada: number = 0; // NUEVO: índice de imagen seleccionada del cachorro
   estiloImagenModal: { [key: string]: string } = {
     width: 'auto',
     height: 'auto',
@@ -283,6 +285,52 @@ export class AnunciosDetailComponent implements OnInit {
         await setDoc(docRef, { id_anuncio: [this.idAnuncioActual] });
       }
       this.esFavorito = true;
+    }
+  }
+
+  abrirModalCachorro(idx: number) {
+    this.cachorroSeleccionado = idx;
+    this.imagenCachorroSeleccionada = 0; // Siempre empieza por la primera imagen
+    const modal = document.getElementById('modalCachorro');
+    if (modal) {
+      // @ts-ignore
+      const bsModal = bootstrap.Modal.getOrCreateInstance(modal);
+      bsModal.show();
+    }
+  }
+
+  anteriorImagenCachorro() {
+    if (
+      this.cachorroSeleccionado !== null &&
+      this.cachorros[this.cachorroSeleccionado]?.imagenes?.length
+    ) {
+      const total = this.cachorros[this.cachorroSeleccionado].imagenes.length;
+      this.imagenCachorroSeleccionada =
+        (this.imagenCachorroSeleccionada - 1 + total) % total;
+    }
+  }
+
+  siguienteImagenCachorro() {
+    if (
+      this.cachorroSeleccionado !== null &&
+      this.cachorros[this.cachorroSeleccionado]?.imagenes?.length
+    ) {
+      const total = this.cachorros[this.cachorroSeleccionado].imagenes.length;
+      this.imagenCachorroSeleccionada =
+        (this.imagenCachorroSeleccionada + 1) % total;
+    }
+  }
+
+  seleccionarImagenCachorro(idx: number) {
+    this.imagenCachorroSeleccionada = idx;
+  }
+
+  abrirModalCachorroFullscreen() {
+    const modal = document.getElementById('modalCachorroFullscreen');
+    if (modal) {
+      // @ts-ignore
+      const bsModal = bootstrap.Modal.getOrCreateInstance(modal);
+      bsModal.show();
     }
   }
 }

@@ -12,11 +12,12 @@ import { Cachorro } from '../../../models/Cachorro.model';
 import { Criadero } from '../../../models/Criadero.model';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { Mascota } from '../../../models/Mascota.model';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-misanuncios-detail',
-  imports: [CommonModule, NgSelectModule, FormsModule],
+  imports: [CommonModule, NgSelectModule, FormsModule, ReactiveFormsModule],
   templateUrl: './misanuncios-detail.component.html',
   styleUrls: ['./misanuncios-detail.component.css']
 })
@@ -43,6 +44,13 @@ export class MisanunciosDetailComponent implements OnInit {
   nuevoPadreId: string | null = null;
   nuevaMadreId: string | null = null;
 
+  // Variables para el modal de edición de cachorro
+  modalCachorroAbierto: boolean = false;
+  cachorroEditando?: Cachorro;
+  formCachorro?: FormGroup;
+  indexCachorroEditando: number = -1;
+  imagenSeleccionadaCachorro: number = 0;
+
   constructor(
     private route: ActivatedRoute,
     private anunciosService: AnunciosService,
@@ -50,7 +58,8 @@ export class MisanunciosDetailComponent implements OnInit {
     private usuarioService: UsuarioService,
     private criaderoService: CriaderoService,
     private cachorrosService: CachorrosService,
-    private imagenService: ImagenService
+    private imagenService: ImagenService,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
@@ -192,22 +201,60 @@ export class MisanunciosDetailComponent implements OnInit {
     this.anuncio?.imagenes.push(imagen);
   }
 
+  // Flechas para navegar entre imágenes del cachorro
+  anteriorImagenCachorro() {
+    const imagenes = this.formCachorro?.get('imagenes')?.value || [];
+    if (imagenes.length > 1) {
+      this.imagenSeleccionadaCachorro =
+        (this.imagenSeleccionadaCachorro - 1 + imagenes.length) % imagenes.length;
+    }
+  }
+
+  siguienteImagenCachorro() {
+    const imagenes = this.formCachorro?.get('imagenes')?.value || [];
+    if (imagenes.length > 1) {
+      this.imagenSeleccionadaCachorro =
+        (this.imagenSeleccionadaCachorro + 1) % imagenes.length;
+    }
+  }
+
+  seleccionarImagenCachorro(index: number) {
+    this.imagenSeleccionadaCachorro = index;
+  }
+
+  eliminarImagenCachorro(index: number) {
+    const imagenes = this.formCachorro?.get('imagenes')?.value || [];
+    if (imagenes.length <= 1) return; // No permitir borrar la última
+    imagenes.splice(index, 1);
+    this.formCachorro?.get('imagenes')?.setValue([...imagenes]);
+    // Ajustar imagenSeleccionadaCachorro si es necesario
+    if (this.imagenSeleccionadaCachorro >= imagenes.length) {
+      this.imagenSeleccionadaCachorro = Math.max(0, imagenes.length - 1);
+    }
+  }
+
   anteriorImagen() {
-    if (this.anuncio?.imagenes?.length) {
+    const imagenes = this.formCachorro?.get('imagenes')?.value || [];
+    if (imagenes.length > 1) {
       this.imagenSeleccionada =
-        (this.imagenSeleccionada - 1 + this.anuncio.imagenes.length) % this.anuncio.imagenes.length;
+        (this.imagenSeleccionada - 1 + imagenes.length) % imagenes.length;
     }
   }
 
   siguienteImagen() {
-    if (this.anuncio?.imagenes?.length) {
+    const imagenes = this.formCachorro?.get('imagenes')?.value || [];
+    if (imagenes.length > 1) {
       this.imagenSeleccionada =
-        (this.imagenSeleccionada + 1) % this.anuncio.imagenes.length;
+        (this.imagenSeleccionada + 1) % imagenes.length;
     }
   }
 
   seleccionarImagen(index: number) {
     this.imagenSeleccionada = index;
+  }
+
+  editarAnuncio() {
+    console.log('Editar anuncio:', this.anuncio);
   }
 
   compartirAnuncio() {
@@ -224,12 +271,69 @@ export class MisanunciosDetailComponent implements OnInit {
     }
   }
 
-  editarAnuncio() {
-    console.log('Editar anuncio:', this.anuncio);
+  editarCachorro(id: string) {
+    // Busca el cachorro por id
+    const index = this.cachorros.findIndex(c => c.id === id);
+    if (index === -1) return;
+    this.cachorroEditando = { ...this.cachorros[index] };
+    this.indexCachorroEditando = index;
+    this.formCachorro = this.fb.group({
+      color: [this.cachorroEditando.color, []],
+      sexo: [this.cachorroEditando.sexo, [Validators.required]],
+      precio: [this.cachorroEditando.precio, [Validators.required]],
+      disponible: [this.cachorroEditando.disponible],
+      descripcion: [this.cachorroEditando.descripcion],
+      imagenes: [this.cachorroEditando.imagenes, [Validators.required]],
+    });
+    this.imagenSeleccionadaCachorro = 0;
+    this.modalCachorroAbierto = true;
+    setTimeout(() => {
+      const modal = document.getElementById('modalEditarCachorro');
+      if (modal) {
+        // @ts-ignore
+        const bsModal = new window.bootstrap.Modal(modal);
+        bsModal.show();
+      }
+    }, 0);
   }
 
-  editarCachorro(id: string) {
-    console.log('Editar cachorro con ID:', id);
+  cerrarModalCachorro() {
+    this.modalCachorroAbierto = false;
+    this.cachorroEditando = undefined;
+    this.indexCachorroEditando = -1;
+    this.formCachorro = undefined;
+  }
+
+  async guardarCachorroEditado() {
+    if (!this.formCachorro || this.formCachorro.invalid || this.indexCachorroEditando === -1) return;
+    const valores = this.formCachorro.value;
+    this.cachorros[this.indexCachorroEditando] = {
+      ...this.cachorros[this.indexCachorroEditando],
+      ...valores
+    };
+    this.cerrarModalCachorro();
+    // Aquí puedes llamar a un servicio para guardar en backend si lo necesitas
+  }
+
+  onCachorroFileSelected(event: any) {
+    const files: FileList = event.target.files;
+    if (!files || files.length === 0) return;
+    const imagenesActuales = this.formCachorro?.get('imagenes')?.value || [];
+    const nuevasImagenes: any[] = [];
+    let leidas = 0;
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        nuevasImagenes.push(e.target.result);
+        leidas++;
+        if (leidas === files.length) {
+          this.formCachorro?.get('imagenes')?.setValue([...imagenesActuales, ...nuevasImagenes]);
+          this.formCachorro?.get('imagenes')?.markAsTouched();
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   ajustarEstiloImagen(event: Event) {

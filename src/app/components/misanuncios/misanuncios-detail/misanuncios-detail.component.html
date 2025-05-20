@@ -238,3 +238,101 @@
     </div>
   </div>
 </div>
+
+<!-- Modal para editar cachorro -->
+<div class="modal fade" id="modalEditarCachorro" tabindex="-1" aria-labelledby="modalEditarCachorroLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" *ngIf="formCachorro">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEditarCachorroLabel">Editar cachorro</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" (click)="cerrarModalCachorro()"></button>
+      </div>
+      <form [formGroup]="formCachorro" (ngSubmit)="guardarCachorroEditado()">
+        <div class="modal-body">
+          <!-- Imagen grande principal con flechas y cruz roja para eliminar -->
+          <div class="text-center mb-3" *ngIf="formCachorro.get('imagenes')?.value?.length">
+            <div class="d-flex justify-content-center align-items-center position-relative" style="height:220px;">
+              <button *ngIf="formCachorro.get('imagenes')?.value.length > 1"
+                      type="button"
+                      class="btn btn-light position-absolute start-0 top-50 translate-middle-y"
+                      style="z-index:10;width:36px;height:36px;padding:0;"
+                      (click)="anteriorImagenCachorro()">
+                <i class="bi bi-chevron-left fs-4"></i>
+              </button>
+              <img [src]="formCachorro.get('imagenes')?.value[imagenSeleccionadaCachorro || 0]"
+                   alt="Imagen cachorro"
+                   class="rounded mb-2 shadow"
+                   style="width:220px;max-width:100%;height:220px;object-fit:cover;">
+              <!-- Cruz roja para eliminar la imagen grande -->
+              <button type="button"
+                      class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-1"
+                      style="border-radius:50%;line-height:1;width:28px;height:28px;z-index:20;"
+                      (click)="eliminarImagenCachorro(imagenSeleccionadaCachorro); $event.stopPropagation();"
+                      title="Eliminar imagen">
+                &times;
+              </button>
+              <button *ngIf="formCachorro.get('imagenes')?.value.length > 1"
+                      type="button"
+                      class="btn btn-light position-absolute end-0 top-50 translate-middle-y"
+                      style="z-index:10;width:36px;height:36px;padding:0;"
+                      (click)="siguienteImagenCachorro()">
+                <i class="bi bi-chevron-right fs-4"></i>
+              </button>
+            </div>
+          </div>
+          <!-- Miniaturas con cruz roja para eliminar -->
+          <div class="d-flex justify-content-center flex-wrap mb-2" *ngIf="formCachorro.get('imagenes')?.value?.length">
+            <div class="position-relative m-1" *ngFor="let img of formCachorro.get('imagenes')?.value; let i = index">
+              <img [src]="img"
+                   (click)="seleccionarImagenCachorro(i)"
+                   [class.border-primary]="i === imagenSeleccionadaCachorro"
+                   class="img-thumbnail"
+                   style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;">
+              <button type="button"
+                      class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-1"
+                      style="border-radius:50%;line-height:1;width:20px;height:20px;z-index:20;"
+                      (click)="eliminarImagenCachorro(i); $event.stopPropagation();"
+                      title="Eliminar imagen">
+                &times;
+              </button>
+            </div>
+          </div>
+          <!-- Añadir imágenes -->
+          <div class="mb-3">
+            <label class="form-label mb-1">Añadir imágenes:</label>
+            <input type="file" class="form-control" (change)="onCachorroFileSelected($event)" multiple>
+            <div *ngIf="formCachorro.get('imagenes')?.invalid && formCachorro.get('imagenes')?.touched" class="text-danger">Debe subir al menos una imagen.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Color:</label>
+            <input type="text" class="form-control" formControlName="color">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Sexo:</label>
+            <select class="form-select" formControlName="sexo">
+              <option value="Macho">Macho</option>
+              <option value="Hembra">Hembra</option>
+            </select>
+            <div *ngIf="formCachorro.get('sexo')?.invalid && formCachorro.get('sexo')?.touched" class="text-danger">El sexo es obligatorio.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Precio:</label>
+            <input type="number" class="form-control" formControlName="precio">
+            <div *ngIf="formCachorro.get('precio')?.invalid && formCachorro.get('precio')?.touched" class="text-danger">El precio es obligatorio.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Disponible:</label>
+            <input type="checkbox" class="form-check-input" formControlName="disponible">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Descripción:</label>
+            <textarea class="form-control" formControlName="descripcion"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success" [disabled]="formCachorro.invalid">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

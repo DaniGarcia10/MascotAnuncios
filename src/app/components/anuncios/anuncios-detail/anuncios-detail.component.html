@@ -79,9 +79,18 @@
       <div *ngIf="cachorros.length > 0" class="mt-4">
         <h3 class="card-title fw-bold">Cachorros disponibles</h3>
         <div class="row">
-          <div *ngFor="let cachorro of cachorros" class="col-md-4 mb-3">
-            <div class="card shadow-sm">
-              <img [src]="cachorro.imagenes[0]" class="card-img-top" alt="Imagen del cachorro" style="object-fit: cover; height: 200px;">
+          <div *ngFor="let cachorro of cachorros; let idx = index" class="col-md-4 mb-3">
+            <div class="card shadow-sm position-relative">
+              <div class="position-relative">
+                <img [src]="cachorro.imagenes[0]" class="card-img-top" alt="Imagen del cachorro"
+                  style="object-fit: cover; height: 200px; cursor:pointer;"
+                  (click)="abrirModalCachorro(idx)">
+                <div *ngIf="cachorro.imagenes && cachorro.imagenes.length > 1"
+                     class="position-absolute bottom-0 end-0 m-1 px-2 py-1 bg-dark text-white rounded small"
+                     style="z-index: 10;">
+                  +{{ cachorro.imagenes.length - 1 }} imágenes más
+                </div>
+              </div>
               <div class="card-body">
                 <h5 class="card-title">{{ cachorro.color }} - {{ cachorro.sexo }}</h5>
                 <p class="card-text">
@@ -91,6 +100,72 @@
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal para imagen grande de cachorro -->
+      <div class="modal fade" id="modalCachorro" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content custom-card">
+            <div class="modal-body d-flex flex-column align-items-center p-0" style="min-height: 400px;">
+              <ng-container *ngIf="cachorroSeleccionado !== null">
+                <div class="d-flex justify-content-center align-items-center position-relative w-100" style="min-height: 400px;">
+                  <!-- Botón de pantalla completa a la izquierda -->
+                  <button class="btn btn-light position-absolute top-0 start-0 m-2"
+                    (click)="abrirModalCachorroFullscreen()"
+                    style="z-index: 10;">
+                    <i class="bi bi-arrows-fullscreen fs-5"></i>
+                  </button>
+                  <button class="btn btn-light position-absolute start-0" style="z-index: 10; width: 50px; height: 50px; top: 50%; transform: translateY(-50%); left: 60px;"
+                    (click)="anteriorImagenCachorro()">
+                    <i class="bi bi-chevron-left fs-3"></i>
+                  </button>
+                  <div class="position-relative w-100 d-flex justify-content-center">
+                    <img *ngIf="cachorros[cachorroSeleccionado]?.imagenes?.[imagenCachorroSeleccionada]"
+                      [src]="cachorros[cachorroSeleccionado].imagenes[imagenCachorroSeleccionada]"
+                      class="img-fluid rounded"
+                      style="max-height: 80vh; object-fit: contain;"
+                      alt="Imagen cachorro grande">
+                  </div>
+                  <button class="btn btn-light position-absolute end-0" style="z-index: 10; width: 50px; height: 50px; top: 50%; transform: translateY(-50%);"
+                    (click)="siguienteImagenCachorro()">
+                    <i class="bi bi-chevron-right fs-3"></i>
+                  </button>
+                </div>
+                <!-- Miniaturas debajo -->
+                <div class="d-flex justify-content-center flex-wrap mt-3">
+                  <img *ngFor="let img of cachorros[cachorroSeleccionado].imagenes; let i = index"
+                    [src]="img"
+                    (click)="seleccionarImagenCachorro(i)"
+                    [class.border-primary]="i === imagenCachorroSeleccionada"
+                    class="img-thumbnail m-1"
+                    style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;">
+                </div>
+              </ng-container>
+            </div>
+            <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+              data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal fullscreen para imagen de cachorro -->
+      <div class="modal fade" id="modalCachorroFullscreen" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+          <div class="modal-content custom-card">
+            <div class="modal-body p-0 d-flex justify-content-center align-items-center bg-dark"
+              style="height: 100vh; overflow: auto;">
+              <ng-container *ngIf="cachorroSeleccionado !== null">
+                <img *ngIf="cachorros[cachorroSeleccionado]?.imagenes?.[imagenCachorroSeleccionada]"
+                  [src]="cachorros[cachorroSeleccionado].imagenes[imagenCachorroSeleccionada]"
+                  class="img-fluid rounded"
+                  style="max-height: 95vh; object-fit: contain;"
+                  alt="Imagen cachorro grande fullscreen">
+              </ng-container>
+            </div>
+            <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+              data-bs-dismiss="modal" aria-label="Cerrar"></button>
           </div>
         </div>
       </div>
