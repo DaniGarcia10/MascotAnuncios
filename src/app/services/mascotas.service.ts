@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, doc, getDoc, collection, collectionData } from '@angular/fire/firestore';
+import { Firestore, doc, getDoc, collection, collectionData, query, where, getDocs } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Mascota } from '../models/Mascota.model';
 import { ImagenService } from './imagen.service';
@@ -69,5 +69,28 @@ export class MascotasService {
   getMascotas(): Observable<Mascota[]> {
     const mascotasCollection = collection(this.firestore, this.COLLECTION_NAME);
     return collectionData(mascotasCollection, { idField: 'id' }) as Observable<Mascota[]>;
+  }
+
+  /**
+   * Obtiene todas las mascotas de un usuario por su ID.
+   * @param idUsuario ID del usuario propietario de las mascotas
+   */
+  async getMascotasByUsuarioId(idUsuario: string): Promise<Mascota[]> {
+    const mascotasCollection = collection(this.firestore, this.COLLECTION_NAME);
+    const q = query(mascotasCollection, where('id_usuario', '==', idUsuario));
+    const querySnapshot = await getDocs(q);
+
+    const mascotas: Mascota[] = [];
+    for (const docSnap of querySnapshot.docs) {
+      const mascota = docSnap.data() as Mascota;
+      mascota.id = docSnap.id;
+      // Cargar imágenes si existen
+      if (mascota.imagenes && mascota.imagenes.length > 0) {
+        const imagenesConRuta = mascota.imagenes.map(img => `mascotas/${idUsuario}/${img}`);
+        mascota.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
+      }
+      mascotas.push(mascota);
+    }
+    return mascotas;
   }
 }

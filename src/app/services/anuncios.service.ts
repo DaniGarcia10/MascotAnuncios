@@ -131,4 +131,18 @@ export class AnunciosService {
       await addDoc(cachorrosRef, { ...cachorro, id_anuncio });
     }
   }
+
+  /**
+   * Actualiza los campos id_padre e id_madre de un anuncio.
+   * @param idAnuncio ID del anuncio
+   * @param idPadre ID del padre
+   * @param idMadre ID de la madre
+   */
+  async actualizarPadres(idAnuncio: string, idPadre: string, idMadre: string): Promise<void> {
+    const anuncioDocRef = doc(this.firestore, 'anuncios', idAnuncio);
+    await updateDoc(anuncioDocRef, {
+      id_padre: idPadre,
+      id_madre: idMadre
+    });
+  }
 }

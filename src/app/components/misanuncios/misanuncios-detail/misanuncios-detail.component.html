@@ -137,8 +137,17 @@
         </div>
       </div>
 
+      <!-- Card: Añadir padres -->
+      <div *ngIf="!anuncio?.id_padre && !anuncio?.id_madre" class="card text-center my-3 p-3" style="cursor:pointer;" (click)="abrirModalPadres('padre')">
+        <div class="card-body">
+          <h5 class="card-title">Añadir padres</h5>
+          <p class="card-text text-muted">Haz clic aquí para seleccionar los padres de la camada.</p>
+          <i class="bi bi-plus-circle" style="font-size: 2rem;"></i>
+        </div>
+      </div>
+
       <!-- Card: Padre -->
-      <div *ngIf="padresImagenes['padre']" class="card shadow-sm mb-3 clickable" (click)="editarPadres('padre')">
+      <div *ngIf="padresImagenes['padre']" class="card shadow-sm mb-3 clickable" (click)="abrirModalPadres('padre')">
         <div class="position-relative" style="height: 130px;">
           <h6 class="card-title fw-bold position-absolute top-0 start-0 bg-light px-2 py-1 m-2 rounded">
             Padre
@@ -149,7 +158,7 @@
       </div>
 
       <!-- Card: Madre -->
-      <div *ngIf="padresImagenes['madre']" class="card shadow-sm mb-3 clickable" (click)="editarPadres('madre')">
+      <div *ngIf="padresImagenes['madre']" class="card shadow-sm mb-3 clickable" (click)="abrirModalPadres('madre')">
         <div class="position-relative" style="height: 130px;">
           <h6 class="card-title fw-bold position-absolute top-0 start-0 bg-light px-2 py-1 m-2 rounded">
             Madre
@@ -158,6 +167,67 @@
             class="img-fluid w-100 h-100" style="object-fit: contain;">
         </div>
       </div>
+
+      <!-- Modal para seleccionar padres -->
+<div class="modal fade" id="modalPadres" tabindex="-1" aria-labelledby="modalPadresLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalPadresLabel">Seleccionar padres</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Padre:</label>
+          <ng-select
+            [items]="machos"
+            bindLabel="nombre"
+            bindValue="id"
+            [(ngModel)]="nuevoPadreId"
+            placeholder="Selecciona un padre"
+            [searchable]="false"
+            [clearable]="true">
+            <ng-template ng-option-tmp let-item="item">
+              <div class="d-flex align-items-center">
+                <img [src]="item.imagenes[0]" alt="Foto" class="me-2" width="40" height="40">
+                <div>
+                  <div>{{ item.nombre }}</div>
+                  <small>{{ item.raza }} - {{ item.color }}</small>
+                </div>
+              </div>
+            </ng-template>
+          </ng-select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Madre:</label>
+          <ng-select
+            [items]="hembras"
+            bindLabel="nombre"
+            bindValue="id"
+            [(ngModel)]="nuevaMadreId"
+            placeholder="Selecciona una madre"
+            [searchable]="false"
+            [clearable]="true">
+            <ng-template ng-option-tmp let-item="item">
+              <div class="d-flex align-items-center">
+                <img [src]="item.imagenes[0]" alt="Foto" class="me-2" width="40" height="40">
+                <div>
+                  <div>{{ item.nombre }}</div>
+                  <small>{{ item.raza }} - {{ item.color }}</small>
+                </div>
+              </div>
+            </ng-template>
+          </ng-select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-default" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-success" (click)="guardarPadres()" data-bs-dismiss="modal">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
       <!-- Card: Botones de acción -->
       <div class="card shadow-sm" style="padding: 0.75rem;">
