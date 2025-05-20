@@ -55,8 +55,7 @@
                   bindValue="value"
                   formControlName="raza"
                   placeholder="Selecciona raza"
-                  class="custom-ng-select"
-                  [disabled]="!formMascota.get('perro')?.value">
+                  class="custom-ng-select">
                 </ng-select>
                 <div *ngIf="formMascota.get('raza')?.invalid && formMascota.get('raza')?.touched" class="text-danger">
                   <small>La raza es obligatoria.</small>

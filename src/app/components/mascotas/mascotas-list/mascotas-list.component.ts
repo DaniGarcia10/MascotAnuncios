@@ -43,7 +43,7 @@ export class MascotasListComponent implements OnInit {
     this.formMascota = this.fb.group({
       nombre: ['', [Validators.required, Validators.maxLength(30)]],
       perro: [null, Validators.required],
-      raza: [null, [Validators.required]],
+      raza: [{ value: null, disabled: true }, [Validators.required]], // Inicialmente deshabilitado
       color: ['', [Validators.required, Validators.maxLength(20)]],
       sexo: [null, Validators.required],
       descripcion: ['', [Validators.maxLength(200)]],
@@ -98,9 +98,9 @@ export class MascotasListComponent implements OnInit {
       this.filtrarPadres();
     });
 
-    // Inicialmente deshabilitar el control 'raza'
-    this.formMascota.get('raza')?.disable();
+    // Ya no es necesario: this.formMascota.get('raza')?.disable();
 
+    // Actualizar machos y hembras al cambiar el sexo (por si acaso)
     this.formMascota.get('sexo')?.valueChanges.subscribe(() => {
       this.filtrarPadres();
     });
@@ -117,17 +117,22 @@ export class MascotasListComponent implements OnInit {
   }
 
   filtrarPadres(): void {
+    // Filtra machos y hembras según el tipo seleccionado
     const tipo = this.formMascota.get('perro')?.value;
-s    this.machos = this.mascotasUsuario.filter(m => m.perro === tipo && m.sexo?.toLowerCase() === 'macho');
+    this.machos = this.mascotasUsuario.filter(m => m.perro === tipo && m.sexo?.toLowerCase() === 'macho');
     this.hembras = this.mascotasUsuario.filter(m => m.perro === tipo && m.sexo?.toLowerCase() === 'hembra');
   }
 
   seleccionarPadre(event: any): void {
-    this.formMascota.get('id_padre')?.setValue(event || '');
+    // Permitir tanto objeto como id (igual que en detail)
+    const id = typeof event === 'string' ? event : event?.id;
+    this.formMascota.get('id_padre')?.setValue(id || '');
   }
 
   seleccionarMadre(event: any): void {
-    this.formMascota.get('id_madre')?.setValue(event || '');
+    // Permitir tanto objeto como id (igual que en detail)
+    const id = typeof event === 'string' ? event : event?.id;
+    this.formMascota.get('id_madre')?.setValue(id || '');
   }
 
   setActiveSection(section: string): void {
@@ -141,6 +146,7 @@ s    this.machos = this.mascotasUsuario.filter(m => m.perro === tipo && m.sexo?.
   }
 
   async onSubmitMascota(): Promise<void> {
+    if (this.isSubmittingMascota) return;
     this.isSubmittingMascota = true;
 
     // Validación de campos obligatorios
@@ -182,7 +188,6 @@ s    this.machos = this.mascotasUsuario.filter(m => m.perro === tipo && m.sexo?.
       return;
     }
 
-    // Lógica para guardar la mascota y subir imágenes
     try {
       const userData = await this.authService.getUserDataAuth().toPromise();
       const user: any = userData && (userData as any).user ? (userData as any).user : null;
@@ -197,15 +202,17 @@ s    this.machos = this.mascotasUsuario.filter(m => m.perro === tipo && m.sexo?.
         return;
       }
 
-      // Subir imágenes al storage en la carpeta mascotas/{uid}/
-      const imagenesNombres: string[] = [];
-      for (const file of this.imagenesMascota) {
-        const nombreArchivo = await this.imagenService.subirImagen(
-          file,
-          'mascota',
-          user.uid
-        );
-        imagenesNombres.push(nombreArchivo);
+      // Subir imágenes nuevas y obtener nombres de archivo
+      let imagenesNombres: string[] = [];
+      if (this.imagenesMascota && this.imagenesMascota.length > 0) {
+        for (const file of this.imagenesMascota) {
+          const nombreArchivo = await this.imagenService.subirImagen(
+            file,
+            'mascota',
+            user.uid
+          );
+          imagenesNombres.push(nombreArchivo);
+        }
       }
 
       // Construir objeto mascota
@@ -233,7 +240,6 @@ s    this.machos = this.mascotasUsuario.filter(m => m.perro === tipo && m.sexo?.
         panelClass: ['snackbar-success']
       });
 
-      this.isSubmittingMascota = false;
       this.formMascota.reset({ perro: true, sexo: 'Macho' });
       this.imagenesMascota = [];
       this.updateRazasList();
@@ -246,8 +252,9 @@ s    this.machos = this.mascotasUsuario.filter(m => m.perro === tipo && m.sexo?.
         verticalPosition: 'top',
         panelClass: ['snackbar-error']
       });
-      this.isSubmittingMascota = false;
       console.error(error);
+    } finally {
+      this.isSubmittingMascota = false;
     }
   }
 
