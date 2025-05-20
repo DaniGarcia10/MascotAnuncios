@@ -242,13 +242,22 @@
 <!-- Modal para editar cachorro -->
 <div class="modal fade" id="modalEditarCachorro" tabindex="-1" aria-labelledby="modalEditarCachorroLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <div class="modal-content" *ngIf="formCachorro">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalEditarCachorroLabel">Editar cachorro</h5>
+    <div class="modal-content card custom-card" *ngIf="formCachorro">
+      <div class="modal-header card-header custom-card-header">
+        <h5>
+          <div class="mb-3">
+            <button type="button"
+                    class="btn btn-sm"
+                    [ngClass]="formCachorro?.get('disponible')?.value ? 'btn-success' : 'btn-danger'"
+                    (click)="cambiarDisponibilidadCachorro()">
+              {{ formCachorro?.get('disponible')?.value ? 'Disponible' : 'RESERVADO' }}
+            </button>
+          </div>
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" (click)="cerrarModalCachorro()"></button>
       </div>
       <form [formGroup]="formCachorro" (ngSubmit)="guardarCachorroEditado()">
-        <div class="modal-body">
+        <div class="modal-body card-body custom-card-body">
           <!-- Imagen grande principal con flechas y cruz roja para eliminar -->
           <div class="text-center mb-3" *ngIf="formCachorro.get('imagenes')?.value?.length">
             <div class="d-flex justify-content-center align-items-center position-relative" style="height:220px;">
@@ -321,16 +330,12 @@
             <div *ngIf="formCachorro.get('precio')?.invalid && formCachorro.get('precio')?.touched" class="text-danger">El precio es obligatorio.</div>
           </div>
           <div class="mb-3">
-            <label class="form-label">Disponible:</label>
-            <input type="checkbox" class="form-check-input" formControlName="disponible">
-          </div>
-          <div class="mb-3">
             <label class="form-label">Descripción:</label>
             <textarea class="form-control" formControlName="descripcion"></textarea>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-success" [disabled]="formCachorro.invalid">Guardar</button>
+        <div class="modal-footer d-flex justify-content-end">
+          <button type="submit" class="btn-default" [disabled]="formCachorro.invalid">Guardar</button>
         </div>
       </form>
     </div>

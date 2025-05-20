@@ -364,4 +364,17 @@ export class MisanunciosDetailComponent implements OnInit {
     const dias = Math.floor(horas / 24);
     return `${dias} días`;
   }
+
+  async cambiarDisponibilidadCachorro() {
+    if (!this.formCachorro) return;
+    const actual = this.formCachorro.get('disponible')?.value;
+    const nuevo = !actual;
+    this.formCachorro.get('disponible')?.setValue(nuevo);
+    if (this.indexCachorroEditando !== -1) {
+      this.cachorros[this.indexCachorroEditando].disponible = nuevo;
+    }
+    if (this.cachorroEditando?.id) {
+      await this.cachorrosService.actualizarDisponibilidad(this.cachorroEditando.id, nuevo);
+    }
+  }
 }
