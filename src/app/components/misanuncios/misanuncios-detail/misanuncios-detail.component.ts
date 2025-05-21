@@ -52,6 +52,10 @@ export class MisanunciosDetailComponent implements OnInit {
   imagenSeleccionadaCachorro: number = 0;
   isGuardandoCachorro: boolean = false;
 
+  // Añade una variable para almacenar los archivos seleccionados
+  nuevasImagenesCachorro: File[] = [];
+  imagenesOriginalesCachorro: string[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private anunciosService: AnunciosService,
@@ -223,9 +227,11 @@ export class MisanunciosDetailComponent implements OnInit {
     this.imagenSeleccionadaCachorro = index;
   }
 
-  eliminarImagenCachorro(index: number) {
+  async eliminarImagenCachorro(index: number) {
     const imagenes = this.formCachorro?.get('imagenes')?.value || [];
     if (imagenes.length <= 1) return; // No permitir borrar la última
+
+    // Solo elimina del array, NO del storage aquí
     imagenes.splice(index, 1);
     this.formCachorro?.get('imagenes')?.setValue([...imagenes]);
     // Ajustar imagenSeleccionadaCachorro si es necesario
@@ -272,21 +278,14 @@ export class MisanunciosDetailComponent implements OnInit {
     }
   }
 
-  // Devuelve la URL de visualización para una imagen de cachorro (nombre o url)
-  getUrlImagenCachorro(img: string): string {
-    if (!img) return '';
-    if (img.startsWith('http')) return img;
-    if (img.startsWith('data:image')) return img;
-    return `https://firebasestorage.googleapis.com/v0/b/mascotanunicos.firebasestorage.app/o/cachorros%2F${this.anuncio?.id}%2F${encodeURIComponent(img)}?alt=media`;
-  }
-
-  editarCachorro(id: string) {
+  async editarCachorro(id: string) {
     // Busca el cachorro por id
     const index = this.cachorros.findIndex(c => c.id === id);
     if (index === -1) return;
     this.cachorroEditando = { ...this.cachorros[index] };
     this.indexCachorroEditando = index;
-    // Solo nombres/base64, nunca URLs completas
+
+    // Convertir nombres de imagen a URLs públicas para el modal
     let imagenesSoloNombre = (this.cachorroEditando.imagenes || []).map((img: string) => {
       if (!img) return '';
       if (img.startsWith('http')) {
@@ -301,13 +300,23 @@ export class MisanunciosDetailComponent implements OnInit {
       }
       return img;
     });
+
+    // Guarda las imágenes originales para poder comparar al guardar
+    this.imagenesOriginalesCachorro = [...imagenesSoloNombre];
+
+    // Obtener URLs públicas para mostrar en el modal
+    const imagenesConRuta = imagenesSoloNombre.map(nombre =>
+      nombre.startsWith('http') ? nombre : `cachorros/${this.anuncio?.id}/${nombre}`
+    );
+    const imagenesParaMostrar = await this.imagenService.cargarImagenes(imagenesConRuta);
+
     this.formCachorro = this.fb.group({
       color: [this.cachorroEditando.color, []],
       sexo: [this.cachorroEditando.sexo, [Validators.required]],
       precio: [this.cachorroEditando.precio, [Validators.required]],
       disponible: [this.cachorroEditando.disponible],
       descripcion: [this.cachorroEditando.descripcion],
-      imagenes: [imagenesSoloNombre, [Validators.required]],
+      imagenes: [imagenesParaMostrar, [Validators.required]],
     });
     this.imagenSeleccionadaCachorro = 0;
     this.modalCachorroAbierto = true;
@@ -326,6 +335,15 @@ export class MisanunciosDetailComponent implements OnInit {
     this.cachorroEditando = undefined;
     this.indexCachorroEditando = -1;
     this.formCachorro = undefined;
+    // Cierra el modal de Bootstrap si está abierto
+    setTimeout(() => {
+      const modal = document.getElementById('modalEditarCachorro');
+      if (modal) {
+        // @ts-ignore
+        const bsModal = window.bootstrap.Modal.getInstance(modal);
+        if (bsModal) bsModal.hide();
+      }
+    }, 0);
   }
 
   async guardarCachorroEditado() {
@@ -333,72 +351,83 @@ export class MisanunciosDetailComponent implements OnInit {
     this.isGuardandoCachorro = true;
     const valores = this.formCachorro.value;
     let imagenes = [...(valores.imagenes || [])];
-    let nuevasImagenes: string[] = [];
+
+    // Subir blobs en orden usando nuevasImagenesCachorro
+    let fileIndex = 0;
     for (let i = 0; i < imagenes.length; i++) {
-      const img = imagenes[i];
-      if (img && img.startsWith('data:image')) {
-        const arr = img.split(',');
-        const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
-        const bstr = atob(arr[1]);
-        let n = bstr.length;
-        const u8arr = new Uint8Array(n);
-        while (n--) {
-          u8arr[n] = bstr.charCodeAt(n);
+      if (typeof imagenes[i] === 'string' && imagenes[i].startsWith('blob:')) {
+        const file = this.nuevasImagenesCachorro[fileIndex++];
+        if (file) {
+          const nombreArchivo = await this.imagenService.subirImagen(
+            file,
+            'cachorro',
+            this.anuncio?.id || ''
+          );
+          imagenes[i] = nombreArchivo;
         }
-        const file = new File([u8arr], `cachorro_${Date.now()}_${i}.jpg`, { type: mime });
-        const nombreArchivo = await this.imagenService.subirImagen(
-          file,
-          'cachorro',
-          this.anuncio?.id || ''
-        );
-        nuevasImagenes.push(nombreArchivo);
-        imagenes[i] = nombreArchivo;
+      } else if (typeof imagenes[i] === 'string' && (imagenes[i].startsWith('http') || imagenes[i].includes('%2F'))) {
+        // Si es una URL pública, extrae solo el nombre del archivo
+        let nombre = imagenes[i];
+        if (nombre.includes('%2F')) {
+          nombre = decodeURIComponent(nombre.split('%2F').pop()?.split('?')[0] || nombre);
+        } else if (nombre.includes('/')) {
+          nombre = decodeURIComponent(nombre.split('/').pop()?.split('?')[0] || nombre);
+        }
+        imagenes[i] = nombre;
       }
+      // Si ya es solo el nombre, no hace falta hacer nada
     }
-    const imagenesSoloNombre = imagenes.map((img: string) => {
-      if (!img) return '';
-      if (img.startsWith('http')) {
-        if (img.includes('%2F')) {
-          const nombreCodificado = img.split('%2F').pop()?.split('?')[0] || img;
-          return decodeURIComponent(nombreCodificado);
-        }
-        if (img.includes('/')) {
-          return decodeURIComponent(img.split('/').pop()?.split('?')[0] || img);
-        }
-      }
-      return img;
-    });
+    this.nuevasImagenesCachorro = [];
+
+    // Eliminar del storage solo imágenes reales (no blobs ni URLs)
+    const eliminadas = this.imagenesOriginalesCachorro.filter(
+      orig => !imagenes.includes(orig)
+    ).filter(
+      img => typeof img === 'string' && !img.startsWith('blob:') && !img.startsWith('http')
+    );
+    if (eliminadas.length && this.anuncio?.id) {
+      await this.imagenService.eliminarImagenes('cachorro', this.anuncio.id, eliminadas);
+    }
+
+    // Guardar solo los nombres en Firebase
     this.cachorros[this.indexCachorroEditando] = {
       ...this.cachorros[this.indexCachorroEditando],
       ...valores,
-      imagenes: imagenesSoloNombre
+      imagenes: imagenes
     };
     if (this.cachorroEditando?.id) {
       const { id, ...resto } = this.cachorros[this.indexCachorroEditando];
       await this.cachorrosService.actualizarCachorro(id, resto);
-      }
-      this.cerrarModalCachorro();
+    }
+
+    // Recargar las URLs públicas para mostrar en la app
+    if (this.anuncio?.id) {
+      const imagenesConRuta = imagenes.map(nombre =>
+        nombre.startsWith('http') ? nombre : `cachorros/${this.anuncio?.id}/${nombre}`
+      );
+      this.cachorros[this.indexCachorroEditando].imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
+    }
+
+    this.isGuardandoCachorro = false;
+    this.cerrarModalCachorro();
   }
 
-  onCachorroFileSelected(event: any) {
+  async onCachorroFileSelected(event: any) {
     const files: FileList = event.target.files;
     if (!files || files.length === 0) return;
     const imagenesActuales = this.formCachorro?.get('imagenes')?.value || [];
-    const nuevasImagenes: any[] = [];
-    let leidas = 0;
+    const nuevasImagenes: string[] = [];
+
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        nuevasImagenes.push(e.target.result); // base64 temporal
-        leidas++;
-        if (leidas === files.length) {
-          this.formCachorro?.get('imagenes')?.setValue([...imagenesActuales, ...nuevasImagenes]);
-          this.formCachorro?.get('imagenes')?.markAsTouched();
-        }
-      };
-      reader.readAsDataURL(file);
+      this.nuevasImagenesCachorro.push(file);
+      // Solo para previsualización, no subir aún
+      const url = URL.createObjectURL(file);
+      nuevasImagenes.push(url);
     }
+
+    this.formCachorro?.get('imagenes')?.setValue([...imagenesActuales, ...nuevasImagenes]);
+    this.formCachorro?.get('imagenes')?.markAsTouched();
   }
 
   ajustarEstiloImagen(event: Event) {
