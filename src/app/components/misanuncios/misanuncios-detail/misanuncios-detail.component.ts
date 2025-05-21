@@ -50,6 +50,7 @@ export class MisanunciosDetailComponent implements OnInit {
   formCachorro?: FormGroup;
   indexCachorroEditando: number = -1;
   imagenSeleccionadaCachorro: number = 0;
+  isGuardandoCachorro: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -271,19 +272,42 @@ export class MisanunciosDetailComponent implements OnInit {
     }
   }
 
+  // Devuelve la URL de visualización para una imagen de cachorro (nombre o url)
+  getUrlImagenCachorro(img: string): string {
+    if (!img) return '';
+    if (img.startsWith('http')) return img;
+    if (img.startsWith('data:image')) return img;
+    return `https://firebasestorage.googleapis.com/v0/b/mascotanunicos.firebasestorage.app/o/cachorros%2F${this.anuncio?.id}%2F${encodeURIComponent(img)}?alt=media`;
+  }
+
   editarCachorro(id: string) {
     // Busca el cachorro por id
     const index = this.cachorros.findIndex(c => c.id === id);
     if (index === -1) return;
     this.cachorroEditando = { ...this.cachorros[index] };
     this.indexCachorroEditando = index;
+    // Solo nombres/base64, nunca URLs completas
+    let imagenesSoloNombre = (this.cachorroEditando.imagenes || []).map((img: string) => {
+      if (!img) return '';
+      if (img.startsWith('http')) {
+        // Extraer solo el nombre del archivo de la URL de Firebase
+        if (img.includes('%2F')) {
+          const nombreCodificado = img.split('%2F').pop()?.split('?')[0] || img;
+          return decodeURIComponent(nombreCodificado);
+        }
+        if (img.includes('/')) {
+          return decodeURIComponent(img.split('/').pop()?.split('?')[0] || img);
+        }
+      }
+      return img;
+    });
     this.formCachorro = this.fb.group({
       color: [this.cachorroEditando.color, []],
       sexo: [this.cachorroEditando.sexo, [Validators.required]],
       precio: [this.cachorroEditando.precio, [Validators.required]],
       disponible: [this.cachorroEditando.disponible],
       descripcion: [this.cachorroEditando.descripcion],
-      imagenes: [this.cachorroEditando.imagenes, [Validators.required]],
+      imagenes: [imagenesSoloNombre, [Validators.required]],
     });
     this.imagenSeleccionadaCachorro = 0;
     this.modalCachorroAbierto = true;
@@ -306,18 +330,54 @@ export class MisanunciosDetailComponent implements OnInit {
 
   async guardarCachorroEditado() {
     if (!this.formCachorro || this.formCachorro.invalid || this.indexCachorroEditando === -1) return;
+    this.isGuardandoCachorro = true;
     const valores = this.formCachorro.value;
+    let imagenes = [...(valores.imagenes || [])];
+    let nuevasImagenes: string[] = [];
+    for (let i = 0; i < imagenes.length; i++) {
+      const img = imagenes[i];
+      if (img && img.startsWith('data:image')) {
+        const arr = img.split(',');
+        const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        const file = new File([u8arr], `cachorro_${Date.now()}_${i}.jpg`, { type: mime });
+        const nombreArchivo = await this.imagenService.subirImagen(
+          file,
+          'cachorro',
+          this.anuncio?.id || ''
+        );
+        nuevasImagenes.push(nombreArchivo);
+        imagenes[i] = nombreArchivo;
+      }
+    }
+    const imagenesSoloNombre = imagenes.map((img: string) => {
+      if (!img) return '';
+      if (img.startsWith('http')) {
+        if (img.includes('%2F')) {
+          const nombreCodificado = img.split('%2F').pop()?.split('?')[0] || img;
+          return decodeURIComponent(nombreCodificado);
+        }
+        if (img.includes('/')) {
+          return decodeURIComponent(img.split('/').pop()?.split('?')[0] || img);
+        }
+      }
+      return img;
+    });
     this.cachorros[this.indexCachorroEditando] = {
       ...this.cachorros[this.indexCachorroEditando],
-      ...valores
+      ...valores,
+      imagenes: imagenesSoloNombre
     };
-    // Guardar en backend
     if (this.cachorroEditando?.id) {
-      // No enviar el id dentro del objeto de actualización
       const { id, ...resto } = this.cachorros[this.indexCachorroEditando];
       await this.cachorrosService.actualizarCachorro(id, resto);
-    }
-    this.cerrarModalCachorro();
+      }
+      this.cerrarModalCachorro();
   }
 
   onCachorroFileSelected(event: any) {
@@ -330,7 +390,7 @@ export class MisanunciosDetailComponent implements OnInit {
       const file = files[i];
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        nuevasImagenes.push(e.target.result);
+        nuevasImagenes.push(e.target.result); // base64 temporal
         leidas++;
         if (leidas === files.length) {
           this.formCachorro?.get('imagenes')?.setValue([...imagenesActuales, ...nuevasImagenes]);

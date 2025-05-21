@@ -71,7 +71,7 @@
         <div class="row">
           <div *ngFor="let cachorro of cachorros" class="col-md-4 mb-3">
             <div class="card shadow-sm clickable" (click)="editarCachorro(cachorro.id)">
-              <img [src]="cachorro.imagenes[0]" class="card-img-top" alt="Imagen del cachorro"
+              <img [src]="getUrlImagenCachorro(cachorro.imagenes[0])" class="card-img-top" alt="Imagen del cachorro"
                 style="object-fit: cover; height: 200px;">
               <div class="card-body">
                 <h5 class="card-title">{{ cachorro.color }} - {{ cachorro.sexo }}</h5>
@@ -266,7 +266,7 @@
 
               <!-- Imagen centrada con botón de eliminar en su esquina -->
               <div class="position-relative" style="width:220px; height:220px;">
-                <img [src]="formCachorro.get('imagenes')?.value[imagenSeleccionadaCachorro || 0]" alt="Imagen cachorro"
+                <img [src]="getUrlImagenCachorro(formCachorro.get('imagenes')?.value[imagenSeleccionadaCachorro || 0])" alt="Imagen cachorro"
                   class="rounded mb-2 shadow" style="width:100%; height:100%; object-fit:cover;">
                 <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-1"
                   style="border-radius:50%;line-height:1;width:24px;height:24px;z-index:20;"
@@ -289,7 +289,7 @@
           <!-- Miniaturas con cruz roja para eliminar -->
           <div class="d-flex justify-content-center flex-wrap mb-2" *ngIf="formCachorro.get('imagenes')?.value?.length">
             <div class="position-relative m-1" *ngFor="let img of formCachorro.get('imagenes')?.value; let i = index">
-              <img [src]="img" (click)="seleccionarImagenCachorro(i)"
+              <img [src]="getUrlImagenCachorro(img)" (click)="seleccionarImagenCachorro(i)"
                 [class.border-primary]="i === imagenSeleccionadaCachorro" class="img-thumbnail"
                 style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;">
               <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-1"
@@ -331,7 +331,10 @@
           </div>
         </div>
         <div class="modal-footer d-flex justify-content-end">
-          <button type="submit" class="btn-default" [disabled]="formCachorro.invalid">Guardar</button>
+          <button type="submit" class="btn-default"
+            [disabled]="formCachorro.invalid || isGuardandoCachorro">
+            {{ isGuardandoCachorro ? 'Guardando...' : 'Guardar' }}
+          </button>
         </div>
       </form>
     </div>
