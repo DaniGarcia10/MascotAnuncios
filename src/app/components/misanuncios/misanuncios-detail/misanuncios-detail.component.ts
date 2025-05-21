@@ -347,70 +347,77 @@ export class MisanunciosDetailComponent implements OnInit {
   }
 
   async guardarCachorroEditado() {
-    if (!this.formCachorro || this.formCachorro.invalid || this.indexCachorroEditando === -1) return;
-    this.isGuardandoCachorro = true;
-    const valores = this.formCachorro.value;
-    let imagenes = [...(valores.imagenes || [])];
+  if (!this.formCachorro || this.formCachorro.invalid || this.indexCachorroEditando === -1) return;
+  this.isGuardandoCachorro = true;
+  const valores = this.formCachorro.value;
+  let imagenes = [...(valores.imagenes || [])];
 
-    // Subir blobs en orden usando nuevasImagenesCachorro
-    let fileIndex = 0;
-    for (let i = 0; i < imagenes.length; i++) {
-      if (typeof imagenes[i] === 'string' && imagenes[i].startsWith('blob:')) {
-        const file = this.nuevasImagenesCachorro[fileIndex++];
-        if (file) {
-          const nombreArchivo = await this.imagenService.subirImagen(
-            file,
-            'cachorro',
-            this.anuncio?.id || ''
-          );
-          imagenes[i] = nombreArchivo;
-        }
-      } else if (typeof imagenes[i] === 'string' && (imagenes[i].startsWith('http') || imagenes[i].includes('%2F'))) {
-        // Si es una URL pública, extrae solo el nombre del archivo
-        let nombre = imagenes[i];
-        if (nombre.includes('%2F')) {
-          nombre = decodeURIComponent(nombre.split('%2F').pop()?.split('?')[0] || nombre);
-        } else if (nombre.includes('/')) {
-          nombre = decodeURIComponent(nombre.split('/').pop()?.split('?')[0] || nombre);
-        }
-        imagenes[i] = nombre;
+  // Subir blobs en orden usando nuevasImagenesCachorro
+  let fileIndex = 0;
+  for (let i = 0; i < imagenes.length; i++) {
+    if (typeof imagenes[i] === 'string' && imagenes[i].startsWith('blob:')) {
+      const file = this.nuevasImagenesCachorro[fileIndex++];
+      if (file) {
+        const nombreArchivo = await this.imagenService.subirImagen(
+          file,
+          'cachorro',
+          this.anuncio?.id || ''
+        );
+        imagenes[i] = nombreArchivo;
       }
-      // Si ya es solo el nombre, no hace falta hacer nada
+    } else if (typeof imagenes[i] === 'string' && (imagenes[i].startsWith('http') || imagenes[i].includes('%2F'))) {
+      // Si es una URL pública, extrae solo el nombre del archivo
+      let nombre = imagenes[i];
+      if (nombre.includes('%2F')) {
+        nombre = decodeURIComponent(nombre.split('%2F').pop()?.split('?')[0] || nombre);
+      } else if (nombre.includes('/')) {
+        nombre = decodeURIComponent(nombre.split('/').pop()?.split('?')[0] || nombre);
+      }
+      imagenes[i] = nombre;
     }
-    this.nuevasImagenesCachorro = [];
+    // Si ya es solo el nombre, no hace falta hacer nada
+  }
+  this.nuevasImagenesCachorro = [];
 
-    // Eliminar del storage solo imágenes reales (no blobs ni URLs)
-    const eliminadas = this.imagenesOriginalesCachorro.filter(
-      orig => !imagenes.includes(orig)
-    ).filter(
-      img => typeof img === 'string' && !img.startsWith('blob:') && !img.startsWith('http')
-    );
-    if (eliminadas.length && this.anuncio?.id) {
-      await this.imagenService.eliminarImagenes('cachorro', this.anuncio.id, eliminadas);
-    }
+  // Eliminar del storage solo imágenes reales (no blobs ni URLs)
+  const eliminadas = this.imagenesOriginalesCachorro.filter(
+    orig => !imagenes.includes(orig)
+  ).filter(
+    img => typeof img === 'string' && !img.startsWith('blob:') && !img.startsWith('http')
+  );
+  if (eliminadas.length && this.anuncio?.id) {
+    await this.imagenService.eliminarImagenes('cachorro', this.anuncio.id, eliminadas);
+  }
 
-    // Guardar solo los nombres en Firebase
-    this.cachorros[this.indexCachorroEditando] = {
+  // Actualizar Firebase (solo con los nombres)
+  if (this.cachorroEditando?.id) {
+    const { id, ...resto } = {
       ...this.cachorros[this.indexCachorroEditando],
       ...valores,
       imagenes: imagenes
     };
-    if (this.cachorroEditando?.id) {
-      const { id, ...resto } = this.cachorros[this.indexCachorroEditando];
-      await this.cachorrosService.actualizarCachorro(id, resto);
-    }
-
-    // Recargar las URLs públicas para mostrar en la app
-    if (this.anuncio?.id) {
-      const imagenesConRuta = imagenes.map(nombre =>
-        nombre.startsWith('http') ? nombre : `cachorros/${this.anuncio?.id}/${nombre}`
-      );
-      this.cachorros[this.indexCachorroEditando].imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
-    }
-
-    this.isGuardandoCachorro = false;
-    this.cerrarModalCachorro();
+    await this.cachorrosService.actualizarCachorro(id, resto);
   }
+
+  // Recargar las URLs públicas para mostrar en la app
+  if (this.anuncio?.id) {
+    const imagenesConRuta = imagenes.map(nombre =>
+      nombre.startsWith('http') ? nombre : `cachorros/${this.anuncio?.id}/${nombre}`
+    );
+    const urls = await this.imagenService.cargarImagenes(imagenesConRuta);
+
+    // Actualizar ahora el array completo con las URLs públicas
+    this.cachorros[this.indexCachorroEditando] = {
+      ...this.cachorros[this.indexCachorroEditando],
+      ...valores,
+      imagenes: urls
+    };
+  }
+
+  this.isGuardandoCachorro = false;
+  this.cerrarModalCachorro();
+}
+
 
   async onCachorroFileSelected(event: any) {
     const files: FileList = event.target.files;
