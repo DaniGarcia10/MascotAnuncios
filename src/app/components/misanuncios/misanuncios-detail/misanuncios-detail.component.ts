@@ -567,7 +567,7 @@ export class MisanunciosDetailComponent implements OnInit {
     const indexEditando = this.indexCachorroEditando;
 
     this.isGuardandoCachorro = true;
-    this.cerrarModalCachorro();
+    // Quitar cerrarModalCachorro() de aquí
 
     // Subir blobs
     let fileIndex = 0;
@@ -665,6 +665,7 @@ export class MisanunciosDetailComponent implements OnInit {
     }
 
     this.isGuardandoCachorro = false;
+    this.cerrarModalCachorro(); // Ahora se cierra aquí, después de guardar
   }
 
 
