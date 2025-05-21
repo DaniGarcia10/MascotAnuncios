@@ -22,10 +22,21 @@
           </p>
           <h5 class="card-title fw-bold fs-6 mb-1">{{ anuncio.titulo }}</h5>
           <ul class="list-unstyled mb-0 small">
-            <li><strong>
-              {{ precioMinimo && precioMaximo ? precioMinimo + '€ - ' + precioMaximo + '€' : anuncio.precio + '€' }}
-            </strong>
-          </li>
+            <li>
+              <strong>
+                <ng-container *ngIf="anuncio?.especificar_cachorros; else precioUnico">
+                  <ng-container *ngIf="precioMinimo && precioMaximo && precioMinimo !== precioMaximo">
+                    {{ precioMinimo + '€ - ' + precioMaximo + '€' }}
+                  </ng-container>
+                  <ng-container *ngIf="precioMinimo && precioMaximo && precioMinimo === precioMaximo">
+                    {{ precioMinimo + '€' }}
+                  </ng-container>
+                </ng-container>
+                <ng-template #precioUnico>
+                  {{ anuncio.precio }}€
+                </ng-template>
+              </strong>
+            </li>
             <li><span class="badge bg-secondary">{{ anuncio.raza }}</span></li>
             <li><i class="bi bi-geo-alt"></i> {{ anuncio.ubicacion }}</li>
           </ul>         

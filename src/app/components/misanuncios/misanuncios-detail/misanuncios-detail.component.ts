@@ -72,6 +72,8 @@ export class MisanunciosDetailComponent implements OnInit {
   imagenesOriginalesAnuncio: string[] = [];
   nuevasImagenesAnuncio: File[] = [];
 
+  isGuardandoAnuncio: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private anunciosService: AnunciosService,
@@ -266,19 +268,15 @@ export class MisanunciosDetailComponent implements OnInit {
   }
 
   anteriorImagen() {
-    const imagenes = this.formCachorro?.get('imagenes')?.value || [];
-    if (imagenes.length > 1) {
-      this.imagenSeleccionada =
-        (this.imagenSeleccionada - 1 + imagenes.length) % imagenes.length;
-    }
+    if (!this.anuncio?.imagenes?.length) return;
+    this.imagenSeleccionada =
+      (this.imagenSeleccionada - 1 + this.anuncio.imagenes.length) % this.anuncio.imagenes.length;
   }
 
   siguienteImagen() {
-    const imagenes = this.formCachorro?.get('imagenes')?.value || [];
-    if (imagenes.length > 1) {
-      this.imagenSeleccionada =
-        (this.imagenSeleccionada + 1) % imagenes.length;
-    }
+    if (!this.anuncio?.imagenes?.length) return;
+    this.imagenSeleccionada =
+      (this.imagenSeleccionada + 1) % this.anuncio.imagenes.length;
   }
 
   seleccionarImagen(index: number) {
@@ -421,6 +419,7 @@ export class MisanunciosDetailComponent implements OnInit {
   // Guardar cambios
   async guardarAnuncioEditado() {
     if (!this.formAnuncio || this.formAnuncio.invalid || !this.anuncio?.id) return;
+    this.isGuardandoAnuncio = true;
     const valores = this.formAnuncio.value;
     let imagenes = [...(valores.imagenes || [])];
     // Subir blobs in orden usando nuevasImagenesAnuncio
@@ -487,6 +486,7 @@ export class MisanunciosDetailComponent implements OnInit {
       perro: tipoBooleano,
       imagenes: await this.imagenService.cargarImagenes(imagenesConRuta)
     };
+    this.isGuardandoAnuncio = false;
     this.cerrarModalAnuncio();
   }
 
