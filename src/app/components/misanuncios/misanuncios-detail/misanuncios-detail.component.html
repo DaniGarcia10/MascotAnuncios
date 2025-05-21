@@ -302,7 +302,7 @@
                 <i class="bi bi-chevron-left fs-4"></i>
               </button>
 
-              <!-- Imagen centrada con botón de eliminar en su esquina -->
+              <!-- Imagen centrada with botón de eliminar en su esquina -->
               <div class="position-relative" style="width:220px; height:220px;">
                 <img [src]="formCachorro.get('imagenes')?.value[imagenSeleccionadaCachorro || 0]" alt="Imagen cachorro"
                   class="rounded mb-2 shadow" style="width:100%; height:100%; object-fit:cover;">
@@ -378,6 +378,128 @@
   </div>
 </div>
 
+<!-- Modal para editar anuncio -->
+<div class="modal fade" id="modalEditarAnuncio" tabindex="-1" aria-labelledby="modalEditarAnuncioLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content card custom-card" *ngIf="formAnuncio">
+      <div class="modal-header card-header custom-card-header d-flex align-items-center justify-content-between">
+        <button type="button" class="btn btn-outline-danger me-2" (click)="eliminarAnuncioModal()" style="order: 1;">
+          <i class="bi bi-trash"></i>
+        </button>
+        <div class="flex-grow-1 text-center" style="order: 2;">
+          <span class="fw-bold">Editar anuncio</span>
+        </div>
+        <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Cerrar"
+          (click)="cerrarModalAnuncio()" style="order: 3;"></button>
+      </div>
+      <form [formGroup]="formAnuncio" (ngSubmit)="guardarAnuncioEditado()">
+        <div class="modal-body card-body custom-card-body">
+          <!-- Imágenes -->
+          <div class="text-center mb-3" *ngIf="formAnuncio.get('imagenes')?.value?.length">
+            <div class="d-flex justify-content-center align-items-center position-relative" style="height:220px;">
+              <button *ngIf="formAnuncio.get('imagenes')?.value.length > 1" type="button"
+                class="btn btn-light position-absolute start-0 top-50 translate-middle-y"
+                style="z-index:10;width:36px;height:36px;padding:0;" (click)="anteriorImagenAnuncio()">
+                <i class="bi bi-chevron-left fs-4"></i>
+              </button>
+              <div class="position-relative" style="width:220px; height:220px;">
+                <img [src]="formAnuncio.get('imagenes')?.value[imagenSeleccionadaAnuncio || 0]" alt="Imagen anuncio"
+                  class="rounded mb-2 shadow" style="width:100%; height:100%; object-fit:cover;">
+                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-1"
+                  style="border-radius:50%;line-height:1;width:24px;height:24px;z-index:20;"
+                  (click)="eliminarImagenAnuncio(imagenSeleccionadaAnuncio); $event.stopPropagation();"
+                  title="Eliminar imagen">
+                  &times;
+                </button>
+              </div>
+              <button *ngIf="formAnuncio.get('imagenes')?.value.length > 1" type="button"
+                class="btn btn-light position-absolute end-0 top-50 translate-middle-y"
+                style="z-index:10;width:36px;height:36px;padding:0;" (click)="siguienteImagenAnuncio()">
+                <i class="bi bi-chevron-right fs-4"></i>
+              </button>
+            </div>
+          </div>
+          <!-- Miniaturas -->
+          <div class="d-flex justify-content-center flex-wrap mb-2" *ngIf="formAnuncio.get('imagenes')?.value?.length">
+            <div class="position-relative m-1" *ngFor="let img of formAnuncio.get('imagenes')?.value; let i = index">
+              <img [src]="img" (click)="seleccionarImagenAnuncio(i)"
+                [class.border-primary]="i === imagenSeleccionadaAnuncio" class="img-thumbnail"
+                style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;">
+              <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-1"
+                style="border-radius:50%;line-height:1;width:20px;height:20px;z-index:20;"
+                (click)="eliminarImagenAnuncio(i); $event.stopPropagation();" title="Eliminar imagen">
+                &times;
+              </button>
+            </div>
+          </div>
+          <!-- Añadir imágenes -->
+          <div class="mb-3">
+            <label class="form-label mb-1">Añadir imágenes:</label>
+            <input type="file" class="form-control" (change)="onAnuncioFileSelected($event)" multiple>
+            <div *ngIf="formAnuncio.get('imagenes')?.invalid && formAnuncio.get('imagenes')?.touched"
+              class="text-danger">Debe subir al menos una imagen.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Título del anuncio:</label>
+            <input type="text" formControlName="titulo" class="form-control" placeholder="Título del anuncio" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Especie:</label>
+            <ng-select [items]="tipos"
+                       bindLabel="label"
+                       bindValue="value"
+                       formControlName="tipo"
+                       placeholder="Selecciona tipo"
+                       [searchable]="false"
+                       [clearable]="false"
+                       class="mb-2">
+            </ng-select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Raza:</label>
+            <ng-select [items]="razas" formControlName="raza" placeholder="Selecciona raza"
+              [searchable]="true" placeholder="Selecciona la raza" [clearable]="false" class="mb-2"></ng-select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Provincia:</label>
+            <ng-select [items]="provincias" formControlName="ubicacion" placeholder="Selecciona provincia"
+              [searchable]="true" [clearable]="false" class="mb-2"></ng-select>
+          </div>
+          <!-- Edad -->
+          <div class="mb-3">
+            <label class="form-label">Edad:</label>
+            <div class="d-flex">
+              <input type="number" class="form-control me-2" placeholder="Ingresa la edad" formControlName="edadValor">
+              <ng-select [items]="['meses', 'semanas']"
+                         bindLabel="this"
+                         bindValue="this"
+                         formControlName="edadUnidad"
+                         placeholder="Semanas/Meses"
+                         class="custom-ng-select"
+                         [searchable]="false">
+              </ng-select>
+            </div>
+            <div *ngIf="formAnuncio.get('edadValor')?.invalid && formAnuncio.get('edadValor')?.touched" class="text-danger">Edad es obligatoria.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Precio:</label>
+            <input type="number" class="form-control" formControlName="precio">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Descripción:</label>
+            <textarea class="form-control" formControlName="descripcion"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer d-flex justify-content-between">
+          <button type="submit" class="btn-default w-100" [disabled]="formAnuncio.invalid">
+            Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- Modal de confirmación de eliminación -->
 <div class="modal fade" id="modalConfirmarEliminarCachorro" tabindex="-1"
   aria-labelledby="modalConfirmarEliminarCachorroLabel" aria-hidden="true">
@@ -395,6 +517,27 @@
         <button type="button" class="btn btn-secondary"
           (click)="cerrarModalConfirmacionEliminarCachorro()">Cancelar</button>
         <button type="button" class="btn btn-danger" (click)="confirmarEliminarCachorro()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación de eliminación de anuncio -->
+<div class="modal fade" id="modalConfirmarEliminarAnuncio" tabindex="-1"
+  aria-labelledby="modalConfirmarEliminarAnuncioLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalConfirmarEliminarAnuncioLabel">Confirmar eliminación</h5>
+        <button type="button" class="btn-close" (click)="cerrarModalConfirmacionEliminarAnuncio()" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        ¿Seguro que quieres eliminar este anuncio? Esta acción no se puede deshacer.
+      </div>
+      <div class="modal-footer d-grid gap-2" style="grid-template-columns: 1fr 1fr;">
+        <button type="button" class="btn btn-secondary"
+          (click)="cerrarModalConfirmacionEliminarAnuncio()">Cancelar</button>
+        <button type="button" class="btn btn-danger" (click)="confirmarEliminarAnuncio()">Eliminar</button>
       </div>
     </div>
   </div>

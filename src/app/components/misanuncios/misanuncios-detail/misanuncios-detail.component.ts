@@ -15,6 +15,8 @@ import { Mascota } from '../../../models/Mascota.model';
 import { FormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { RAZAS } from '../../../data/razas';
+import { PROVINCIAS_ESPAÑA } from '../../../data/provincias';
 
 @Component({
   selector: 'app-misanuncios-detail',
@@ -59,6 +61,16 @@ export class MisanunciosDetailComponent implements OnInit {
 
   // Nueva variable para mostrar el modal de confirmación
   mostrarConfirmacionEliminarCachorro: boolean = false;
+  mostrarConfirmacionEliminarAnuncio: boolean = false;
+
+  tipos = ['Perro', 'Gato'];
+  razas: string[] = [];
+  provincias: string[] = [];
+
+  formAnuncio?: FormGroup;
+  imagenSeleccionadaAnuncio: number = 0;
+  imagenesOriginalesAnuncio: string[] = [];
+  nuevasImagenesAnuncio: File[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -77,6 +89,12 @@ export class MisanunciosDetailComponent implements OnInit {
     if (id) {
       this.anunciosService.getAnuncios().subscribe(async anuncios => {
         this.anuncio = anuncios.find(a => a.id === id);
+
+        // Asigna el tipo de mascota y las razas aquí, cuando ya tienes el anuncio
+        if (this.anuncio) {
+          this.tipoMascota = this.anuncio.perro;
+          this.razas = this.anuncio.perro ? RAZAS.perros : RAZAS.gatos;
+        }
 
         await this.actualizarImagenesPadres();
 
@@ -120,6 +138,8 @@ export class MisanunciosDetailComponent implements OnInit {
         }
       });
     }
+
+    this.provincias = PROVINCIAS_ESPAÑA;
   }
 
   async cargarMascotasPadres() {
@@ -265,10 +285,6 @@ export class MisanunciosDetailComponent implements OnInit {
     this.imagenSeleccionada = index;
   }
 
-  editarAnuncio() {
-    console.log('Editar anuncio:', this.anuncio);
-  }
-
   compartirAnuncio() {
     const url = window.location.href;
     if (navigator.share) {
@@ -281,6 +297,197 @@ export class MisanunciosDetailComponent implements OnInit {
       navigator.clipboard.writeText(url);
       alert('Enlace copiado al portapapeles');
     }
+  }
+
+  // Al hacer click en la card principal
+  editarAnuncio() {
+    if (!this.anuncio) return;
+    // Extrae solo nombres de imagen
+    const imagenesSoloNombre = (this.anuncio.imagenes || []).map((img: string) => {
+      if (!img) return '';
+      if (img.startsWith('http')) {
+        if (img.includes('%2F')) {
+          const nombreCodificado = img.split('%2F').pop()?.split('?')[0] || img;
+          return decodeURIComponent(nombreCodificado);
+        }
+        if (img.includes('/')) {
+          return decodeURIComponent(img.split('/').pop()?.split('?')[0] || img);
+        }
+      }
+      return img;
+    });
+    this.imagenesOriginalesAnuncio = [...imagenesSoloNombre];
+    // Carga URLs públicas
+    const imagenesConRuta = imagenesSoloNombre.map(nombre =>
+      nombre.startsWith('http') ? nombre : `anuncios/${this.anuncio?.id}/${nombre}`
+    );
+
+    // Procesar edad para separar valor y unidad
+    let edadValor = '';
+    let edadUnidad = 'meses';
+    if (this.anuncio.edad) {
+      const match = this.anuncio.edad.match(/^(\d+)\s*(mes(?:es)?|semana(?:s)?)$/i);
+      if (match) {
+        edadValor = match[1];
+        edadUnidad = match[2].toLowerCase().startsWith('sem') ? 'semanas' : 'meses';
+      }
+    }
+
+    this.imagenService.cargarImagenes(imagenesConRuta).then(imagenesParaMostrar => {
+      this.formAnuncio = this.fb.group({
+        titulo: [this.anuncio?.titulo || '', [Validators.required]],
+        tipo: [this.anuncio?.perro ? 'Perro' : 'Gato', [Validators.required]],
+        raza: [this.anuncio?.raza || '', [Validators.required]],
+        ubicacion: [this.anuncio?.ubicacion || '', [Validators.required]],
+        edadValor: [edadValor, [Validators.required]],
+        edadUnidad: [edadUnidad, [Validators.required]],
+        precio: [this.anuncio?.precio || '', [Validators.required]],
+        descripcion: [this.anuncio?.descripcion || ''],
+        imagenes: [imagenesParaMostrar, [Validators.required]],
+      });
+      // Escuchar cambios en el tipo para actualizar razas
+      this.formAnuncio.get('tipo')?.valueChanges.subscribe((nuevoTipo: string) => {
+        this.razas = nuevoTipo === 'Perro' ? RAZAS.perros : RAZAS.gatos;
+        // Opcional: resetear la raza seleccionada si no pertenece al nuevo tipo
+        if (!this.razas.includes(this.formAnuncio?.get('raza')?.value)) {
+          this.formAnuncio?.get('raza')?.setValue('');
+        }
+      });
+      this.imagenSeleccionadaAnuncio = 0;
+      setTimeout(() => {
+        const modal = document.getElementById('modalEditarAnuncio');
+        if (modal) {
+          // @ts-ignore
+          const bsModal = new window.bootstrap.Modal(modal);
+          bsModal.show();
+        }
+      }, 0);
+    });
+  }
+
+  cerrarModalAnuncio() {
+    this.formAnuncio = undefined;
+    setTimeout(() => {
+      const modal = document.getElementById('modalEditarAnuncio');
+      if (modal) {
+        // @ts-ignore
+        const bsModal = window.bootstrap.Modal.getInstance(modal);
+        if (bsModal) bsModal.hide();
+      }
+    }, 0);
+  }
+
+  anteriorImagenAnuncio() {
+    const imagenes = this.formAnuncio?.get('imagenes')?.value || [];
+    if (imagenes.length > 1) {
+      this.imagenSeleccionadaAnuncio =
+        (this.imagenSeleccionadaAnuncio - 1 + imagenes.length) % imagenes.length;
+    }
+  }
+  siguienteImagenAnuncio() {
+    const imagenes = this.formAnuncio?.get('imagenes')?.value || [];
+    if (imagenes.length > 1) {
+      this.imagenSeleccionadaAnuncio =
+        (this.imagenSeleccionadaAnuncio + 1) % imagenes.length;
+    }
+  }
+  seleccionarImagenAnuncio(index: number) {
+    this.imagenSeleccionadaAnuncio = index;
+  }
+  eliminarImagenAnuncio(index: number) {
+    const imagenes = this.formAnuncio?.get('imagenes')?.value || [];
+    if (imagenes.length <= 1) return;
+    imagenes.splice(index, 1);
+    this.formAnuncio?.get('imagenes')?.setValue([...imagenes]);
+    if (this.imagenSeleccionadaAnuncio >= imagenes.length) {
+      this.imagenSeleccionadaAnuncio = Math.max(0, imagenes.length - 1);
+    }
+  }
+  async onAnuncioFileSelected(event: any) {
+    const files: FileList = event.target.files;
+    if (!files || files.length === 0) return;
+    const imagenesActuales = this.formAnuncio?.get('imagenes')?.value || [];
+    const nuevasImagenes: string[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      this.nuevasImagenesAnuncio.push(file);
+      const url = URL.createObjectURL(file);
+      nuevasImagenes.push(url);
+    }
+    this.formAnuncio?.get('imagenes')?.setValue([...imagenesActuales, ...nuevasImagenes]);
+    this.formAnuncio?.get('imagenes')?.markAsTouched();
+  }
+
+  // Guardar cambios
+  async guardarAnuncioEditado() {
+    if (!this.formAnuncio || this.formAnuncio.invalid || !this.anuncio?.id) return;
+    const valores = this.formAnuncio.value;
+    let imagenes = [...(valores.imagenes || [])];
+    // Subir blobs in orden usando nuevasImagenesAnuncio
+    let fileIndex = 0;
+    for (let i = 0; i < imagenes.length; i++) {
+      if (typeof imagenes[i] === 'string' && imagenes[i].startsWith('blob:')) {
+        const file = this.nuevasImagenesAnuncio[fileIndex++];
+        if (file) {
+          const nombreArchivo = await this.imagenService.subirImagen(
+            file,
+            'anuncio',
+            this.anuncio?.id || ''
+          );
+          imagenes[i] = nombreArchivo;
+        }
+      } else if (typeof imagenes[i] === 'string' && (imagenes[i].startsWith('http') || imagenes[i].includes('%2F'))) {
+        let nombre = imagenes[i];
+        if (nombre.includes('%2F')) {
+          nombre = decodeURIComponent(nombre.split('%2F').pop()?.split('?')[0] || nombre);
+        } else if (nombre.includes('/')) {
+          nombre = decodeURIComponent(nombre.split('/').pop()?.split('?')[0] || nombre);
+        }
+        imagenes[i] = nombre;
+      }
+    }
+    // Eliminar imágenes borradas
+    const eliminadas = this.imagenesOriginalesAnuncio.filter(
+      orig => !imagenes.includes(orig)
+    ).filter(
+      img => typeof img === 'string' && !img.startsWith('blob:') && !img.startsWith('http')
+    );
+    if (eliminadas.length && this.anuncio?.id) {
+      await this.imagenService.eliminarImagenes('anuncio', this.anuncio.id, eliminadas);
+    }
+    this.nuevasImagenesAnuncio = [];
+    // Convertir tipo a booleano antes de guardar
+    const tipoBooleano = valores.tipo === 'Perro';
+
+    // Unir edadValor y edadUnidad para guardar en el modelo
+    const edad = valores.edadValor && valores.edadUnidad ? `${valores.edadValor} ${valores.edadUnidad}` : '';
+
+    // Construir el objeto solo con los campos necesarios
+    const dataToUpdate = {
+      titulo: valores.titulo,
+      raza: valores.raza,
+      ubicacion: valores.ubicacion,
+      edad,
+      precio: valores.precio,
+      descripcion: valores.descripcion,
+      perro: valores.tipo === 'Perro',
+      imagenes
+    };
+
+    // Actualizar en Firebase
+    await this.anunciosService.actualizarAnuncio(this.anuncio.id, dataToUpdate);
+    // Recargar URLs públicas
+    const imagenesConRuta = imagenes.map(nombre =>
+      nombre.startsWith('http') ? nombre : `anuncios/${this.anuncio?.id}/${nombre}`
+    );
+    this.anuncio = {
+      ...this.anuncio,
+      ...valores,
+      edad,
+      perro: tipoBooleano,
+      imagenes: await this.imagenService.cargarImagenes(imagenesConRuta)
+    };
+    this.cerrarModalAnuncio();
   }
 
   async editarCachorro(id: string) {
@@ -351,102 +558,115 @@ export class MisanunciosDetailComponent implements OnInit {
     }, 0);
   }
 
+
   async guardarCachorroEditado() {
-  if (!this.formCachorro || this.formCachorro.invalid) return;
-  const valores = this.formCachorro.value;
-  let imagenes = [...(valores.imagenes || [])];
+    if (!this.formCachorro || this.formCachorro.invalid) return;
+    const valores = this.formCachorro.value;
+    let imagenes = [...(valores.imagenes || [])];
 
-  // Guarda el índice antes de cerrar el modal
-  const indexEditando = this.indexCachorroEditando;
+    const indexEditando = this.indexCachorroEditando;
 
-  this.isGuardandoCachorro = true;
-  this.cerrarModalCachorro();
+    this.isGuardandoCachorro = true;
+    this.cerrarModalCachorro();
 
-  // Subir blobs en orden usando nuevasImagenesCachorro
-  let fileIndex = 0;
-  for (let i = 0; i < imagenes.length; i++) {
-    if (typeof imagenes[i] === 'string' && imagenes[i].startsWith('blob:')) {
-      const file = this.nuevasImagenesCachorro[fileIndex++];
-      if (file) {
-        const nombreArchivo = await this.imagenService.subirImagen(
-          file,
-          'cachorro',
-          this.anuncio?.id || ''
-        );
-        imagenes[i] = nombreArchivo;
+    // Subir blobs
+    let fileIndex = 0;
+    for (let i = 0; i < imagenes.length; i++) {
+      if (typeof imagenes[i] === 'string' && imagenes[i].startsWith('blob:')) {
+        const file = this.nuevasImagenesCachorro[fileIndex++];
+        if (file) {
+          const nombreArchivo = await this.imagenService.subirImagen(
+            file,
+            'cachorro',
+            this.anuncio?.id || ''
+          );
+          imagenes[i] = nombreArchivo;
+        }
+      } else if (typeof imagenes[i] === 'string' && (imagenes[i].startsWith('http') || imagenes[i].includes('%2F'))) {
+        let nombre = imagenes[i];
+        if (nombre.includes('%2F')) {
+          nombre = decodeURIComponent(nombre.split('%2F').pop()?.split('?')[0] || nombre);
+        } else if (nombre.includes('/')) {
+          nombre = decodeURIComponent(nombre.split('/').pop()?.split('?')[0] || nombre);
+        }
+        imagenes[i] = nombre;
       }
-    } else if (typeof imagenes[i] === 'string' && (imagenes[i].startsWith('http') || imagenes[i].includes('%2F'))) {
-      let nombre = imagenes[i];
-      if (nombre.includes('%2F')) {
-        nombre = decodeURIComponent(nombre.split('%2F').pop()?.split('?')[0] || nombre);
-      } else if (nombre.includes('/')) {
-        nombre = decodeURIComponent(nombre.split('/').pop()?.split('?')[0] || nombre);
+    }
+    this.nuevasImagenesCachorro = [];
+
+    if (indexEditando === -1) {
+      // CREAR NUEVO CACHORRO
+      if (!this.anuncio?.id) {
+        this.isGuardandoCachorro = false;
+        return;
       }
-      imagenes[i] = nombre;
-    }
-  }
-  this.nuevasImagenesCachorro = [];
-
-  if (indexEditando === -1) {
-    // CREAR NUEVO CACHORRO
-    if (!this.anuncio?.id) {
-      this.isGuardandoCachorro = false;
-      return;
-    }
-    const nuevoCachorro = {
-      ...valores,
-      imagenes: imagenes,
-      id_anuncio: this.anuncio.id,
-    };
-    const idNuevo = await this.cachorrosService.crearCachorro(nuevoCachorro);
-    // Recargar URLs públicas
-    const imagenesConRuta = imagenes.map(nombre =>
-      nombre.startsWith('http') ? nombre : `cachorros/${this.anuncio?.id}/${nombre}`
-    );
-    const urls = await this.imagenService.cargarImagenes(imagenesConRuta);
-    this.cachorros.push({
-      ...nuevoCachorro,
-      id: idNuevo,
-      imagenes: urls,
-    });
-  } else {
-    // EDICIÓN DE CACHORRO EXISTENTE
-    const eliminadas = this.imagenesOriginalesCachorro.filter(
-      orig => !imagenes.includes(orig)
-    ).filter(
-      img => typeof img === 'string' && !img.startsWith('blob:') && !img.startsWith('http')
-    );
-    if (eliminadas.length && this.anuncio?.id) {
-      await this.imagenService.eliminarImagenes('cachorro', this.anuncio.id, eliminadas);
-    }
-
-    // Actualizar Firebase (solo con los nombres)
-    if (this.cachorroEditando?.id) {
-      const { id, ...resto } = {
-        ...this.cachorros[indexEditando],
+      const nuevoCachorro = {
         ...valores,
-        imagenes: imagenes
+        imagenes: imagenes,
+        id_anuncio: this.anuncio.id,
       };
-      await this.cachorrosService.actualizarCachorro(id, resto);
-    }
-
-    // Recargar las URLs públicas para mostrar en la app
-    if (this.anuncio?.id) {
+      const idNuevo = await this.cachorrosService.crearCachorro(nuevoCachorro);
       const imagenesConRuta = imagenes.map(nombre =>
         nombre.startsWith('http') ? nombre : `cachorros/${this.anuncio?.id}/${nombre}`
       );
       const urls = await this.imagenService.cargarImagenes(imagenesConRuta);
-
-      this.cachorros[indexEditando] = {
-        ...this.cachorros[indexEditando],
-        ...valores,
-        imagenes: urls
+      const cachorroCreado = {
+        ...nuevoCachorro,
+        id: idNuevo,
+        imagenes: urls,
       };
+      this.cachorros.push(cachorroCreado);
+      // Asigna el cachorro creado para futuras ediciones inmediatas
+      this.cachorroEditando = cachorroCreado;
+    } else {
+      // EDICIÓN DE CACHORRO EXISTENTE
+      const eliminadas = this.imagenesOriginalesCachorro.filter(
+        orig => !imagenes.includes(orig)
+      ).filter(
+        img => typeof img === 'string' && !img.startsWith('blob:') && !img.startsWith('http')
+      );
+      if (eliminadas.length && this.anuncio?.id) {
+        await this.imagenService.eliminarImagenes('cachorro', this.anuncio.id, eliminadas);
+      }
+
+      // Obtener el id de forma robusta
+      let id = this.cachorroEditando?.id;
+      if (!id && this.cachorros[indexEditando]) {
+        id = this.cachorros[indexEditando].id;
+      }
+      if (!id) {
+        console.error('Error: El cachorro no tiene ID');
+        this.isGuardandoCachorro = false;
+        return;
+      }
+
+      const datosActualizados = {
+        color: valores.color,
+        sexo: valores.sexo,
+        precio: valores.precio,
+        disponible: valores.disponible,
+        descripcion: valores.descripcion,
+        imagenes
+      };
+
+      await this.cachorrosService.actualizarCachorro(id, datosActualizados);
+
+      if (this.anuncio?.id) {
+        const imagenesConRuta = imagenes.map(nombre =>
+          nombre.startsWith('http') ? nombre : `cachorros/${this.anuncio?.id}/${nombre}`
+        );
+        const urls = await this.imagenService.cargarImagenes(imagenesConRuta);
+        this.cachorros[indexEditando] = {
+          ...this.cachorros[indexEditando],
+          ...valores,
+          imagenes: urls
+        };
+      }
     }
+
+    this.isGuardandoCachorro = false;
   }
 
-  this.isGuardandoCachorro = false;
-}
 
 
   async onCachorroFileSelected(event: any) {
@@ -537,7 +757,7 @@ export class MisanunciosDetailComponent implements OnInit {
     }, 0);
   }
 
-  async eliminarCachorroModal() {
+  eliminarCachorroModal() {
     if (!this.cachorroEditando?.id || !this.anuncio?.id) return;
     // Abre el modal de confirmación
     this.mostrarConfirmacionEliminarCachorro = true;
@@ -557,7 +777,31 @@ export class MisanunciosDetailComponent implements OnInit {
     this.isGuardandoCachorro = true;
 
     await this.cachorrosService.eliminarCachorro(this.cachorroEditando!.id);
-    await this.imagenService.eliminarCarpeta('cachorro', this.cachorroEditando!.id);
+
+    // Eliminar todas las imágenes del cachorro en Firebase Storage
+    if (this.cachorroEditando?.imagenes && this.cachorroEditando.imagenes.length > 0) {
+      const idAnuncio = this.anuncio.id;
+      // Extraer solo el nombre de archivo de cada imagen
+      const nombresImagenes = this.cachorroEditando.imagenes.map((img: string) => {
+        if (!img) return '';
+        if (img.startsWith('http')) {
+          if (img.includes('%2F')) {
+            const nombreCodificado = img.split('%2F').pop()?.split('?')[0] || img;
+            return decodeURIComponent(nombreCodificado);
+          }
+          if (img.includes('/')) {
+            return decodeURIComponent(img.split('/').pop()?.split('?')[0] || img);
+          }
+        }
+        return img;
+      }).filter(Boolean);
+
+      if (nombresImagenes.length > 0) {
+        await this.imagenService.eliminarImagenes('cachorro', idAnuncio, nombresImagenes);
+        console.log(`Imágenes eliminadas de Firebase Storage:`, nombresImagenes);
+      }
+    }
+
     this.cachorros = this.cachorros.filter(c => c.id !== this.cachorroEditando?.id);
 
     this.isGuardandoCachorro = false;
@@ -574,6 +818,37 @@ export class MisanunciosDetailComponent implements OnInit {
     this.mostrarConfirmacionEliminarCachorro = false;
     setTimeout(() => {
       const modal = document.getElementById('modalConfirmarEliminarCachorro');
+      if (modal) {
+        // @ts-ignore
+        const bsModal = window.bootstrap.Modal.getInstance(modal);
+        if (bsModal) bsModal.hide();
+      }
+    }, 0);
+  }
+
+  eliminarAnuncioModal() {
+    this.mostrarConfirmacionEliminarAnuncio = true;
+    setTimeout(() => {
+      const modal = document.getElementById('modalConfirmarEliminarAnuncio');
+      if (modal) {
+        // @ts-ignore
+        const bsModal = new window.bootstrap.Modal(modal);
+        bsModal.show();
+      }
+    }, 0);
+  }
+
+  async confirmarEliminarAnuncio() {
+    if (!this.anuncio?.id) return;
+    await this.anunciosService.eliminarAnuncio(this.anuncio.id).toPromise();
+    // Redirige o recarga la página, o muestra un mensaje
+    window.location.href = '/mis-anuncios'; // Cambia la ruta según tu app
+  }
+
+  cerrarModalConfirmacionEliminarAnuncio() {
+    this.mostrarConfirmacionEliminarAnuncio = false;
+    setTimeout(() => {
+      const modal = document.getElementById('modalConfirmarEliminarAnuncio');
       if (modal) {
         // @ts-ignore
         const bsModal = window.bootstrap.Modal.getInstance(modal);

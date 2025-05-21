@@ -12,6 +12,11 @@ import { CachorrosService } from './cachorros.service';
 })
 export class AnunciosService {
 
+  tipos = [
+    { label: 'Perro', value: true },
+    { label: 'Gato', value: false }
+  ];
+
   constructor(
     private firestore: Firestore,
     private storage: Storage,
@@ -144,5 +149,15 @@ export class AnunciosService {
       id_padre: idPadre,
       id_madre: idMadre
     });
+  }
+
+  /**
+   * Actualiza los datos de un anuncio.
+   * @param idAnuncio ID del anuncio
+   * @param data Campos a actualizar
+   */
+  async actualizarAnuncio(idAnuncio: string, data: any): Promise<void> {
+    const anuncioDocRef = doc(this.firestore, 'anuncios', idAnuncio);
+    await updateDoc(anuncioDocRef, data);
   }
 }
