@@ -69,8 +69,17 @@
       <div *ngIf="cachorros.length > 0" class="mt-4">
         <h3 class="card-title fw-bold">Cachorros disponibles</h3>
         <div class="row">
-          <div *ngFor="let cachorro of cachorros" class="col-md-4 mb-3">
-            <div class="card shadow-sm clickable" (click)="editarCachorro(cachorro.id)">
+          <!-- Cards de cachorros existentes -->
+          <div *ngFor="let cachorro of cachorros; let i = index" class="col-md-4 mb-3">
+            <div class="card shadow-sm clickable position-relative"
+                 (click)="editarCachorro(cachorro.id)"
+                 [style.pointer-events]="isGuardandoCachorro && indexCachorroEditando === i ? 'none' : 'auto'"
+                 [style.opacity]="isGuardandoCachorro && indexCachorroEditando === i ? 0.6 : 1">
+              <div *ngIf="isGuardandoCachorro && indexCachorroEditando === i"
+                   class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+                   style="background: rgba(255,255,255,0.7); z-index: 10;">
+                <div class="spinner-border text-success" role="status"></div>
+              </div>
               <img [src]="cachorro.imagenes[0]" class="card-img-top" alt="Imagen del cachorro"
                 style="object-fit: cover; height: 200px;">
               <div class="card-body">
@@ -80,6 +89,18 @@
                   <strong>Disponible:</strong> {{ cachorro.disponible ? 'Sí' : 'No' }}<br>
                   {{ cachorro.descripcion }}
                 </p>
+              </div>
+            </div>
+          </div>
+          <!-- Card para añadir cachorro -->
+          <div class="col-md-4 mb-3">
+            <div class="card shadow-sm clickable h-100 d-flex align-items-center justify-content-center"
+                 style="min-height: 320px; cursor:pointer; border: 2px dashed #28a745;"
+                 (click)="abrirModalNuevoCachorro()">
+              <div class="text-center w-100">
+                <i class="bi bi-plus-circle" style="font-size: 3rem; color: #28a745;"></i>
+                <h5 class="mt-2">Añadir cachorro</h5>
+                <p class="text-muted">Crea un nuevo cachorro para esta camada</p>
               </div>
             </div>
           </div>
@@ -335,10 +356,16 @@
             <textarea class="form-control" formControlName="descripcion"></textarea>
           </div>
         </div>
-        <div class="modal-footer d-flex justify-content-end">
+        <div class="modal-footer d-flex justify-content-between">
+          <button *ngIf="indexCachorroEditando !== -1"
+                  type="button"
+                  class="btn btn-outline-danger"
+                  (click)="eliminarCachorroModal()">
+            <i class="bi bi-trash"></i> Eliminar
+          </button>
           <button type="submit" class="btn-default"
-            [disabled]="formCachorro.invalid || isGuardandoCachorro">
-            {{ isGuardandoCachorro ? 'Guardando...' : 'Guardar' }}
+            [disabled]="formCachorro.invalid">
+            Guardar
           </button>
         </div>
       </form>

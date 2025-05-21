@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, doc, getDoc, query, where, getDocs, updateDoc } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, doc, getDoc, query, where, getDocs, updateDoc, deleteDoc } from '@angular/fire/firestore';
 import { Cachorro } from '../models/Cachorro.model';
 
 @Injectable({
@@ -32,5 +32,17 @@ export class CachorrosService {
     // No guardar el id dentro del documento
     const { id, ...resto } = datos;
     await updateDoc(cachorroDoc, { ...resto });
+  }
+
+  // NUEVO MÉTODO PARA CREAR CACHORRO
+  async crearCachorro(cachorro: any): Promise<string> {
+    const cachorrosCollection = collection(this.firestore, 'cachorros');
+    const docRef = await addDoc(cachorrosCollection, cachorro);
+    return docRef.id;
+  }
+
+  async eliminarCachorro(idCachorro: string): Promise<void> {
+    const cachorroDoc = doc(this.firestore, 'cachorros', idCachorro);
+    await deleteDoc(cachorroDoc);
   }
 }

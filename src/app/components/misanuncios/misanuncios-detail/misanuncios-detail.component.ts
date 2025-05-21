@@ -12,7 +12,7 @@ import { Cachorro } from '../../../models/Cachorro.model';
 import { Criadero } from '../../../models/Criadero.model';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { Mascota } from '../../../models/Mascota.model';
-import { FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -347,10 +347,12 @@ export class MisanunciosDetailComponent implements OnInit {
   }
 
   async guardarCachorroEditado() {
-  if (!this.formCachorro || this.formCachorro.invalid || this.indexCachorroEditando === -1) return;
-  this.isGuardandoCachorro = true;
-  const valores = this.formCachorro.value;
+  if (!this.formCachorro || this.formCachorro.invalid) return;
+  const valores = this.formCachorro.value; // <-- OBTÉN LOS VALORES AQUÍ
   let imagenes = [...(valores.imagenes || [])];
+
+  this.isGuardandoCachorro = true;
+  this.cerrarModalCachorro();
 
   // Subir blobs en orden usando nuevasImagenesCachorro
   let fileIndex = 0;
@@ -366,7 +368,6 @@ export class MisanunciosDetailComponent implements OnInit {
         imagenes[i] = nombreArchivo;
       }
     } else if (typeof imagenes[i] === 'string' && (imagenes[i].startsWith('http') || imagenes[i].includes('%2F'))) {
-      // Si es una URL pública, extrae solo el nombre del archivo
       let nombre = imagenes[i];
       if (nombre.includes('%2F')) {
         nombre = decodeURIComponent(nombre.split('%2F').pop()?.split('?')[0] || nombre);
@@ -375,47 +376,69 @@ export class MisanunciosDetailComponent implements OnInit {
       }
       imagenes[i] = nombre;
     }
-    // Si ya es solo el nombre, no hace falta hacer nada
   }
   this.nuevasImagenesCachorro = [];
 
-  // Eliminar del storage solo imágenes reales (no blobs ni URLs)
-  const eliminadas = this.imagenesOriginalesCachorro.filter(
-    orig => !imagenes.includes(orig)
-  ).filter(
-    img => typeof img === 'string' && !img.startsWith('blob:') && !img.startsWith('http')
-  );
-  if (eliminadas.length && this.anuncio?.id) {
-    await this.imagenService.eliminarImagenes('cachorro', this.anuncio.id, eliminadas);
-  }
-
-  // Actualizar Firebase (solo con los nombres)
-  if (this.cachorroEditando?.id) {
-    const { id, ...resto } = {
-      ...this.cachorros[this.indexCachorroEditando],
+  if (this.indexCachorroEditando === -1) {
+    // CREAR NUEVO CACHORRO
+    if (!this.anuncio?.id) {
+      this.isGuardandoCachorro = false;
+      return;
+    }
+    const nuevoCachorro = {
       ...valores,
-      imagenes: imagenes
+      imagenes: imagenes,
+      id_anuncio: this.anuncio.id,
     };
-    await this.cachorrosService.actualizarCachorro(id, resto);
-  }
-
-  // Recargar las URLs públicas para mostrar en la app
-  if (this.anuncio?.id) {
+    const idNuevo = await this.cachorrosService.crearCachorro(nuevoCachorro);
+    // Recargar URLs públicas
     const imagenesConRuta = imagenes.map(nombre =>
       nombre.startsWith('http') ? nombre : `cachorros/${this.anuncio?.id}/${nombre}`
     );
     const urls = await this.imagenService.cargarImagenes(imagenesConRuta);
+    this.cachorros.push({
+      ...nuevoCachorro,
+      id: idNuevo,
+      imagenes: urls,
+    });
+  } else {
+    // ...código de edición existente...
+    // Eliminar del storage solo imágenes reales (no blobs ni URLs)
+    const eliminadas = this.imagenesOriginalesCachorro.filter(
+      orig => !imagenes.includes(orig)
+    ).filter(
+      img => typeof img === 'string' && !img.startsWith('blob:') && !img.startsWith('http')
+    );
+    if (eliminadas.length && this.anuncio?.id) {
+      await this.imagenService.eliminarImagenes('cachorro', this.anuncio.id, eliminadas);
+    }
 
-    // Actualizar ahora el array completo con las URLs públicas
-    this.cachorros[this.indexCachorroEditando] = {
-      ...this.cachorros[this.indexCachorroEditando],
-      ...valores,
-      imagenes: urls
-    };
+    // Actualizar Firebase (solo con los nombres)
+    if (this.cachorroEditando?.id) {
+      const { id, ...resto } = {
+        ...this.cachorros[this.indexCachorroEditando],
+        ...valores,
+        imagenes: imagenes
+      };
+      await this.cachorrosService.actualizarCachorro(id, resto);
+    }
+
+    // Recargar las URLs públicas para mostrar en la app
+    if (this.anuncio?.id) {
+      const imagenesConRuta = imagenes.map(nombre =>
+        nombre.startsWith('http') ? nombre : `cachorros/${this.anuncio?.id}/${nombre}`
+      );
+      const urls = await this.imagenService.cargarImagenes(imagenesConRuta);
+
+      this.cachorros[this.indexCachorroEditando] = {
+        ...this.cachorros[this.indexCachorroEditando],
+        ...valores,
+        imagenes: urls
+      };
+    }
   }
 
   this.isGuardandoCachorro = false;
-  this.cerrarModalCachorro();
 }
 
 
@@ -477,5 +500,52 @@ export class MisanunciosDetailComponent implements OnInit {
     if (this.cachorroEditando?.id) {
       await this.cachorrosService.actualizarDisponibilidad(this.cachorroEditando.id, nuevo);
     }
+  }
+
+  abrirModalNuevoCachorro() {
+    this.cachorroEditando = undefined;
+    this.indexCachorroEditando = -1;
+    this.imagenesOriginalesCachorro = [];
+    this.nuevasImagenesCachorro = [];
+    this.formCachorro = this.fb.group({
+      color: ['', []],
+      sexo: ['', [Validators.required]],
+      precio: ['', [Validators.required]],
+      disponible: [true],
+      descripcion: [''],
+      imagenes: [[], [
+        Validators.required,
+        (control: AbstractControl) => (control.value && control.value.length > 0 ? null : { required: true })
+      ]],
+    });
+    this.imagenSeleccionadaCachorro = 0;
+    this.modalCachorroAbierto = true;
+    setTimeout(() => {
+      const modal = document.getElementById('modalEditarCachorro');
+      if (modal) {
+        // @ts-ignore
+        const bsModal = new window.bootstrap.Modal(modal);
+        bsModal.show();
+      }
+    }, 0);
+  }
+
+  async eliminarCachorroModal() {
+    if (!this.cachorroEditando?.id || !this.anuncio?.id) return;
+    if (!confirm('¿Seguro que quieres eliminar este cachorro? Esta acción no se puede deshacer.')) return;
+
+    this.isGuardandoCachorro = true;
+
+    // Elimina el documento del cachorro en Firestore
+    await this.cachorrosService.eliminarCachorro(this.cachorroEditando.id);
+
+    // Elimina la carpeta de imágenes del cachorro en Storage
+    await this.imagenService.eliminarCarpeta('cachorro', this.cachorroEditando.id);
+
+    // Quita el cachorro de la lista local
+    this.cachorros = this.cachorros.filter(c => c.id !== this.cachorroEditando?.id);
+
+    this.isGuardandoCachorro = false;
+    this.cerrarModalCachorro();
   }
 }
