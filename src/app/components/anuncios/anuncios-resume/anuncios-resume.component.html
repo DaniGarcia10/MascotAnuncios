@@ -30,7 +30,18 @@
           </h5>
           <p class="card-text mb-1 text-truncate">
             <strong>
-              {{ precioMinimo && precioMaximo ? precioMinimo + '€ - ' + precioMaximo + '€' : anuncio.precio + '€' }}
+              <!-- Mostrar rango de precios o precio único -->
+              <ng-container *ngIf="anuncio?.especificar_cachorros; else precioUnico">
+                <ng-container *ngIf="precioMinimo && precioMaximo && precioMinimo !== precioMaximo">
+                  {{ precioMinimo + '€ - ' + precioMaximo + '€' }}
+                </ng-container>
+                <ng-container *ngIf="precioMinimo && precioMaximo && precioMinimo === precioMaximo">
+                  {{ precioMinimo + '€' }}
+                </ng-container>
+              </ng-container>
+              <ng-template #precioUnico>
+                {{ anuncio.precio }}€
+              </ng-template>
             </strong>
           </p>
           <span class="badge bg-secondary mb-2">{{ anuncio.raza }}</span>

@@ -117,7 +117,12 @@
           <h4 class="card-title fw-bold mb-0">
             <!-- Mostrar rango de precios o precio único -->
             <ng-container *ngIf="anuncio?.especificar_cachorros; else precioUnico">
-              {{ precioMinimo && precioMaximo ? precioMinimo + '€ - ' + precioMaximo + '€' : '' }}
+              <ng-container *ngIf="precioMinimo && precioMaximo && precioMinimo !== precioMaximo">
+                {{ precioMinimo + '€ - ' + precioMaximo + '€' }}
+              </ng-container>
+              <ng-container *ngIf="precioMinimo && precioMaximo && precioMinimo === precioMaximo">
+                {{ precioMinimo + '€' }}
+              </ng-container>
             </ng-container>
             <ng-template #precioUnico>
               {{ anuncio.precio }}€

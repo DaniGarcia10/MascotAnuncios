@@ -618,6 +618,12 @@ export class MisanunciosDetailComponent implements OnInit {
       this.cachorros.push(cachorroCreado);
       // Asigna el cachorro creado para futuras ediciones inmediatas
       this.cachorroEditando = cachorroCreado;
+
+      // --- NUEVO: Si es el primer cachorro, poner especificar_cachorros a true ---
+      if (this.cachorros.length === 1 && this.anuncio && !this.anuncio.especificar_cachorros) {
+        this.anuncio.especificar_cachorros = true;
+        await this.anunciosService.actualizarAnuncio(this.anuncio.id, { especificar_cachorros: true });
+      }
     } else {
       // EDICIÓN DE CACHORRO EXISTENTE
       const eliminadas = this.imagenesOriginalesCachorro.filter(
@@ -804,6 +810,12 @@ export class MisanunciosDetailComponent implements OnInit {
     }
 
     this.cachorros = this.cachorros.filter(c => c.id !== this.cachorroEditando?.id);
+
+    // --- NUEVO: Si no quedan cachorros, poner especificar_cachorros a false ---
+    if (this.cachorros.length === 0 && this.anuncio && this.anuncio.especificar_cachorros) {
+      this.anuncio.especificar_cachorros = false;
+      await this.anunciosService.actualizarAnuncio(this.anuncio.id, { especificar_cachorros: false });
+    }
 
     this.isGuardandoCachorro = false;
     this.cerrarModalCachorro();
