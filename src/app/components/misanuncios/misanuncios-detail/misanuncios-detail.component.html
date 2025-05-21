@@ -7,14 +7,16 @@
         <div class="card-body">
           <h2 class="card-title fw-bold">{{ anuncio.titulo }}</h2>
           <p class="card-text mb-2">
-            <i class="bi bi-geo-alt me-1"></i>{{ anuncio.ubicacion }} - <i class="bi bi-clock me-1"></i>{{ calcularTiempoTranscurrido(anuncio.fecha_publicacion) }}
+            <i class="bi bi-geo-alt me-1"></i>{{ anuncio.ubicacion }} - <i class="bi bi-clock me-1"></i>{{
+            calcularTiempoTranscurrido(anuncio.fecha_publicacion) }}
           </p>
         </div>
 
         <div *ngIf="anuncio.imagenes.length > 0" class="card-body">
           <!-- Imagen principal con flechas -->
           <div class="d-flex justify-content-center align-items-center position-relative mb-3">
-            <button class="btn btn-light position-absolute start-0" (click)="anteriorImagen()" style="z-index: 10; width: 50px; height: 50px;">
+            <button class="btn btn-light position-absolute start-0" (click)="anteriorImagen()"
+              style="z-index: 10; width: 50px; height: 50px;">
               <i class="bi bi-chevron-left fs-3"></i>
             </button>
             <div class="position-relative" style="max-height: 400px;">
@@ -69,13 +71,14 @@
         <div class="row">
           <div *ngFor="let cachorro of cachorros" class="col-md-4 mb-3">
             <div class="card shadow-sm clickable" (click)="editarCachorro(cachorro.id)">
-              <img [src]="cachorro.imagenes[0]" class="card-img-top" alt="Imagen del cachorro" style="object-fit: cover; height: 200px;">
+              <img [src]="cachorro.imagenes[0]" class="card-img-top" alt="Imagen del cachorro"
+                style="object-fit: cover; height: 200px;">
               <div class="card-body">
                 <h5 class="card-title">{{ cachorro.color }} - {{ cachorro.sexo }}</h5>
                 <p class="card-text">
                   <strong>{{ cachorro.precio }}€</strong><br>
                   <strong>Disponible:</strong> {{ cachorro.disponible ? 'Sí' : 'No' }}<br>
-                   {{ cachorro.descripcion }}
+                  {{ cachorro.descripcion }}
                 </p>
               </div>
             </div>
@@ -127,7 +130,7 @@
       <div class="card shadow-sm mb-3">
         <div class="card-body d-flex align-items-center gap-3">
           <img *ngIf="criaderoData?.foto_perfil" [src]="criaderoData?.foto_perfil" alt="Foto del criador"
-              class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
+            class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
           <div>
             <h6 class="card-title fw-bold mb-1">{{ criaderoData?.nombre }}</h6>
             <p class="text-muted mb-0">
@@ -138,7 +141,8 @@
       </div>
 
       <!-- Card: Añadir padres -->
-      <div *ngIf="!anuncio?.id_padre && !anuncio?.id_madre" class="card text-center my-3 p-3" style="cursor:pointer;" (click)="abrirModalPadres('padre')">
+      <div *ngIf="!anuncio?.id_padre && !anuncio?.id_madre" class="card text-center my-3 p-3" style="cursor:pointer;"
+        (click)="abrirModalPadres('padre')">
         <div class="card-body">
           <h5 class="card-title">Añadir padres</h5>
           <p class="card-text text-muted">Haz clic aquí para seleccionar los padres de la camada.</p>
@@ -152,8 +156,8 @@
           <h6 class="card-title fw-bold position-absolute top-0 start-0 bg-light px-2 py-1 m-2 rounded">
             Padre
           </h6>
-          <img [src]="padresImagenes['padre']" alt="Imagen del padre"
-            class="img-fluid w-100 h-100" style="object-fit: contain;">
+          <img [src]="padresImagenes['padre']" alt="Imagen del padre" class="img-fluid w-100 h-100"
+            style="object-fit: contain;">
         </div>
       </div>
 
@@ -163,70 +167,59 @@
           <h6 class="card-title fw-bold position-absolute top-0 start-0 bg-light px-2 py-1 m-2 rounded">
             Madre
           </h6>
-          <img [src]="padresImagenes['madre']" alt="Imagen de la madre"
-            class="img-fluid w-100 h-100" style="object-fit: contain;">
+          <img [src]="padresImagenes['madre']" alt="Imagen de la madre" class="img-fluid w-100 h-100"
+            style="object-fit: contain;">
         </div>
       </div>
 
       <!-- Modal para seleccionar padres -->
-<div class="modal fade" id="modalPadres" tabindex="-1" aria-labelledby="modalPadresLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalPadresLabel">Seleccionar padres</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label">Padre:</label>
-          <ng-select
-            [items]="machos"
-            bindLabel="nombre"
-            bindValue="id"
-            [(ngModel)]="nuevoPadreId"
-            placeholder="Selecciona un padre"
-            [searchable]="false"
-            [clearable]="true">
-            <ng-template ng-option-tmp let-item="item">
-              <div class="d-flex align-items-center">
-                <img [src]="item.imagenes[0]" alt="Foto" class="me-2" width="40" height="40">
-                <div>
-                  <div>{{ item.nombre }}</div>
-                  <small>{{ item.raza }} - {{ item.color }}</small>
-                </div>
+      <div class="modal fade" id="modalPadres" tabindex="-1" aria-labelledby="modalPadresLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalPadresLabel">Seleccionar padres</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label">Padre:</label>
+                <ng-select [items]="machos" bindLabel="nombre" bindValue="id" [(ngModel)]="nuevoPadreId"
+                  placeholder="Selecciona un padre" [searchable]="false" [clearable]="true">
+                  <ng-template ng-option-tmp let-item="item">
+                    <div class="d-flex align-items-center">
+                      <img [src]="item.imagenes[0]" alt="Foto" class="me-2" width="40" height="40">
+                      <div>
+                        <div>{{ item.nombre }}</div>
+                        <small>{{ item.raza }} - {{ item.color }}</small>
+                      </div>
+                    </div>
+                  </ng-template>
+                </ng-select>
               </div>
-            </ng-template>
-          </ng-select>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Madre:</label>
-          <ng-select
-            [items]="hembras"
-            bindLabel="nombre"
-            bindValue="id"
-            [(ngModel)]="nuevaMadreId"
-            placeholder="Selecciona una madre"
-            [searchable]="false"
-            [clearable]="true">
-            <ng-template ng-option-tmp let-item="item">
-              <div class="d-flex align-items-center">
-                <img [src]="item.imagenes[0]" alt="Foto" class="me-2" width="40" height="40">
-                <div>
-                  <div>{{ item.nombre }}</div>
-                  <small>{{ item.raza }} - {{ item.color }}</small>
-                </div>
+              <div class="mb-3">
+                <label class="form-label">Madre:</label>
+                <ng-select [items]="hembras" bindLabel="nombre" bindValue="id" [(ngModel)]="nuevaMadreId"
+                  placeholder="Selecciona una madre" [searchable]="false" [clearable]="true">
+                  <ng-template ng-option-tmp let-item="item">
+                    <div class="d-flex align-items-center">
+                      <img [src]="item.imagenes[0]" alt="Foto" class="me-2" width="40" height="40">
+                      <div>
+                        <div>{{ item.nombre }}</div>
+                        <small>{{ item.raza }} - {{ item.color }}</small>
+                      </div>
+                    </div>
+                  </ng-template>
+                </ng-select>
               </div>
-            </ng-template>
-          </ng-select>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn-default" data-bs-dismiss="modal">Cerrar</button>
+              <button type="button" class="btn btn-success" (click)="guardarPadres()"
+                data-bs-dismiss="modal">Guardar</button>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-default" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-success" (click)="guardarPadres()" data-bs-dismiss="modal">Guardar</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 
       <!-- Card: Botones de acción -->
@@ -240,68 +233,68 @@
 </div>
 
 <!-- Modal para editar cachorro -->
-<div class="modal fade" id="modalEditarCachorro" tabindex="-1" aria-labelledby="modalEditarCachorroLabel" aria-hidden="true">
+<div class="modal fade" id="modalEditarCachorro" tabindex="-1" aria-labelledby="modalEditarCachorroLabel"
+  aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content card custom-card" *ngIf="formCachorro">
       <div class="modal-header card-header custom-card-header">
         <h5>
           <div class="mb-3">
-            <button type="button"
-                    class="btn btn-sm"
-                    [ngClass]="formCachorro?.get('disponible')?.value ? 'btn-success' : 'btn-danger'"
-                    (click)="cambiarDisponibilidadCachorro()">
-              {{ formCachorro?.get('disponible')?.value ? 'Disponible' : 'RESERVADO' }}
+            <button type="button" class="btn btn-sm"
+              [ngClass]="formCachorro.get('disponible')?.value ? 'btn-success' : 'btn-danger'"
+              (click)="cambiarDisponibilidadCachorro()">
+              {{ formCachorro.get('disponible')?.value ? 'Disponible' : 'RESERVADO' }}
             </button>
           </div>
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" (click)="cerrarModalCachorro()"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"
+          (click)="cerrarModalCachorro()"></button>
       </div>
       <form [formGroup]="formCachorro" (ngSubmit)="guardarCachorroEditado()">
         <div class="modal-body card-body custom-card-body">
           <!-- Imagen grande principal con flechas y cruz roja para eliminar -->
+          <!-- Imagen grande principal con flechas y cruz roja para eliminar -->
           <div class="text-center mb-3" *ngIf="formCachorro.get('imagenes')?.value?.length">
             <div class="d-flex justify-content-center align-items-center position-relative" style="height:220px;">
-              <button *ngIf="formCachorro.get('imagenes')?.value.length > 1"
-                      type="button"
-                      class="btn btn-light position-absolute start-0 top-50 translate-middle-y"
-                      style="z-index:10;width:36px;height:36px;padding:0;"
-                      (click)="anteriorImagenCachorro()">
+
+              <!-- Flecha izquierda -->
+              <button *ngIf="formCachorro.get('imagenes')?.value.length > 1" type="button"
+                class="btn btn-light position-absolute start-0 top-50 translate-middle-y"
+                style="z-index:10;width:36px;height:36px;padding:0;" (click)="anteriorImagenCachorro()">
                 <i class="bi bi-chevron-left fs-4"></i>
               </button>
-              <img [src]="formCachorro.get('imagenes')?.value[imagenSeleccionadaCachorro || 0]"
-                   alt="Imagen cachorro"
-                   class="rounded mb-2 shadow"
-                   style="width:220px;max-width:100%;height:220px;object-fit:cover;">
-              <!-- Cruz roja para eliminar la imagen grande -->
-              <button type="button"
-                      class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-1"
-                      style="border-radius:50%;line-height:1;width:28px;height:28px;z-index:20;"
-                      (click)="eliminarImagenCachorro(imagenSeleccionadaCachorro); $event.stopPropagation();"
-                      title="Eliminar imagen">
-                &times;
-              </button>
-              <button *ngIf="formCachorro.get('imagenes')?.value.length > 1"
-                      type="button"
-                      class="btn btn-light position-absolute end-0 top-50 translate-middle-y"
-                      style="z-index:10;width:36px;height:36px;padding:0;"
-                      (click)="siguienteImagenCachorro()">
+
+              <!-- Imagen centrada con botón de eliminar en su esquina -->
+              <div class="position-relative" style="width:220px; height:220px;">
+                <img [src]="formCachorro.get('imagenes')?.value[imagenSeleccionadaCachorro || 0]" alt="Imagen cachorro"
+                  class="rounded mb-2 shadow" style="width:100%; height:100%; object-fit:cover;">
+                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-1"
+                  style="border-radius:50%;line-height:1;width:24px;height:24px;z-index:20;"
+                  (click)="eliminarImagenCachorro(imagenSeleccionadaCachorro); $event.stopPropagation();"
+                  title="Eliminar imagen">
+                  &times;
+                </button>
+              </div>
+
+              <!-- Flecha derecha -->
+              <button *ngIf="formCachorro.get('imagenes')?.value.length > 1" type="button"
+                class="btn btn-light position-absolute end-0 top-50 translate-middle-y"
+                style="z-index:10;width:36px;height:36px;padding:0;" (click)="siguienteImagenCachorro()">
                 <i class="bi bi-chevron-right fs-4"></i>
               </button>
+              
             </div>
           </div>
+
           <!-- Miniaturas con cruz roja para eliminar -->
           <div class="d-flex justify-content-center flex-wrap mb-2" *ngIf="formCachorro.get('imagenes')?.value?.length">
             <div class="position-relative m-1" *ngFor="let img of formCachorro.get('imagenes')?.value; let i = index">
-              <img [src]="img"
-                   (click)="seleccionarImagenCachorro(i)"
-                   [class.border-primary]="i === imagenSeleccionadaCachorro"
-                   class="img-thumbnail"
-                   style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;">
-              <button type="button"
-                      class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-1"
-                      style="border-radius:50%;line-height:1;width:20px;height:20px;z-index:20;"
-                      (click)="eliminarImagenCachorro(i); $event.stopPropagation();"
-                      title="Eliminar imagen">
+              <img [src]="img" (click)="seleccionarImagenCachorro(i)"
+                [class.border-primary]="i === imagenSeleccionadaCachorro" class="img-thumbnail"
+                style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;">
+              <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-1"
+                style="border-radius:50%;line-height:1;width:20px;height:20px;z-index:20;"
+                (click)="eliminarImagenCachorro(i); $event.stopPropagation();" title="Eliminar imagen">
                 &times;
               </button>
             </div>
@@ -310,7 +303,8 @@
           <div class="mb-3">
             <label class="form-label mb-1">Añadir imágenes:</label>
             <input type="file" class="form-control" (change)="onCachorroFileSelected($event)" multiple>
-            <div *ngIf="formCachorro.get('imagenes')?.invalid && formCachorro.get('imagenes')?.touched" class="text-danger">Debe subir al menos una imagen.</div>
+            <div *ngIf="formCachorro.get('imagenes')?.invalid && formCachorro.get('imagenes')?.touched"
+              class="text-danger">Debe subir al menos una imagen.</div>
           </div>
           <div class="mb-3">
             <label class="form-label">Color:</label>
@@ -322,12 +316,14 @@
               <option value="Macho">Macho</option>
               <option value="Hembra">Hembra</option>
             </select>
-            <div *ngIf="formCachorro.get('sexo')?.invalid && formCachorro.get('sexo')?.touched" class="text-danger">El sexo es obligatorio.</div>
+            <div *ngIf="formCachorro.get('sexo')?.invalid && formCachorro.get('sexo')?.touched" class="text-danger">El
+              sexo es obligatorio.</div>
           </div>
           <div class="mb-3">
             <label class="form-label">Precio:</label>
             <input type="number" class="form-control" formControlName="precio">
-            <div *ngIf="formCachorro.get('precio')?.invalid && formCachorro.get('precio')?.touched" class="text-danger">El precio es obligatorio.</div>
+            <div *ngIf="formCachorro.get('precio')?.invalid && formCachorro.get('precio')?.touched" class="text-danger">
+              El precio es obligatorio.</div>
           </div>
           <div class="mb-3">
             <label class="form-label">Descripción:</label>

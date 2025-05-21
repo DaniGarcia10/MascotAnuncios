@@ -311,8 +311,13 @@ export class MisanunciosDetailComponent implements OnInit {
       ...this.cachorros[this.indexCachorroEditando],
       ...valores
     };
+    // Guardar en backend
+    if (this.cachorroEditando?.id) {
+      // No enviar el id dentro del objeto de actualización
+      const { id, ...resto } = this.cachorros[this.indexCachorroEditando];
+      await this.cachorrosService.actualizarCachorro(id, resto);
+    }
     this.cerrarModalCachorro();
-    // Aquí puedes llamar a un servicio para guardar en backend si lo necesitas
   }
 
   onCachorroFileSelected(event: any) {

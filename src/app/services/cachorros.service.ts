@@ -26,4 +26,11 @@ export class CachorrosService {
     const cachorroDoc = doc(this.firestore, 'cachorros', idCachorro);
     await updateDoc(cachorroDoc, { disponible });
   }
+
+  async actualizarCachorro(idCachorro: string, datos: Partial<Cachorro>): Promise<void> {
+    const cachorroDoc = doc(this.firestore, 'cachorros', idCachorro);
+    // No guardar el id dentro del documento
+    const { id, ...resto } = datos;
+    await updateDoc(cachorroDoc, { ...resto });
+  }
 }

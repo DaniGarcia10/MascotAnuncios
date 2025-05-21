@@ -407,5 +407,4 @@ export class AnunciosDetailComponent implements OnInit {
     this.imagenCachorroSeleccionada = idx;
   }
 
-  // Elimina el método abrirModalCachorroFullscreen y fullscreenActivo
 }
