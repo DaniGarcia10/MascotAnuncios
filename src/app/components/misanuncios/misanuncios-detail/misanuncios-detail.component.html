@@ -71,13 +71,12 @@
         <div class="row">
           <!-- Cards de cachorros existentes -->
           <div *ngFor="let cachorro of cachorros; let i = index" class="col-md-4 mb-3">
-            <div class="card shadow-sm clickable position-relative"
-                 (click)="editarCachorro(cachorro.id)"
-                 [style.pointer-events]="isGuardandoCachorro && indexCachorroEditando === i ? 'none' : 'auto'"
-                 [style.opacity]="isGuardandoCachorro && indexCachorroEditando === i ? 0.6 : 1">
+            <div class="card shadow-sm clickable position-relative" (click)="editarCachorro(cachorro.id)"
+              [style.pointer-events]="isGuardandoCachorro && indexCachorroEditando === i ? 'none' : 'auto'"
+              [style.opacity]="isGuardandoCachorro && indexCachorroEditando === i ? 0.6 : 1">
               <div *ngIf="isGuardandoCachorro && indexCachorroEditando === i"
-                   class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                   style="background: rgba(255,255,255,0.7); z-index: 10;">
+                class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+                style="background: rgba(255,255,255,0.7); z-index: 10;">
                 <div class="spinner-border text-success" role="status"></div>
               </div>
               <img [src]="cachorro.imagenes[0]" class="card-img-top" alt="Imagen del cachorro"
@@ -95,8 +94,8 @@
           <!-- Card para añadir cachorro -->
           <div class="col-md-4 mb-3">
             <div class="card shadow-sm clickable h-100 d-flex align-items-center justify-content-center"
-                 style="min-height: 320px; cursor:pointer; border: 2px dashed #28a745;"
-                 (click)="abrirModalNuevoCachorro()">
+              style="min-height: 320px; cursor:pointer; border: 2px dashed #28a745;"
+              (click)="abrirModalNuevoCachorro()">
               <div class="text-center w-100">
                 <i class="bi bi-plus-circle" style="font-size: 3rem; color: #28a745;"></i>
                 <h5 class="mt-2">Añadir cachorro</h5>
@@ -196,19 +195,20 @@
       <!-- Modal para seleccionar padres -->
       <div class="modal fade" id="modalPadres" tabindex="-1" aria-labelledby="modalPadresLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
+          <div class="modal-content card custom-card">
+            <div class="modal-header card-header custom-card-header">
               <h5 class="modal-title" id="modalPadresLabel">Seleccionar padres</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body card-body custom-card-body">
               <div class="mb-3">
                 <label class="form-label">Padre:</label>
                 <ng-select [items]="machos" bindLabel="nombre" bindValue="id" [(ngModel)]="nuevoPadreId"
-                  placeholder="Selecciona un padre" [searchable]="false" [clearable]="true">
+                  placeholder="Selecciona un padre" [searchable]="false" [clearable]="true"
+                  class="mb-2">
                   <ng-template ng-option-tmp let-item="item">
                     <div class="d-flex align-items-center">
-                      <img [src]="item.imagenes[0]" alt="Foto" class="me-2" width="40" height="40">
+                      <img [src]="item.imagenes[0]" alt="Foto" class="me-2 rounded-circle border" width="40" height="40" style="object-fit:cover;">
                       <div>
                         <div>{{ item.nombre }}</div>
                         <small>{{ item.raza }} - {{ item.color }}</small>
@@ -220,10 +220,11 @@
               <div class="mb-3">
                 <label class="form-label">Madre:</label>
                 <ng-select [items]="hembras" bindLabel="nombre" bindValue="id" [(ngModel)]="nuevaMadreId"
-                  placeholder="Selecciona una madre" [searchable]="false" [clearable]="true">
+                  placeholder="Selecciona una madre" [searchable]="false" [clearable]="true"
+                  class="mb-2">
                   <ng-template ng-option-tmp let-item="item">
                     <div class="d-flex align-items-center">
-                      <img [src]="item.imagenes[0]" alt="Foto" class="me-2" width="40" height="40">
+                      <img [src]="item.imagenes[0]" alt="Foto" class="me-2 rounded-circle border" width="40" height="40" style="object-fit:cover;">
                       <div>
                         <div>{{ item.nombre }}</div>
                         <small>{{ item.raza }} - {{ item.color }}</small>
@@ -234,8 +235,7 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn-default" data-bs-dismiss="modal">Cerrar</button>
-              <button type="button" class="btn btn-success" (click)="guardarPadres()"
+              <button type="button" class="btn-default w-100" (click)="guardarPadres()"
                 data-bs-dismiss="modal">Guardar</button>
             </div>
           </div>
@@ -258,22 +258,26 @@
   aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content card custom-card" *ngIf="formCachorro">
-      <div class="modal-header card-header custom-card-header">
-        <h5>
-          <div class="mb-3">
-            <button type="button" class="btn btn-sm"
-              [ngClass]="formCachorro.get('disponible')?.value ? 'btn-success' : 'btn-danger'"
-              (click)="cambiarDisponibilidadCachorro()">
-              {{ formCachorro.get('disponible')?.value ? 'Disponible' : 'RESERVADO' }}
-            </button>
-          </div>
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"
-          (click)="cerrarModalCachorro()"></button>
+      <div class="modal-header card-header custom-card-header d-flex align-items-center justify-content-between">
+        <!-- Botón papelera a la izquierda -->
+        <button *ngIf="indexCachorroEditando !== -1" type="button" class="btn btn-outline-danger me-2"
+          (click)="eliminarCachorroModal()" style="order: 1;">
+          <i class="bi bi-trash"></i>
+        </button>
+        <!-- Botón disponible centrado -->
+        <div class="flex-grow-1 text-center" style="order: 2;">
+          <button type="button" class="btn btn-sm"
+            [ngClass]="formCachorro.get('disponible')?.value ? 'btn-success' : 'btn-danger'"
+            (click)="cambiarDisponibilidadCachorro()">
+            {{ formCachorro.get('disponible')?.value ? 'Disponible' : 'RESERVADO' }}
+          </button>
+        </div>
+        <!-- Botón cerrar a la derecha -->
+        <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Cerrar"
+          (click)="cerrarModalCachorro()" style="order: 3;"></button>
       </div>
       <form [formGroup]="formCachorro" (ngSubmit)="guardarCachorroEditado()">
         <div class="modal-body card-body custom-card-body">
-          <!-- Imagen grande principal con flechas y cruz roja para eliminar -->
           <!-- Imagen grande principal con flechas y cruz roja para eliminar -->
           <div class="text-center mb-3" *ngIf="formCachorro.get('imagenes')?.value?.length">
             <div class="d-flex justify-content-center align-items-center position-relative" style="height:220px;">
@@ -303,7 +307,7 @@
                 style="z-index:10;width:36px;height:36px;padding:0;" (click)="siguienteImagenCachorro()">
                 <i class="bi bi-chevron-right fs-4"></i>
               </button>
-              
+
             </div>
           </div>
 
@@ -333,13 +337,8 @@
           </div>
           <div class="mb-3">
             <label class="form-label">Sexo:</label>
-            <ng-select
-              [items]="['Macho', 'Hembra']"
-              formControlName="sexo"
-              placeholder="Selecciona sexo"
-              [searchable]="false"
-              [clearable]="false"
-              class="mb-2">
+            <ng-select [items]="['Macho', 'Hembra']" formControlName="sexo" placeholder="Selecciona sexo"
+              [searchable]="false" [clearable]="false" class="mb-2">
             </ng-select>
             <div *ngIf="formCachorro.get('sexo')?.invalid && formCachorro.get('sexo')?.touched" class="text-danger">
               El sexo es obligatorio.
@@ -357,18 +356,33 @@
           </div>
         </div>
         <div class="modal-footer d-flex justify-content-between">
-          <button *ngIf="indexCachorroEditando !== -1"
-                  type="button"
-                  class="btn btn-outline-danger"
-                  (click)="eliminarCachorroModal()">
-            <i class="bi bi-trash"></i> Eliminar
-          </button>
-          <button type="submit" class="btn-default"
-            [disabled]="formCachorro.invalid">
+          <button type="submit" class="btn-default w-100" [disabled]="formCachorro.invalid">
             Guardar
           </button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="modalConfirmarEliminarCachorro" tabindex="-1"
+  aria-labelledby="modalConfirmarEliminarCachorroLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalConfirmarEliminarCachorroLabel">Confirmar eliminación</h5>
+        <button type="button" class="btn-close" (click)="cerrarModalConfirmacionEliminarCachorro()"
+          aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        ¿Seguro que quieres eliminar este cachorro? Esta acción no se puede deshacer.
+      </div>
+      <div class="modal-footer d-grid gap-2" style="grid-template-columns: 1fr 1fr;">
+        <button type="button" class="btn btn-secondary"
+          (click)="cerrarModalConfirmacionEliminarCachorro()">Cancelar</button>
+        <button type="button" class="btn btn-danger" (click)="confirmarEliminarCachorro()">Eliminar</button>
+      </div>
     </div>
   </div>
 </div>

@@ -14,6 +14,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { Mascota } from '../../../models/Mascota.model';
 import { FormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-misanuncios-detail',
@@ -56,6 +57,9 @@ export class MisanunciosDetailComponent implements OnInit {
   nuevasImagenesCachorro: File[] = [];
   imagenesOriginalesCachorro: string[] = [];
 
+  // Nueva variable para mostrar el modal de confirmación
+  mostrarConfirmacionEliminarCachorro: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private anunciosService: AnunciosService,
@@ -64,7 +68,8 @@ export class MisanunciosDetailComponent implements OnInit {
     private criaderoService: CriaderoService,
     private cachorrosService: CachorrosService,
     private imagenService: ImagenService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -348,8 +353,11 @@ export class MisanunciosDetailComponent implements OnInit {
 
   async guardarCachorroEditado() {
   if (!this.formCachorro || this.formCachorro.invalid) return;
-  const valores = this.formCachorro.value; // <-- OBTÉN LOS VALORES AQUÍ
+  const valores = this.formCachorro.value;
   let imagenes = [...(valores.imagenes || [])];
+
+  // Guarda el índice antes de cerrar el modal
+  const indexEditando = this.indexCachorroEditando;
 
   this.isGuardandoCachorro = true;
   this.cerrarModalCachorro();
@@ -379,7 +387,7 @@ export class MisanunciosDetailComponent implements OnInit {
   }
   this.nuevasImagenesCachorro = [];
 
-  if (this.indexCachorroEditando === -1) {
+  if (indexEditando === -1) {
     // CREAR NUEVO CACHORRO
     if (!this.anuncio?.id) {
       this.isGuardandoCachorro = false;
@@ -402,8 +410,7 @@ export class MisanunciosDetailComponent implements OnInit {
       imagenes: urls,
     });
   } else {
-    // ...código de edición existente...
-    // Eliminar del storage solo imágenes reales (no blobs ni URLs)
+    // EDICIÓN DE CACHORRO EXISTENTE
     const eliminadas = this.imagenesOriginalesCachorro.filter(
       orig => !imagenes.includes(orig)
     ).filter(
@@ -416,7 +423,7 @@ export class MisanunciosDetailComponent implements OnInit {
     // Actualizar Firebase (solo con los nombres)
     if (this.cachorroEditando?.id) {
       const { id, ...resto } = {
-        ...this.cachorros[this.indexCachorroEditando],
+        ...this.cachorros[indexEditando],
         ...valores,
         imagenes: imagenes
       };
@@ -430,8 +437,8 @@ export class MisanunciosDetailComponent implements OnInit {
       );
       const urls = await this.imagenService.cargarImagenes(imagenesConRuta);
 
-      this.cachorros[this.indexCachorroEditando] = {
-        ...this.cachorros[this.indexCachorroEditando],
+      this.cachorros[indexEditando] = {
+        ...this.cachorros[indexEditando],
         ...valores,
         imagenes: urls
       };
@@ -532,20 +539,46 @@ export class MisanunciosDetailComponent implements OnInit {
 
   async eliminarCachorroModal() {
     if (!this.cachorroEditando?.id || !this.anuncio?.id) return;
-    if (!confirm('¿Seguro que quieres eliminar este cachorro? Esta acción no se puede deshacer.')) return;
+    // Abre el modal de confirmación
+    this.mostrarConfirmacionEliminarCachorro = true;
+    setTimeout(() => {
+      const modal = document.getElementById('modalConfirmarEliminarCachorro');
+      if (modal) {
+        // @ts-ignore
+        const bsModal = new window.bootstrap.Modal(modal);
+        bsModal.show();
+      }
+    }, 0);
+  }
 
+  // Llama a esto si el usuario confirma la eliminación
+  async confirmarEliminarCachorro() {
+    if (!this.cachorroEditando?.id || !this.anuncio?.id) return;
     this.isGuardandoCachorro = true;
 
-    // Elimina el documento del cachorro en Firestore
-    await this.cachorrosService.eliminarCachorro(this.cachorroEditando.id);
-
-    // Elimina la carpeta de imágenes del cachorro en Storage
-    await this.imagenService.eliminarCarpeta('cachorro', this.cachorroEditando.id);
-
-    // Quita el cachorro de la lista local
+    await this.cachorrosService.eliminarCachorro(this.cachorroEditando!.id);
+    await this.imagenService.eliminarCarpeta('cachorro', this.cachorroEditando!.id);
     this.cachorros = this.cachorros.filter(c => c.id !== this.cachorroEditando?.id);
 
     this.isGuardandoCachorro = false;
     this.cerrarModalCachorro();
+    this.cerrarModalConfirmacionEliminarCachorro();
+    this.snackBar.open('Cachorro eliminado correctamente', 'X', { 
+      duration: 2500, 
+      panelClass: 'snackbar-success',
+      verticalPosition: 'top'
+    });
+  }
+
+  cerrarModalConfirmacionEliminarCachorro() {
+    this.mostrarConfirmacionEliminarCachorro = false;
+    setTimeout(() => {
+      const modal = document.getElementById('modalConfirmarEliminarCachorro');
+      if (modal) {
+        // @ts-ignore
+        const bsModal = window.bootstrap.Modal.getInstance(modal);
+        if (bsModal) bsModal.hide();
+      }
+    }, 0);
   }
 }
