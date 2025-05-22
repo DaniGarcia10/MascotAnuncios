@@ -47,7 +47,7 @@ export class AnunciosFormComponent implements OnInit {
       perro: [null, Validators.required],
       raza: [null, Validators.required],
       titulo: ['', Validators.required],
-      descripcion: [''],
+      descripcion: ['', [Validators.maxLength(360)]], 
       fecha_publicacion: new Date().toISOString(),
       id_padre: [null],
       id_madre: [null],
@@ -60,7 +60,7 @@ export class AnunciosFormComponent implements OnInit {
       imagenes: [[], Validators.required],
       cachorros: this.fb.array([]),
       especificar_cachorros: [false],
-      precio: [null],
+      precio: [null, [Validators.required, Validators.max(100000)]],
       destacado: [null],
       especificarPadres: [false], 
     });
@@ -85,9 +85,9 @@ export class AnunciosFormComponent implements OnInit {
             this.fb.group({
               color: [''],
               sexo: ['', Validators.required],
-              precio: [null, Validators.required],
+              precio: [null, [Validators.required, Validators.max(100000)]],
               disponible: [true],
-              descripcion: [''],
+              descripcion: ['', Validators.maxLength(45)],
               imagenes: [[], Validators.required],
             })
           );
@@ -161,9 +161,9 @@ export class AnunciosFormComponent implements OnInit {
         this.fb.group({
           color: [''],
           sexo: ['', Validators.required],
-          precio: [null, Validators.required],
+          precio: [null, [Validators.required, Validators.max(100000)]],
           disponible: [true],
-          descripcion: [''],
+          descripcion: ['', Validators.maxLength(45)],
           imagenes: [[], Validators.required],
         })
       );
@@ -176,81 +176,86 @@ export class AnunciosFormComponent implements OnInit {
 
   onFileSelected(event: any): void {
     const files = event.target.files;
-    const fileArray = Array.from(files) as File[]; // Convertir a un array de File
-    this.formAnuncio.get('imagenes')?.setValue(fileArray); // Guardar los archivos completos
+    const fileArray = Array.from(files) as File[];
+    const archivosValidos: File[] = [];
+    let errorDetectado = false;
+
+    for (const file of fileArray) {
+      try {
+        // Validar extensión usando el servicio
+        this.imagenService['validarExtension'](file);
+        archivosValidos.push(file);
+      } catch (error: any) {
+        errorDetectado = true;
+        const extension = file.name.split('.').pop()?.toLowerCase();
+        const mensaje = `El formato "${extension}" no es válido. Formatos soportados: jpg, jpeg, png, webp, pdf.`;
+        const modal = document.getElementById('modalErrorExtensionImagen');
+        const mensajeElem = document.getElementById('mensajeErrorExtensionImagen');
+        if (mensajeElem) mensajeElem.textContent = mensaje;
+        if (modal && (window as any).bootstrap) {
+          // @ts-ignore
+          const bsModal = new (window as any).bootstrap.Modal(modal);
+          bsModal.show();
+        }
+        break; // Salir del bucle al primer error
+      }
+    }
+
+    if (errorDetectado) {
+      // Limpiar input y control si hubo error
+      event.target.value = '';
+      this.formAnuncio.get('imagenes')?.setValue([]);
+    } else {
+      this.formAnuncio.get('imagenes')?.setValue(archivosValidos);
+    }
     this.formAnuncio.get('imagenes')?.markAsTouched();
-    console.log(this.formAnuncio.get('imagenes')?.value);
   }
 
+  // Para los cachorros:
   onCachorroFileSelected(event: any, i: number): void {
     const files = event.target.files;
-    const fileArray = Array.from(files) as File[]; 
-    this.cachorros.at(i).get('imagenes')?.setValue(fileArray); 
+    const fileArray = Array.from(files) as File[];
+    const archivosValidos: File[] = [];
+    let errorDetectado = false;
+
+    for (const file of fileArray) {
+      try {
+        this.imagenService['validarExtension'](file);
+        archivosValidos.push(file);
+      } catch (error: any) {
+        errorDetectado = true;
+        const extension = file.name.split('.').pop()?.toLowerCase();
+        const mensaje = `El formato "${extension}" no es válido. Formatos soportados: jpg, jpeg, png, webp, pdf.`;
+        const modal = document.getElementById('modalErrorExtensionImagen');
+        const mensajeElem = document.getElementById('mensajeErrorExtensionImagen');
+        if (mensajeElem) mensajeElem.textContent = mensaje;
+        if (modal && (window as any).bootstrap) {
+          // @ts-ignore
+          const bsModal = new (window as any).bootstrap.Modal(modal);
+          bsModal.show();
+        }
+        break; // Salir del bucle al primer error
+      }
+    }
+
+    if (errorDetectado) {
+      event.target.value = '';
+      this.cachorros.at(i).get('imagenes')?.setValue([]);
+    } else {
+      this.cachorros.at(i).get('imagenes')?.setValue(archivosValidos);
+    }
     this.cachorros.at(i).get('imagenes')?.markAsTouched();
-    console.log(this.cachorros.at(i).get('imagenes')?.value);
   }
 
   async onSubmit(): Promise<void> {
     if (this.isSubmitting) return; // Evitar múltiples envíos
     this.isSubmitting = true;
 
-    const errores: string[] = [];
-    const controls = this.formAnuncio.controls;
+    // Marcar todos los campos del formulario como tocados para mostrar errores
+    this.formAnuncio.markAllAsTouched();
+    this.cachorros.controls.forEach(cachorro => cachorro.markAllAsTouched());
 
-    if (controls['perro'].invalid) {
-      errores.push('El tipo (perro/gato) es obligatorio.');
-      controls['perro'].markAsTouched();
-    }
-    if (controls['raza'].invalid) {
-      errores.push('La raza es obligatoria.');
-      controls['raza'].markAsTouched();
-    }
-    if (controls['titulo'].invalid) {
-      errores.push('El título es obligatorio.');
-      controls['titulo'].markAsTouched();
-    }
-    if (controls['edadValor'].invalid) {
-      errores.push('La edad es obligatoria.');
-      controls['edadValor'].markAsTouched();
-    }
-    if (controls['edadUnidad'].invalid) {
-      errores.push('La unidad de edad es obligatoria.');
-      controls['edadUnidad'].markAsTouched();
-    }
-    if (controls['ubicacion'].invalid) {
-      errores.push('La provincia es obligatoria.');
-      controls['ubicacion'].markAsTouched();
-    }
-    if (!controls['imagenes'].value || controls['imagenes'].value.length === 0) {
-      errores.push('Debe subir al menos una imagen.');
-      controls['imagenes'].markAsTouched();
-    }
-
-    // Validación de cachorros si corresponde
-    if (controls['especificar_cachorros'].value && this.cachorros.length > 0) {
-      this.cachorros.controls.forEach((cachorro, i) => {
-        if (cachorro.get('sexo')?.invalid) {
-          errores.push(`El sexo del cachorro ${i + 1} es obligatorio.`);
-          cachorro.get('sexo')?.markAsTouched();
-        }
-        if (cachorro.get('precio')?.invalid) {
-          errores.push(`El precio del cachorro ${i + 1} es obligatorio.`);
-          cachorro.get('precio')?.markAsTouched();
-        }
-        if (!cachorro.get('imagenes')?.value || cachorro.get('imagenes')?.value.length === 0) {
-          errores.push(`Debe subir al menos una imagen para el cachorro ${i + 1}.`);
-          cachorro.get('imagenes')?.markAsTouched();
-        }
-      });
-    }
-
-    if (errores.length > 0) {
-      this.snackBar.open(errores.join(' '), 'Cerrar', {
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-        duration: 6000
-      });
+    if (this.formAnuncio.invalid) {
       this.isSubmitting = false;
       return;
     }

@@ -51,8 +51,21 @@
             </div>
           </div>
           <div class="mb-3">
+            <label for="repetirPassword" class="form-label">Repetir contraseña:</label>
+            <input id="repetirPassword" formControlName="repetirPassword" type="password" class="form-control" placeholder="Repite tu contraseña" required>
+            <div *ngIf="formRegistro.get('repetirPassword')?.invalid && formRegistro.get('repetirPassword')?.touched" class="text-danger">
+              <small *ngIf="formRegistro.get('repetirPassword')?.errors?.['required']">Debes repetir la contraseña.</small>
+            </div>
+            <div *ngIf="formRegistro.errors?.['passwordsNoCoinciden'] && (formRegistro.get('repetirPassword')?.touched || formRegistro.get('password')?.touched)" class="text-danger">
+              <small>Las contraseñas no coinciden.</small>
+            </div>
+          </div>
+          <div class="mb-3">
             <label for="fotoPerfil" class="form-label">Foto de Perfil:</label>
             <input id="fotoPerfil" type="file" class="form-control" (change)="onFileSelected($event)">
+            <div *ngIf="isSubmitting && !fotoPerfil" class="text-danger">
+              <small>La foto de perfil es obligatoria.</small>
+            </div>
           </div>
           <div class="form-check mb-3">
             <input id="vendedor" formControlName="vendedor" type="checkbox" class="form-check-input">
@@ -89,7 +102,7 @@
             <div class="mb-3">
               <label for="fotoPerfilCriadero" class="form-label">Foto de Perfil del Criadero:</label>
               <input id="fotoPerfilCriadero" type="file" class="form-control" (change)="onFileSelectedCriadero($event)">
-              <div *ngIf="isVendedor() && !fotoPerfilCriadero && isSubmitting" class="text-danger">
+              <div *ngIf="isSubmitting && isVendedor() && !fotoPerfilCriadero" class="text-danger">
                 <small>La foto de perfil del criadero es obligatoria.</small>
               </div>
             </div>
@@ -115,7 +128,7 @@
                   Formatos admitidos: PDF, JPG, PNG<br>
                   Tamaño máximo: 20 MB por archivo
                 </small>
-                <div *ngIf="isVendedor() && documentacionFiles.length === 0 && isSubmitting" class="text-danger mt-1">
+                <div *ngIf="isSubmitting && isVendedor() && documentacionFiles.length === 0" class="text-danger mt-1">
                   <small>La documentación del criadero es obligatoria.</small>
                 </div>
               </div>
@@ -135,6 +148,23 @@
             {{ isSubmitting ? 'Registrando...' : 'Registrarse' }}
           </button>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal para error de extensión de imagen -->
+<div class="modal fade" id="modalErrorExtensionImagen" tabindex="-1" aria-labelledby="modalErrorExtensionImagenLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header">
+        <h5 class="modal-title w-100" id="modalErrorExtensionImagenLabel">Formato de imagen no válido</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p class="fs-5 mb-0" id="mensajeErrorExtensionImagen"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger w-100" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>

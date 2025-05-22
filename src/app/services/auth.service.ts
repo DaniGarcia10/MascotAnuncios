@@ -3,14 +3,13 @@ import { Usuario } from '../models/Usuario.model';
 import { Auth, User, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword } from '@angular/fire/auth';
 import { Firestore, doc, getDoc } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { getDownloadURL, ref, Storage } from '@angular/fire/storage'; // Importar Firebase Storage
 import { UsuarioService } from './usuario.service'; // Importar UsuarioService
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private logueado = new BehaviorSubject<boolean>(false); // Cambiar a BehaviorSubject
+  private logueado = new BehaviorSubject<boolean | null>(null);
 
   constructor(private auth: Auth, private ngZone: NgZone, private firestore: Firestore, private usuarioService: UsuarioService) {
     onAuthStateChanged(this.auth, (user) => {
@@ -38,8 +37,12 @@ export class AuthService {
     });
   }
 
-  isAuthenticated(): BehaviorSubject<boolean> {
-    return this.logueado; // Retornar el BehaviorSubject
+  isAuthenticated(): Observable<boolean | null> {
+    return this.logueado.asObservable();
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.logueado.value;
   }
 
   getUserDataAuth(): Observable<{ user: User | null, usuario: Usuario | null }> {

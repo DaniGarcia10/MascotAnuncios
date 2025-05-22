@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { FormGroup, FormControl, Validators, ReactiveFormsModule, ValidationErrors, ValidatorFn, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -14,7 +14,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, MatSnackBarModule]
 })
-export class RegistroComponent implements OnInit {
+export class RegistroComponent {
   formRegistro: FormGroup;
   imagenUrl: string | null = null;
   fotoPerfil: File | null = null;
@@ -27,7 +27,8 @@ export class RegistroComponent implements OnInit {
     private imagenService: ImagenService,
     private firestore: Firestore,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {
     this.formRegistro = new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.maxLength(30)]),
@@ -36,46 +37,132 @@ export class RegistroComponent implements OnInit {
       telefono: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.maxLength(15)]),
       vendedor: new FormControl(false),
       password: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(20)]),
+      repetirPassword: new FormControl('', [Validators.required]),
       criadero: new FormGroup({
         nombre: new FormControl('', [Validators.maxLength(50)]),
-        nucleo_zoologico: new FormControl('', [
+        nucleo_zoologico: new FormControl('', []), // Sin validadores por defecto
+        ubicacion: new FormControl('', [])
+      })
+    }, { validators: this.passwordsIgualesValidator });
+
+    // Escucha cambios en el checkbox vendedor
+    this.formRegistro.get('vendedor')?.valueChanges.subscribe((isVendedor: boolean) => {
+      const criaderoGroup = this.formRegistro.get('criadero') as FormGroup;
+      if (isVendedor) {
+        criaderoGroup.get('nucleo_zoologico')?.setValidators([
           Validators.required,
           Validators.pattern('^[a-zA-Z0-9]+$'),
           Validators.minLength(12),
           Validators.maxLength(12)
-        ]),
-        ubicacion: new FormControl('', [Validators.required, Validators.maxLength(100)])
-      })
+        ]);
+        criaderoGroup.get('ubicacion')?.setValidators([
+          Validators.required,
+          Validators.maxLength(100)
+        ]);
+        criaderoGroup.get('nombre')?.setValidators([
+          Validators.required,
+          Validators.maxLength(50)
+        ]);
+      } else {
+        criaderoGroup.get('nucleo_zoologico')?.clearValidators();
+        criaderoGroup.get('ubicacion')?.clearValidators();
+        criaderoGroup.get('nombre')?.clearValidators();
+        criaderoGroup.reset();
+      }
+      criaderoGroup.get('nucleo_zoologico')?.updateValueAndValidity();
+      criaderoGroup.get('ubicacion')?.updateValueAndValidity();
+      criaderoGroup.get('nombre')?.updateValueAndValidity();
     });
   }
 
-  ngOnInit(): void {
-    this.imagenService.cargarImagenes(['registro2.jpg'])
-      .then((urls) => this.imagenUrl = urls[0])
-      .catch((error) => console.error('Error al cargar la imagen:', error));
-  }
+  // Validador personalizado para comprobar que las contraseñas coinciden
+  passwordsIgualesValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
+    const password = group.get('password')?.value;
+    const repetir = group.get('repetirPassword')?.value;
+    return password === repetir ? null : { passwordsNoCoinciden: true };
+  };
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      this.fotoPerfil = file;
-      console.log('Foto de perfil seleccionada:', file.name);
+      try {
+        this.imagenService['validarExtension'](file);
+        this.fotoPerfil = file;
+        console.log('Foto de perfil seleccionada:', file.name);
+      } catch (error: any) {
+        const extension = file.name.split('.').pop()?.toLowerCase();
+        const mensaje = `El formato "${extension}" no es válido. Formatos soportados: jpg, jpeg, png, webp, pdf.`;
+        const modal = document.getElementById('modalErrorExtensionImagen');
+        const mensajeElem = document.getElementById('mensajeErrorExtensionImagen');
+        if (mensajeElem) mensajeElem.textContent = mensaje;
+        if (modal && (window as any).bootstrap) {
+          // @ts-ignore
+          const bsModal = new (window as any).bootstrap.Modal(modal);
+          bsModal.show();
+        }
+        event.target.value = '';
+        this.fotoPerfil = null;
+      }
     }
   }
 
   onFileSelectedCriadero(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      this.fotoPerfilCriadero = file;
-      console.log('Foto de perfil del criadero seleccionada:', file.name);
+      try {
+        this.imagenService['validarExtension'](file);
+        this.fotoPerfilCriadero = file;
+        console.log('Foto de perfil del criadero seleccionada:', file.name);
+      } catch (error: any) {
+        const extension = file.name.split('.').pop()?.toLowerCase();
+        const mensaje = `El formato "${extension}" no es válido. Formatos soportados: jpg, jpeg, png, webp, pdf.`;
+        const modal = document.getElementById('modalErrorExtensionImagen');
+        const mensajeElem = document.getElementById('mensajeErrorExtensionImagen');
+        if (mensajeElem) mensajeElem.textContent = mensaje;
+        if (modal && (window as any).bootstrap) {
+          // @ts-ignore
+          const bsModal = new (window as any).bootstrap.Modal(modal);
+          bsModal.show();
+        }
+        event.target.value = '';
+        this.fotoPerfilCriadero = null;
+      }
     }
   }
 
   // Manejar selección de archivos de documentación
   onDocumentacionFilesSelected(event: any): void {
     if (event.target.files && event.target.files.length > 0) {
-      this.documentacionFiles = Array.from(event.target.files);
-      console.log('Archivos de documentación seleccionados:', this.documentacionFiles.map(f => f.name));
+      const archivos: File[] = Array.from(event.target.files);
+      const archivosValidos: File[] = [];
+      let extensionInvalida = false;
+
+      for (const file of archivos) {
+        try {
+          this.imagenService['validarExtension'](file);
+          archivosValidos.push(file);
+        } catch (error: any) {
+          extensionInvalida = true;
+          const extension = file.name.split('.').pop()?.toLowerCase();
+          const mensaje = `El formato "${extension}" no es válido. Formatos soportados: jpg, jpeg, png, webp, pdf.`;
+          const modal = document.getElementById('modalErrorExtensionImagen');
+          const mensajeElem = document.getElementById('mensajeErrorExtensionImagen');
+          if (mensajeElem) mensajeElem.textContent = mensaje;
+          if (modal && (window as any).bootstrap) {
+            // @ts-ignore
+            const bsModal = new (window as any).bootstrap.Modal(modal);
+            bsModal.show();
+          }
+        }
+      }
+
+      if (extensionInvalida) {
+        event.target.value = '';
+        this.documentacionFiles = [];
+      } else {
+        this.documentacionFiles = archivosValidos;
+        console.log('Archivos de documentación seleccionados:', this.documentacionFiles.map(f => f.name));
+      }
     }
   }
 
@@ -83,99 +170,33 @@ export class RegistroComponent implements OnInit {
     if (this.isSubmitting) return;
     this.isSubmitting = true;
 
-    const usuario = this.formRegistro.value;
-    let errores: string[] = [];
+    this.formRegistro.markAllAsTouched();
 
-    // Validaciones adicionales para criadero
     if (this.isVendedor()) {
       const criaderoGroup = this.formRegistro.get('criadero') as FormGroup;
-      // Nombre obligatorio
-      if (criaderoGroup.get('nombre')?.invalid) {
-        errores.push('El nombre del criadero es obligatorio.');
-        criaderoGroup.get('nombre')?.markAsTouched();
-      }
-      // Foto de perfil obligatoria
-      if (!this.fotoPerfilCriadero) {
-        errores.push('La foto de perfil del criadero es obligatoria.');
-      }
-      // Validaciones de campos internos
-      if (criaderoGroup.get('nucleo_zoologico')?.invalid) {
-        if (criaderoGroup.get('nucleo_zoologico')?.errors?.['required']) {
-          errores.push('El núcleo zoológico es obligatorio.');
-        }
-        if (criaderoGroup.get('nucleo_zoologico')?.errors?.['pattern']) {
-          errores.push('El núcleo zoológico solo permite caracteres alfanuméricos.');
-        }
-        if (criaderoGroup.get('nucleo_zoologico')?.errors?.['minlength'] || criaderoGroup.get('nucleo_zoologico')?.errors?.['maxlength']) {
-          errores.push('El núcleo zoológico debe tener exactamente 12 caracteres.');
-        }
-      }
-      if (criaderoGroup.get('ubicacion')?.invalid) {
-        if (criaderoGroup.get('ubicacion')?.errors?.['required']) {
-          errores.push('La ubicación del criadero es obligatoria.');
-        }
-        if (criaderoGroup.get('ubicacion')?.errors?.['maxlength']) {
-          errores.push('La ubicación del criadero excede el máximo de caracteres.');
-        }
-      }
+      criaderoGroup.markAllAsTouched();
     }
 
-    // Validaciones generales del formulario
-    if (this.formRegistro.get('nombre')?.invalid) {
-      errores.push('El nombre es obligatorio.');
-      this.formRegistro.get('nombre')?.markAsTouched();
-    }
-    if (this.formRegistro.get('apellidos')?.invalid) {
-      errores.push('Los apellidos son obligatorios.');
-      this.formRegistro.get('apellidos')?.markAsTouched();
-    }
-    if (this.formRegistro.get('email')?.invalid) {
-      if (this.formRegistro.get('email')?.errors?.['required']) {
-        errores.push('El correo es obligatorio.');
-      }
-      if (this.formRegistro.get('email')?.errors?.['email']) {
-        errores.push('El formato del correo no es válido.');
-      }
-      if (this.formRegistro.get('email')?.errors?.['maxlength']) {
-        errores.push('El correo excede el máximo de caracteres.');
-      }
-      this.formRegistro.get('email')?.markAsTouched();
-    }
-    if (this.formRegistro.get('telefono')?.invalid) {
-      if (this.formRegistro.get('telefono')?.errors?.['required']) {
-        errores.push('El teléfono es obligatorio.');
-      }
-      if (this.formRegistro.get('telefono')?.errors?.['pattern']) {
-        errores.push('El teléfono solo permite números.');
-      }
-      if (this.formRegistro.get('telefono')?.errors?.['maxlength']) {
-        errores.push('El teléfono excede el máximo de caracteres.');
-      }
-      this.formRegistro.get('telefono')?.markAsTouched();
-    }
-    if (this.formRegistro.get('password')?.invalid) {
-      if (this.formRegistro.get('password')?.errors?.['required']) {
-        errores.push('La contraseña es obligatoria.');
-      }
-      if (this.formRegistro.get('password')?.errors?.['minlength']) {
-        errores.push('La contraseña debe tener al menos 6 caracteres.');
-      }
-      if (this.formRegistro.get('password')?.errors?.['maxlength']) {
-        errores.push('La contraseña excede el máximo de caracteres.');
-      }
-      this.formRegistro.get('password')?.markAsTouched();
-    }
+    // Forzar detección de cambios para mostrar los small
+    this.cdr.markForCheck();
 
-    if (errores.length > 0) {
-      this.snackBar.open(errores.join(' '), 'Cerrar', {
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-        duration: 6000
-      });
+    // Validación de archivos obligatorios
+    const faltaFotoPerfil = !this.fotoPerfil;
+    const faltaFotoCriadero = this.isVendedor() && !this.fotoPerfilCriadero;
+    const faltaDocumentacion = this.isVendedor() && this.documentacionFiles.length === 0;
+
+    if (
+      this.formRegistro.invalid ||
+      faltaFotoPerfil ||
+      faltaFotoCriadero ||
+      faltaDocumentacion
+    ) {
       this.isSubmitting = false;
+      this.cdr.markForCheck(); // Forzar actualización de la vista
       return;
     }
+
+    const usuario = this.formRegistro.value;
 
     try {
       const response: any = await this.authService.registro(usuario.email, usuario.password);

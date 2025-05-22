@@ -14,8 +14,8 @@ import { ImagenService } from '../../services/imagen.service'; // Importar el se
 export class NavbarComponent implements OnInit {
   isAuthenticated = false;
   esVendedor = false;
-  logoUrl: string = ''; // Variable para almacenar la URL del logo
-
+  esAdmin = false;
+  logoUrl: string = ''; 
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -24,11 +24,12 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
     this.authService.isAuthenticated().subscribe((authStatus) => {
-      this.isAuthenticated = authStatus;
+      this.isAuthenticated = !!authStatus; // Fuerza a booleano, nunca será null
     });
 
     this.authService.getUserDataAuth().subscribe(({ usuario }) => {
       this.esVendedor = usuario?.vendedor ?? false;
+      this.esAdmin = usuario?.email === 'danielgarciapelaez@gmail.com';
     });
 
     // Cargar la URL del logo

@@ -53,7 +53,12 @@
                          [searchable]="false">
               </ng-select>
             </div>
-            <div *ngIf="formAnuncio.get('edadValor')?.invalid && formAnuncio.get('edadValor')?.touched" class="text-danger">Edad es obligatoria.</div>
+            <small *ngIf="(formAnuncio.get('edadValor')?.invalid && formAnuncio.get('edadValor')?.touched)" class="text-danger">
+              La edad es obligatoria.
+            </small>
+            <small *ngIf="(formAnuncio.get('edadUnidad')?.invalid && formAnuncio.get('edadUnidad')?.touched)" class="text-danger">
+              Elige una unidad de edad.
+            </small>
           </div>
         
           <!-- Provincia -->
@@ -71,6 +76,30 @@
           <div class="mb-3">
             <label class="form-label">Precio:</label>
             <input type="number" class="form-control" formControlName="precio" placeholder="Precio en €" min="0">
+            <small *ngIf="formAnuncio.get('precio')?.invalid && formAnuncio.get('precio')?.touched" class="text-danger">
+              <ng-container *ngIf="formAnuncio.get('precio')?.errors?.['required']">
+                El precio es obligatorio.
+              </ng-container>
+              <ng-container *ngIf="formAnuncio.get('precio')?.errors?.['max']">
+                El precio no puede superar 100000.
+              </ng-container>
+            </small>
+          </div>
+
+          <!-- Descripción principal -->
+          <div class="mb-3">
+            <label class="form-label">Descripción del anuncio:</label>
+            <textarea class="form-control"
+                      formControlName="descripcion"
+                      placeholder="Describe tu anuncio (máx. 360 caracteres)"
+                      maxlength="360"
+                      rows="4"></textarea>
+            <small class="text-muted">
+              {{ formAnuncio.get('descripcion')?.value?.length || 0 }}/360 caracteres
+            </small>
+            <div *ngIf="formAnuncio.get('descripcion')?.errors?.['maxlength'] && formAnuncio.get('descripcion')?.touched" class="text-danger">
+              Máximo 360 caracteres.
+            </div>
           </div>
         
           <!-- Imágenes -->
@@ -171,12 +200,22 @@
                 <div class="mb-3">
                   <label class="form-label">Precio:</label>
                   <input type="number" class="form-control" formControlName="precio" placeholder="Ingresa el precio">
-                  <div *ngIf="cachorro.get('precio')?.invalid && cachorro.get('precio')?.touched" class="text-danger">El precio es obligatorio.</div>
+                  <small *ngIf="cachorro.get('precio')?.invalid && cachorro.get('precio')?.touched" class="text-danger">
+                    <ng-container *ngIf="cachorro.get('precio')?.errors?.['required']">
+                      El precio es obligatorio.
+                    </ng-container>
+                    <ng-container *ngIf="cachorro.get('precio')?.errors?.['max']">
+                      El precio no puede superar 100000.
+                    </ng-container>
+                  </small>
                 </div>
         
                 <div class="mb-3">
                   <label class="form-label">Descripción:</label>
                   <textarea class="form-control" formControlName="descripcion" placeholder="Ingresa una descripción"></textarea>
+                  <small *ngIf="cachorro.get('descripcion')?.errors?.['maxlength'] && cachorro.get('descripcion')?.touched" class="text-danger">
+                    Máximo 45 caracteres.
+                  </small>
                 </div>
         
                 <div class="mb-3">
@@ -192,6 +231,24 @@
             {{ isSubmitting ? 'Publicando...' : 'Publicar Anuncio' }}
           </button>
         </form>        
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para error de extensión de imagen -->
+<div class="modal fade" id="modalErrorExtensionImagen" tabindex="-1" aria-labelledby="modalErrorExtensionImagenLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header">
+        <h5 class="modal-title w-100" id="modalErrorExtensionImagenLabel">Formato de imagen no válido</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p class="fs-5 mb-0" id="mensajeErrorExtensionImagen"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger w-100" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>

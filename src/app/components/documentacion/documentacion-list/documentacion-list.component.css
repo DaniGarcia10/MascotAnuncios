@@ -1,0 +1,48 @@
+.tarjetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.tarjeta {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #f9f9f9;
+  transition: box-shadow 0.2s;
+}
+.tarjeta:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.visor-backdrop {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.4);
+  z-index: 999;
+}
+.visor-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  height: 90vh;
+  background: white;
+  border: 2px solid #333;
+  z-index: 1000;
+  padding: 1rem;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+}
+.visor-modal button {
+  align-self: flex-end;
+  margin-bottom: 0.5rem;
+}
+.visor-modal iframe {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  border: none;
+}

@@ -333,15 +333,42 @@ export class MisanunciosDetailComponent implements OnInit {
 
     this.imagenService.cargarImagenes(imagenesConRuta).then(imagenesParaMostrar => {
       this.formAnuncio = this.fb.group({
-        titulo: [this.anuncio?.titulo || '', [Validators.required]],
-        tipo: [this.anuncio?.perro ? 'Perro' : 'Gato', [Validators.required]],
-        raza: [this.anuncio?.raza || '', [Validators.required]],
-        ubicacion: [this.anuncio?.ubicacion || '', [Validators.required]],
-        edadValor: [edadValor, [Validators.required]],
-        edadUnidad: [edadUnidad, [Validators.required]],
-        precio: [this.anuncio?.precio || '', [Validators.required]],
-        descripcion: [this.anuncio?.descripcion || ''],
-        imagenes: [imagenesParaMostrar, [Validators.required]],
+        titulo: [
+          this.anuncio?.titulo || '',
+          [Validators.required, Validators.maxLength(70)]
+        ],
+        tipo: [
+          this.anuncio?.perro ? 'Perro' : 'Gato',
+          [Validators.required]
+        ],
+        raza: [
+          this.anuncio?.raza || '',
+          [Validators.required]
+        ],
+        ubicacion: [
+          this.anuncio?.ubicacion || '',
+          [Validators.required]
+        ],
+        edadValor: [
+          edadValor,
+          [Validators.required]
+        ],
+        edadUnidad: [
+          edadUnidad,
+          [Validators.required]
+        ],
+        precio: [
+          this.anuncio?.precio || '',
+          [Validators.required, Validators.max(100000)]
+        ],
+        descripcion: [
+          this.anuncio?.descripcion || '',
+          [Validators.maxLength(360)]
+        ],
+        imagenes: [
+          imagenesParaMostrar,
+          [Validators.required]
+        ],
       });
       // Escuchar cambios en el tipo para actualizar razas
       this.formAnuncio.get('tipo')?.valueChanges.subscribe((nuevoTipo: string) => {
@@ -408,9 +435,19 @@ export class MisanunciosDetailComponent implements OnInit {
     const nuevasImagenes: string[] = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      this.nuevasImagenesAnuncio.push(file);
-      const url = URL.createObjectURL(file);
-      nuevasImagenes.push(url);
+      try {
+        this.imagenService['validarExtension'](file);
+        this.nuevasImagenesAnuncio.push(file);
+        const url = URL.createObjectURL(file);
+        nuevasImagenes.push(url);
+      } catch (error: any) {
+        const extension = file.name.split('.').pop()?.toLowerCase();
+        this.mostrarModalErrorExtension(
+          `El formato "${extension}" no es válido. Formatos soportados: jpg, jpeg, png, webp, pdf.`
+        );
+        event.target.value = ''; // Limpiar input de archivos
+        return; // Salir para evitar agregar imágenes inválidas
+      }
     }
     this.formAnuncio?.get('imagenes')?.setValue([...imagenesActuales, ...nuevasImagenes]);
     this.formAnuncio?.get('imagenes')?.markAsTouched();
@@ -418,7 +455,10 @@ export class MisanunciosDetailComponent implements OnInit {
 
   // Guardar cambios
   async guardarAnuncioEditado() {
-    if (!this.formAnuncio || this.formAnuncio.invalid || !this.anuncio?.id) return;
+    if (!this.formAnuncio || this.formAnuncio.invalid || !this.anuncio?.id) {
+      this.formAnuncio?.markAllAsTouched(); // <-- Añade esto
+      return;
+    }
     this.isGuardandoAnuncio = true;
     const valores = this.formAnuncio.value;
     let imagenes = [...(valores.imagenes || [])];
@@ -525,7 +565,10 @@ export class MisanunciosDetailComponent implements OnInit {
     this.formCachorro = this.fb.group({
       color: [this.cachorroEditando.color, []],
       sexo: [this.cachorroEditando.sexo, [Validators.required]],
-      precio: [this.cachorroEditando.precio, [Validators.required]],
+      precio: [
+        this.cachorroEditando.precio,
+        [Validators.required, Validators.max(100000)]
+      ],
       disponible: [this.cachorroEditando.disponible],
       descripcion: [this.cachorroEditando.descripcion],
       imagenes: [imagenesParaMostrar, [Validators.required]],
@@ -560,7 +603,10 @@ export class MisanunciosDetailComponent implements OnInit {
 
 
   async guardarCachorroEditado() {
-    if (!this.formCachorro || this.formCachorro.invalid) return;
+    if (!this.formCachorro || this.formCachorro.invalid) {
+      this.formCachorro?.markAllAsTouched(); // <-- Añade esto
+      return;
+    }
     const valores = this.formCachorro.value;
     let imagenes = [...(valores.imagenes || [])];
 
@@ -684,10 +730,21 @@ export class MisanunciosDetailComponent implements OnInit {
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      this.nuevasImagenesCachorro.push(file);
-      // Solo para previsualización, no subir aún
-      const url = URL.createObjectURL(file);
-      nuevasImagenes.push(url);
+      try {
+        // Validar extensión usando el servicio
+        this.imagenService['validarExtension'](file);
+        this.nuevasImagenesCachorro.push(file);
+        // Solo para previsualización, no subir aún
+        const url = URL.createObjectURL(file);
+        nuevasImagenes.push(url);
+      } catch (error: any) {
+        const extension = file.name.split('.').pop()?.toLowerCase();
+        this.mostrarModalErrorExtension(
+          `El formato "${extension}" no es válido. Formatos soportados: jpg, jpeg, png, webp, pdf.`
+        );
+        event.target.value = ''; // Limpiar input de archivos
+        return; // Salir para evitar agregar imágenes inválidas
+      }
     }
 
     this.formCachorro?.get('imagenes')?.setValue([...imagenesActuales, ...nuevasImagenes]);
@@ -744,7 +801,7 @@ export class MisanunciosDetailComponent implements OnInit {
     this.formCachorro = this.fb.group({
       color: ['', []],
       sexo: ['', [Validators.required]],
-      precio: ['', [Validators.required]],
+      precio: ['', [Validators.required, Validators.max(100000)]],
       disponible: [true],
       descripcion: [''],
       imagenes: [[], [
@@ -866,6 +923,19 @@ export class MisanunciosDetailComponent implements OnInit {
         // @ts-ignore
         const bsModal = window.bootstrap.Modal.getInstance(modal);
         if (bsModal) bsModal.hide();
+      }
+    }, 0);
+  }
+
+  mostrarModalErrorExtension(mensaje: string) {
+    setTimeout(() => {
+      const mensajeDiv = document.getElementById('mensajeErrorExtensionImagen');
+      if (mensajeDiv) mensajeDiv.textContent = mensaje;
+      const modal = document.getElementById('modalErrorExtensionImagen');
+      if (modal) {
+        // @ts-ignore
+        const bsModal = new window.bootstrap.Modal(modal);
+        bsModal.show();
       }
     }, 0);
   }

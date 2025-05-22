@@ -29,7 +29,7 @@
                 <div *ngIf="formMascota.get('nombre')?.invalid && formMascota.get('nombre')?.touched"
                   class="text-danger">
                   <small *ngIf="formMascota.get('nombre')?.errors?.['required']">El nombre es obligatorio.</small>
-                  <small *ngIf="formMascota.get('nombre')?.errors?.['maxlength']">Máximo 30 caracteres.</small>
+                  <small *ngIf="formMascota.get('nombre')?.errors?.['maxlength']">Máximo 50 caracteres.</small>
                 </div>
               </div>
               <div class="mb-3">
@@ -91,13 +91,13 @@
                   placeholder="Descripción"></textarea>
                 <div *ngIf="formMascota.get('descripcion')?.invalid && formMascota.get('descripcion')?.touched"
                   class="text-danger">
-                  <small *ngIf="formMascota.get('descripcion')?.errors?.['maxlength']">Máximo 200 caracteres.</small>
+                  <small *ngIf="formMascota.get('descripcion')?.errors?.['maxlength']">Máximo 300 caracteres.</small>
                 </div>
               </div>
               <div class="mb-3">
                 <label for="imagenes" class="form-label">Imágenes:</label>
                 <input id="imagenes" type="file" class="form-control" (change)="onFileSelectedMascota($event)" multiple>
-                <div *ngIf="isSubmittingMascota && (!imagenesMascota || imagenesMascota.length === 0)" class="text-danger">
+                <div *ngIf="(isSubmittingMascota || imagenesMascota?.length === 0) && (!imagenesMascota || imagenesMascota.length === 0)" class="text-danger">
                   <small>Debes añadir al menos una imagen.</small>
                 </div>
               </div>
@@ -164,7 +164,7 @@
          style="max-width:420px; width:100%; position:relative; transform:scale(0.9); box-shadow: 0 4px 24px rgba(0,0,0,0.18);">
       <!-- Botones de cerrar y eliminar -->
       <div class="position-absolute top-0 start-0 m-2 d-flex align-items-center gap-2">
-        <button type="button" class="btn btn-link p-0 text-danger" (click)="eliminarMascotaDetalle()" title="Eliminar">
+        <button type="button" class="btn btn-link p-0 text-danger" (click)="abrirModalConfirmacionEliminarMascota()" title="Eliminar">
           <i class="bi bi-trash" style="font-size: 1.5rem;"></i>
         </button>
       </div>
@@ -194,5 +194,45 @@
   </div>
 </div>
 
+  </div>
+</div>
+
+<!-- Modal de confirmación de eliminación de mascota -->
+<div class="modal fade" id="modalConfirmarEliminarMascota" tabindex="-1"
+  aria-labelledby="modalConfirmarEliminarMascotaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalConfirmarEliminarMascotaLabel">Confirmar eliminación</h5>
+        <button type="button" class="btn-close" (click)="cerrarModalConfirmacionEliminarMascota()"
+          aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        ¿Seguro que quieres eliminar esta mascota? Esta acción no se puede deshacer.
+      </div>
+      <div class="modal-footer d-grid gap-2" style="grid-template-columns: 1fr 1fr;">
+        <button type="button" class="btn btn-secondary"
+          (click)="cerrarModalConfirmacionEliminarMascota()">Cancelar</button>
+        <button type="button" class="btn btn-danger" (click)="confirmarEliminarMascota()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para error de extensión de imagen -->
+<div class="modal fade" id="modalErrorExtensionImagen" tabindex="-1" aria-labelledby="modalErrorExtensionImagenLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header">
+        <h5 class="modal-title w-100" id="modalErrorExtensionImagenLabel">Formato de imagen no válido</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p class="fs-5 mb-0" id="mensajeErrorExtensionImagen"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger w-100" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
   </div>
 </div>

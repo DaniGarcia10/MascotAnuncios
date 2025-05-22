@@ -33,7 +33,6 @@ export class AnunciosDetailComponent implements OnInit {
   // NUEVO: para saber si el modal es de padre/madre
   tipoModalImagen: 'cachorro' | 'padre' | 'madre' | null = null;
   imagenesModal: string[] = [];
-  tituloModal: string = '';
 
   estiloImagenModal: { [key: string]: string } = {
     width: 'auto',
@@ -368,15 +367,12 @@ export class AnunciosDetailComponent implements OnInit {
     if (tipo === 'cachorro' && idx !== undefined) {
       this.cachorroSeleccionado = idx;
       this.imagenesModal = this.cachorros[idx]?.imagenes || [];
-      this.tituloModal = `${this.cachorros[idx]?.color || ''} - ${this.cachorros[idx]?.sexo || ''}`;
     } else if (tipo === 'padre') {
       this.cachorroSeleccionado = null;
       this.imagenesModal = this.padresImagenes['padre'] || [];
-      this.tituloModal = 'Padre';
     } else if (tipo === 'madre') {
       this.cachorroSeleccionado = null;
       this.imagenesModal = this.padresImagenes['madre'] || [];
-      this.tituloModal = 'Madre';
     }
     this.imagenCachorroSeleccionada = 0;
     const modal = document.getElementById('modalCachorro');

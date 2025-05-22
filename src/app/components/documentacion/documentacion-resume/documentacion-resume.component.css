@@ -1,0 +1,18 @@
+.tarjetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.tarjeta {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #f9f9f9;
+  min-width: 220px;
+  max-width: 320px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 1rem;
+}
+.tarjeta strong {
+  font-size: 1.1rem;
+}

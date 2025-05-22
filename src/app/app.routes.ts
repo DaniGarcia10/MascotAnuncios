@@ -14,10 +14,14 @@ import { MisanunciosListComponent } from './components/misanuncios/misanuncios-l
 import { MisanunciosDetailComponent } from './components/misanuncios/misanuncios-detail/misanuncios-detail.component';
 import { FavoritosListComponent } from './components/favoritos/favoritos-list/favoritos-list.component';
 import { MascotasDetailComponent } from './components/mascotas/mascotas-detail/mascotas-detail.component';
+import { DocumentacionListComponent } from './components/documentacion/documentacion-list/documentacion-list.component';
+import { UsuariosListComponent } from './components/usuarios/usuarios-list/usuarios-list.component';
+import { NoAuthGuard } from './guards/no-auth.guard'; 
+import { AdminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'registro', component: RegistroComponent },
+  { path: 'login', component: LoginComponent, canActivate: [NoAuthGuard] },
+  { path: 'registro', component: RegistroComponent, canActivate: [NoAuthGuard] },
   { path: 'inicio', component: InicioComponent },
   { path: 'perfil', component: PerfilComponent },
   { path: 'anuncios', component: AnunciosListComponent },
@@ -29,6 +33,8 @@ export const routes: Routes = [
   { path: 'publicar', component: AnunciosFormComponent },
   { path: 'favoritos', component: FavoritosListComponent },
   { path: 'suscripciones', component: SuscripcionesComponent },
+  { path: 'documentaciones', component: DocumentacionListComponent, canActivate: [AdminGuard] },
+  { path: 'usuarios', component: UsuariosListComponent, canActivate: [AdminGuard] },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 @NgModule({

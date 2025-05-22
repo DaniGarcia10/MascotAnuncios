@@ -31,22 +31,24 @@ export class MascotasListComponent implements OnInit {
   hembras: Mascota[] = [];
   mascotaDetalle: Mascota | null = null;
 
+  modalEliminarMascotaAbierto = false;
+
   constructor(
     private mascotasService: MascotasService,
     private fb: FormBuilder,
     private authService: AuthService,
     private imagenService: ImagenService,
-    private snackBar: MatSnackBar, // Añadir MatSnackBar
-    private firestore: Firestore, // Agregar Firestore para guardar la mascota
-    private router: Router // Añadir Router para navegación
+    private snackBar: MatSnackBar,
+    private firestore: Firestore,
+    private router: Router
   ) {
     this.formMascota = this.fb.group({
-      nombre: ['', [Validators.required, Validators.maxLength(30)]],
+      nombre: ['', [Validators.required, Validators.maxLength(50)]], // Máximo 50 caracteres
       perro: [null, Validators.required],
-      raza: [{ value: null, disabled: true }, [Validators.required]], // Inicialmente deshabilitado
+      raza: [{ value: null, disabled: true }, [Validators.required]], // Obligatorio
       color: ['', [Validators.required, Validators.maxLength(20)]],
       sexo: [null, Validators.required],
-      descripcion: ['', [Validators.maxLength(200)]],
+      descripcion: ['', [Validators.maxLength(300)]], // Máximo 300 caracteres
       id_padre: [''],
       id_madre: ['']
     });
@@ -139,7 +141,38 @@ export class MascotasListComponent implements OnInit {
 
   onFileSelectedMascota(event: any): void {
     if (event.target.files && event.target.files.length > 0) {
-      this.imagenesMascota = Array.from(event.target.files);
+      const archivos: File[] = Array.from(event.target.files);
+      const archivosValidos: File[] = [];
+      let extensionInvalida = false;
+
+      for (const file of archivos) {
+        try {
+          // Validar extensión usando el servicio
+          this.imagenService['validarExtension'](file);
+          archivosValidos.push(file);
+        } catch (error: any) {
+          extensionInvalida = true;
+          const extension = file.name.split('.').pop()?.toLowerCase();
+          // Mostrar modal de error en vez de snackbar
+          const mensaje = `El formato "${extension}" no es válido. Formatos soportados: jpg, jpeg, png, webp, pdf.`;
+          const modal = document.getElementById('modalErrorExtensionImagen');
+          const mensajeElem = document.getElementById('mensajeErrorExtensionImagen');
+          if (mensajeElem) mensajeElem.textContent = mensaje;
+          if (modal && (window as any).bootstrap) {
+            // @ts-ignore
+            const bsModal = new (window as any).bootstrap.Modal(modal);
+            bsModal.show();
+          }
+        }
+      }
+
+      if (extensionInvalida) {
+        // Limpiar input y archivos si hay extensión inválida
+        event.target.value = '';
+        this.imagenesMascota = [];
+      } else {
+        this.imagenesMascota = archivosValidos;
+      }
     }
   }
 
@@ -149,41 +182,20 @@ export class MascotasListComponent implements OnInit {
     }
     this.isSubmittingMascota = true;
 
-    // Validación de campos obligatorios
-    const errores: string[] = [];
+    // Marcar todos los campos como tocados para mostrar errores en el formulario
+    Object.values(this.formMascota.controls).forEach(control => control.markAsTouched());
+
     const controls = this.formMascota.controls;
 
-    if (controls['nombre'].invalid) {
-      errores.push('El nombre es obligatorio.');
-      controls['nombre'].markAsTouched();
-    }
-    if (controls['perro'].invalid) {
-      errores.push('El tipo (perro/gato) es obligatorio.');
-      controls['perro'].markAsTouched();
-    }
-    if (controls['raza'].invalid) {
-      errores.push('La raza es obligatoria.');
-      controls['raza'].markAsTouched();
-    }
-    if (controls['color'].invalid) {
-      errores.push('El color es obligatorio.');
-      controls['color'].markAsTouched();
-    }
-    if (controls['sexo'].invalid) {
-      errores.push('El sexo es obligatorio.');
-      controls['sexo'].markAsTouched();
-    }
-    if (!this.imagenesMascota || this.imagenesMascota.length === 0) {
-      errores.push('Debes añadir al menos una imagen.');
-    }
-
-    if (errores.length > 0) {
-      this.snackBar.open(errores.join(' '), 'Cerrar', {
-        duration: 6000,
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error']
-      });
+    // Validación de campos obligatorios (solo para cortar el submit)
+    if (
+      controls['nombre'].invalid ||
+      controls['perro'].invalid ||
+      controls['raza'].invalid || // raza obligatoria
+      controls['color'].invalid ||
+      controls['sexo'].invalid ||
+      !this.imagenesMascota || this.imagenesMascota.length === 0 // mínimo una imagen
+    ) {
       this.isSubmittingMascota = false;
       return;
     }
@@ -280,8 +292,7 @@ export class MascotasListComponent implements OnInit {
 
   async eliminarMascotaDetalle() {
     if (!this.mascotaDetalle || !this.mascotaDetalle.id) return;
-    const confirmacion = confirm(`¿Deseas eliminar a ${this.mascotaDetalle.nombre}?`);
-    if (!confirmacion) return;
+    // Elimina el confirm, ya no es necesario porque el modal ya confirma
     const mascotaRef = doc(this.firestore, 'mascotas', this.mascotaDetalle.id);
     try {
       // Eliminar imágenes del storage antes de eliminar el documento
@@ -332,5 +343,33 @@ export class MascotasListComponent implements OnInit {
     const id = this.mascotaDetalle.id;
     this.cerrarDetallesMascota();
     this.router.navigate(['/mascotas', id]);
+  }
+
+  abrirModalConfirmacionEliminarMascota() {
+    this.modalEliminarMascotaAbierto = true;
+    setTimeout(() => {
+      const modal = document.getElementById('modalConfirmarEliminarMascota');
+      if (modal) {
+        // @ts-ignore
+        const bsModal = new window.bootstrap.Modal(modal);
+        bsModal.show();
+        // Guardar referencia si quieres cerrar desde TS
+        (this as any)._bsModalMascota = bsModal;
+      }
+    });
+  }
+
+  cerrarModalConfirmacionEliminarMascota() {
+    this.modalEliminarMascotaAbierto = false;
+    // @ts-ignore
+    if ((this as any)._bsModalMascota) {
+      // @ts-ignore
+      (this as any)._bsModalMascota.hide();
+    }
+  }
+
+  async confirmarEliminarMascota() {
+    this.cerrarModalConfirmacionEliminarMascota();
+    await this.eliminarMascotaDetalle();
   }
 }

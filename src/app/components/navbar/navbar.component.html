@@ -38,6 +38,12 @@
                         <a class="nav-link" routerLink="/registro">Registrarse</a>
                     </li>
                 </ng-template>
+                <li *ngIf="esAdmin" class="nav-item me-3">
+                    <a class="nav-link" routerLink="/usuarios">Usuarios</a>
+                </li>
+                <li *ngIf="esAdmin" class="nav-item me-3">
+                    <a class="nav-link" routerLink="/documentaciones">Documentación</a>
+                </li>
             </ul>
             <ul class="navbar-nav ms-auto"> <!-- Mover el ícono de perfil a la derecha -->
                 <ng-container *ngIf="isAuthenticated">
