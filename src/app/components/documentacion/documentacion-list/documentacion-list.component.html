@@ -1,42 +1,64 @@
-<div *ngIf="loading">Cargando archivos...</div>
-<div *ngIf="!loading && !usuarioSeleccionado" class="tarjetas">
-  <div *ngFor="let usuario of usuarios" class="tarjeta" (click)="seleccionarUsuario(usuario)">
-    <strong>{{ usuario.usuario.nombre }} {{ usuario.usuario.apellidos }}</strong>
-    <div><b>Email:</b> {{ usuario.usuario.email }}</div>
-    <div><b>Teléfono:</b> {{ usuario.usuario.telefono }}</div>
+<div class="container my-3">
+  <div *ngIf="loading">Cargando archivos...</div>
+
+  <!-- Filtros y Ordenar por -->
+  <div class="d-flex justify-content-between align-items-center mb-3" *ngIf="!loading && !usuarioSeleccionado">
+    <div class="flex-grow-1 me-3">
+      <input type="text" class="form-control buscador-ancho" placeholder="Buscar por nombre, apellidos, teléfono o email"
+        [(ngModel)]="filtroBusqueda" (ngModelChange)="aplicarFiltros()" />
+    </div>
+    <div class="ordenar-por ms-auto">
+      <ng-select
+        [items]="opcionesOrden"
+        bindLabel="label"
+        bindValue="value"
+        [(ngModel)]="ordenSeleccionado"
+        placeholder="Ordenar por..."
+        (change)="aplicarFiltros()"
+        class="custom-ng-select"
+        [searchable]="false">
+      </ng-select>
+    </div>
   </div>
-</div>
 
-<!-- Panel de Archivos del Usuario Seleccionado -->
-<div *ngIf="usuarioSeleccionado && !archivoSeleccionado" class="p-4 bg-white rounded shadow-sm">
-  <button class="btn btn-outline-secondary mb-3" (click)="cerrarArchivosUsuario()">
-    <i class="bi bi-arrow-left me-1"></i> Volver
-  </button>
+  <div *ngIf="!loading && !usuarioSeleccionado" class="tarjetas">
+    <div *ngFor="let usuario of usuariosFiltrados" class="tarjeta" (click)="seleccionarUsuario(usuario)">
+      <strong>{{ usuario.usuario.nombre }} {{ usuario.usuario.apellidos }}</strong>
+      <div><b>Email:</b> {{ usuario.usuario.email }}</div>
+      <div><b>Teléfono:</b> {{ usuario.usuario.telefono }}</div>
+    </div>
+  </div>
 
-  <h4 class="mb-4">
-    Archivos de {{ usuarioSeleccionado.usuario.nombre }} {{ usuarioSeleccionado.usuario.apellidos }}
-  </h4>
+  <!-- Panel de Archivos del Usuario Seleccionado -->
+  <div *ngIf="usuarioSeleccionado && !archivoSeleccionado" class="p-4 bg-white rounded shadow-sm">
+    <button class="btn btn-outline-secondary mb-3" (click)="cerrarArchivosUsuario()">
+      <i class="bi bi-arrow-left me-1"></i> Volver
+    </button>
 
-  <ul class="list-group">
-    <li class="list-group-item" *ngFor="let archivo of usuarioSeleccionado.archivos">
-      <a href="#" (click)="verArchivo(archivo); $event.preventDefault()" class="text-decoration-none">
-        {{ archivo.nombre }}
-      </a>
-    </li>
-  </ul>
-</div>
+    <h4 class="mb-4">
+      Archivos de {{ usuarioSeleccionado.usuario.nombre }} {{ usuarioSeleccionado.usuario.apellidos }}
+    </h4>
 
+    <ul class="list-group">
+      <li class="list-group-item" *ngFor="let archivo of usuarioSeleccionado.archivos">
+        <a href="#" (click)="verArchivo(archivo); $event.preventDefault()" class="text-decoration-none">
+          {{ archivo.nombre }}
+        </a>
+      </li>
+    </ul>
+  </div>
 
-<!-- Visor PDF Modal Profesional -->
-<div *ngIf="archivoSeleccionado" class="modal d-block bg-dark bg-opacity-75" tabindex="-1" (click)="cerrarVisor()">
-  <div class="modal-dialog modal-xl modal-dialog-centered" (click)="$event.stopPropagation()">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Visualizador de PDF</h5>
-        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarVisor()"></button>
-      </div>
-      <div class="modal-body p-0" style="height: 80vh;">
-        <iframe [src]="archivoSeleccionado.url | safeUrl" width="100%" height="100%" style="border: none;"></iframe>
+  <!-- Visor PDF Modal Profesional -->
+  <div *ngIf="archivoSeleccionado" class="modal d-block bg-dark bg-opacity-75" tabindex="-1" (click)="cerrarVisor()">
+    <div class="modal-dialog modal-xl modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Visualizador de PDF</h5>
+          <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarVisor()"></button>
+        </div>
+        <div class="modal-body p-0" style="height: 80vh;">
+          <iframe [src]="archivoSeleccionado.url | safeUrl" width="100%" height="100%" style="border: none;"></iframe>
+        </div>
       </div>
     </div>
   </div>

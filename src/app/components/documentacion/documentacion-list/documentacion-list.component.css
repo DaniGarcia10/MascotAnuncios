@@ -46,3 +46,67 @@
   height: 100%;
   border: none;
 }
+
+.filtros-header, .ordenar-por {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+    color: #6b4226;
+}
+
+.filtros-header span.flecha, .ordenar-por {
+    margin-left: 0.5rem;
+}
+
+/* Personalización del ng-select */
+.ordenar-por ng-select {
+    background-color: transparent;
+    border: none;
+    font-weight: bold;
+    color: #6b4226;
+    font-style: normal;
+    width: auto;
+    box-shadow: none;
+    
+}
+
+/* Ajustar el ancho del desplegable sin afectar el contenedor */
+::ng-deep .ordenar-por ng-select .ng-dropdown-panel {
+    width: auto; /* Permite que el desplegable se ajuste automáticamente */
+    z-index: 1050; /* Asegura que el desplegable esté por encima de otros elementos */
+    right: 0; /* Alinea el desplegable hacia la izquierda */
+    left: auto; /* Evita que se desplace hacia la izquierda */
+}
+
+/* Sobrescribir el estilo del placeholder */
+::ng-deep .ordenar-por ng-select .ng-placeholder {
+    color: #6b4226;
+    font-style: normal; 
+}
+
+.filtros-header span.flecha {
+    color: #6b4226;
+}
+
+.buscador-ancho {
+  min-width: 370px;
+  width: 370px;
+  max-width: 100%;
+  box-shadow: 0 2px 8px rgba(139, 94, 60, 0.04);
+
+}
+
+.buscador-ancho:focus {
+  outline: none;
+  border-color: var(--primary-text-color);
+  box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.15);
+}
+
+
+@media (max-width: 500px) {
+  .buscador-ancho {
+    min-width: 100%;
+    width: 100%;
+  }
+}

@@ -17,7 +17,11 @@ export class DocumentacionResumeComponent implements OnInit {
   constructor(private documentacionService: DocumentacionService) {}
 
   async ngOnInit() {
-    this.usuarios = await this.documentacionService.getUsuariosConDocumentos();
+    const usuariosConArchivos = await this.documentacionService.getUsuariosConDocumentos();
+    this.usuarios = usuariosConArchivos.map(u => ({
+      usuario: u.usuario,
+      url: u.archivos && u.archivos.length > 0 ? u.archivos[0].url : ''
+    }));
     this.loading = false;
   }
 }
