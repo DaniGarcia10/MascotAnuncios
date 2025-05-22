@@ -96,6 +96,16 @@
           <p><strong>Núcleo Zoológico:</strong> {{ criadero.nucleo_zoologico }}</p>
           <p><strong>Ubicación:</strong> {{ criadero.ubicacion }}</p>
           <p><strong>Fecha de Registro:</strong> {{ criadero.fecha_registro }}</p>
+          <p>
+            <span *ngIf="criadero.verificado; else noVerificado" class="text-success">
+              Verificado <i class="bi bi-patch-check-fill"></i>
+            </span>
+            <ng-template #noVerificado>
+              <span class="text-danger">
+                No verificado <i class="bi bi-patch-check-fill"></i>
+              </span>
+            </ng-template>
+          </p>
         </div>
       </div>
       <ng-template #noCriadero>

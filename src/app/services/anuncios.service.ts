@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, collectionData, doc, deleteDoc, addDoc, updateDoc, query, where } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, doc, getDoc, deleteDoc, addDoc, updateDoc, query, where } from '@angular/fire/firestore';
 import { Storage, ref, deleteObject } from '@angular/fire/storage';
 import { Observable, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -159,5 +159,20 @@ export class AnunciosService {
   async actualizarAnuncio(idAnuncio: string, data: any): Promise<void> {
     const anuncioDocRef = doc(this.firestore, 'anuncios', idAnuncio);
     await updateDoc(anuncioDocRef, data);
+  }
+
+  /**
+   * Obtiene el teléfono del usuario por su ID.
+   * @param idUsuario ID del usuario
+   * @returns Promise<string | null>
+   */
+  async telefonoByIdUsuario(idUsuario: string): Promise<string | null> {
+    const usuarioRef = doc(this.firestore, 'usuarios', idUsuario);
+    const usuarioSnap = await getDoc(usuarioRef);
+    if (usuarioSnap.exists()) {
+      const data = usuarioSnap.data() as any;
+      return data.telefono || null;
+    }
+    return null;
   }
 }

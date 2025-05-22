@@ -86,6 +86,20 @@
             </small>
           </div>
 
+          <!-- Teléfono -->
+          <div class="mb-3">
+            <label class="form-label">Teléfono de contacto:</label>
+            <input type="tel" class="form-control" formControlName="telefono" placeholder="Introduce tu teléfono (9 dígitos)">
+            <div *ngIf="formAnuncio.get('telefono')?.invalid && formAnuncio.get('telefono')?.touched" class="text-danger">
+              <ng-container *ngIf="formAnuncio.get('telefono')?.errors?.['required']">
+                El teléfono es obligatorio.
+              </ng-container>
+              <ng-container *ngIf="formAnuncio.get('telefono')?.errors?.['pattern']">
+                El teléfono debe tener 9 dígitos numéricos.
+              </ng-container>
+            </div>
+          </div>
+
           <!-- Descripción principal -->
           <div class="mb-3">
             <label class="form-label">Descripción del anuncio:</label>
@@ -226,7 +240,7 @@
               </div>
             </div>
           </div>
-        
+
           <button type="submit" class="btn-default w-100" [disabled]="isSubmitting">
             {{ isSubmitting ? 'Publicando...' : 'Publicar Anuncio' }}
           </button>

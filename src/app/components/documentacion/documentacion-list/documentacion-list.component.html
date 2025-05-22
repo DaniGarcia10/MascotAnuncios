@@ -1,15 +1,43 @@
 <div *ngIf="loading">Cargando archivos...</div>
-<div *ngIf="!loading" class="tarjetas">
-  <div *ngFor="let usuario of usuarios" class="tarjeta" (click)="verArchivo(usuario)">
+<div *ngIf="!loading && !usuarioSeleccionado" class="tarjetas">
+  <div *ngFor="let usuario of usuarios" class="tarjeta" (click)="seleccionarUsuario(usuario)">
     <strong>{{ usuario.usuario.nombre }} {{ usuario.usuario.apellidos }}</strong>
+    <div><b>Email:</b> {{ usuario.usuario.email }}</div>
+    <div><b>Teléfono:</b> {{ usuario.usuario.telefono }}</div>
   </div>
 </div>
 
-<!-- Visor PDF modal simple -->
-<div *ngIf="archivoSeleccionado">
-  <div class="visor-backdrop" (click)="cerrarVisor()"></div>
-  <div class="visor-modal">
-    <button (click)="cerrarVisor()">Cerrar</button>
-    <iframe [src]="archivoSeleccionado.url | safeUrl"></iframe>
+<!-- Panel de Archivos del Usuario Seleccionado -->
+<div *ngIf="usuarioSeleccionado && !archivoSeleccionado" class="p-4 bg-white rounded shadow-sm">
+  <button class="btn btn-outline-secondary mb-3" (click)="cerrarArchivosUsuario()">
+    <i class="bi bi-arrow-left me-1"></i> Volver
+  </button>
+
+  <h4 class="mb-4">
+    Archivos de {{ usuarioSeleccionado.usuario.nombre }} {{ usuarioSeleccionado.usuario.apellidos }}
+  </h4>
+
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let archivo of usuarioSeleccionado.archivos">
+      <a href="#" (click)="verArchivo(archivo); $event.preventDefault()" class="text-decoration-none">
+        {{ archivo.nombre }}
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+<!-- Visor PDF Modal Profesional -->
+<div *ngIf="archivoSeleccionado" class="modal d-block bg-dark bg-opacity-75" tabindex="-1" (click)="cerrarVisor()">
+  <div class="modal-dialog modal-xl modal-dialog-centered" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Visualizador de PDF</h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarVisor()"></button>
+      </div>
+      <div class="modal-body p-0" style="height: 80vh;">
+        <iframe [src]="archivoSeleccionado.url | safeUrl" width="100%" height="100%" style="border: none;"></iframe>
+      </div>
+    </div>
   </div>
 </div>

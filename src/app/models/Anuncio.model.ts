@@ -15,4 +15,5 @@ export interface Anuncio {
     especificar_cachorros: boolean;
     precio: number | null;
     destacado: boolean;
+    telefono: string | null;
   }

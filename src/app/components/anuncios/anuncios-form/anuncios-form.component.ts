@@ -63,6 +63,7 @@ export class AnunciosFormComponent implements OnInit {
       precio: [null, [Validators.required, Validators.max(100000)]],
       destacado: [null],
       especificarPadres: [false], 
+      telefono: [null, [Validators.required, Validators.pattern(/^[0-9]{9}$/)]],
     });
 
     // Obtener el usuario autenticado y asignar su ID al formulario
@@ -70,6 +71,13 @@ export class AnunciosFormComponent implements OnInit {
       if (user) {
         this.formAnuncio.get('id_usuario')?.setValue(user.uid); 
         this.cargarMascotasUsuario(user.uid);
+
+        // Precargar el teléfono del usuario
+        this.anunciosService.telefonoByIdUsuario(user.uid).then(telefono => {
+          if (telefono) {
+            this.formAnuncio.get('telefono')?.setValue(telefono);
+          }
+        });
       }
     });
 

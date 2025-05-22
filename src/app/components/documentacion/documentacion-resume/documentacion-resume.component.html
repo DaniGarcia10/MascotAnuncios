@@ -1,10 +1,22 @@
-<div *ngIf="loading">Cargando IDs de carpetas...</div>
-<div *ngIf="!loading" class="tarjetas">
-  <div *ngFor="let item of usuarios" class="tarjeta">
-    <strong>{{ item.usuario.nombre }} {{ item.usuario.apellidos }}</strong>
-    <div><b>Email:</b> {{ item.usuario.email }}</div>
-    <div><b>Teléfono:</b> {{ item.usuario.telefono }}</div>
-    <div><b>DNI/ID:</b> {{ item.usuario.id }}</div>
-    <!-- Puedes agregar más campos si lo deseas -->
+<!-- Indicador de carga -->
+<div *ngIf="loading" class="d-flex justify-content-center align-items-center p-5">
+  <div class="spinner-border text-primary me-2" role="status"></div>
+  <span class="fs-5">Cargando IDs de carpetas...</span>
+</div>
+
+<!-- Lista de usuarios en tarjetas -->
+<div *ngIf="!loading" class="row g-3">
+  <div *ngFor="let item of usuarios" class="col-12 col-md-6 col-lg-4">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title mb-2">{{ item.usuario.nombre }} {{ item.usuario.apellidos }}</h5>
+        <p class="card-text mb-1">
+          {{ item.usuario.email }}
+        </p>
+        <p class="card-text mb-0">
+          {{ item.usuario.telefono }}
+        </p>
+      </div>
+    </div>
   </div>
 </div>

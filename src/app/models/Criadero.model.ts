@@ -5,4 +5,5 @@ export interface Criadero {
     foto_perfil: string;
     ubicacion: string;
     fecha_registro: string;
+    verificado: boolean;
 }

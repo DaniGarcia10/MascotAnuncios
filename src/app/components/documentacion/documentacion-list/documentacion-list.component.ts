@@ -12,9 +12,10 @@ import { Usuario } from '../../../models/Usuario.model';
   styleUrls: ['./documentacion-list.component.css']
 })
 export class DocumentacionListComponent implements OnInit {
-  usuarios: { usuario: Usuario, url: string }[] = [];
+  usuarios: { usuario: Usuario, archivos: { nombre: string, url: string }[] }[] = [];
   loading = true;
-  archivoSeleccionado: { usuario: Usuario, url: string } | null = null;
+  usuarioSeleccionado: { usuario: Usuario, archivos: { nombre: string, url: string }[] } | null = null;
+  archivoSeleccionado: { nombre: string, url: string } | null = null;
 
   constructor(private documentacionService: DocumentacionService) {}
 
@@ -23,11 +24,21 @@ export class DocumentacionListComponent implements OnInit {
     this.loading = false;
   }
 
-  verArchivo(usuario: { usuario: Usuario, url: string }) {
-    this.archivoSeleccionado = usuario;
+  seleccionarUsuario(usuario: { usuario: Usuario, archivos: { nombre: string, url: string }[] }) {
+    this.usuarioSeleccionado = usuario;
+    this.archivoSeleccionado = null;
+  }
+
+  verArchivo(archivo: { nombre: string, url: string }) {
+    this.archivoSeleccionado = archivo;
   }
 
   cerrarVisor() {
+    this.archivoSeleccionado = null;
+  }
+
+  cerrarArchivosUsuario() {
+    this.usuarioSeleccionado = null;
     this.archivoSeleccionado = null;
   }
 }

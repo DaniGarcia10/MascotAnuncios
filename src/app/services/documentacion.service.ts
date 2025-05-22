@@ -9,7 +9,7 @@ import { Usuario } from '../models/Usuario.model';
 export class DocumentacionService {
   constructor(private storage: Storage, private usuarioService: UsuarioService) {}
 
-  async getUsuariosConDocumentos(): Promise<{ usuario: Usuario, url: string }[]> {
+  async getUsuariosConDocumentos(): Promise<{ usuario: Usuario, archivos: { nombre: string, url: string }[] }[]> {
     const docRef = ref(this.storage, 'documentacion/');
     console.log('Buscando carpetas en: documentacion/');
     const carpetas = await listAll(docRef);
@@ -26,14 +26,18 @@ export class DocumentacionService {
         const archivos = await listAll(carpetaRef);
         console.log(`Archivos en carpetaRef (${userId}):`, archivos.items.map(a => a.name));
         if (usuarioObj && archivos.items.length > 0) {
-          const archivoRef = archivos.items[0];
-          const url = await getDownloadURL(archivoRef);
-          return { usuario: usuarioObj, url };
+          const archivosArr = await Promise.all(
+            archivos.items.map(async archivoRef => ({
+              nombre: archivoRef.name,
+              url: await getDownloadURL(archivoRef)
+            }))
+          );
+          return { usuario: usuarioObj, archivos: archivosArr };
         }
         return null;
       })
     );
-    const resultado = usuarios.filter(u => u !== null) as { usuario: Usuario, url: string }[];
+    const resultado = usuarios.filter(u => u !== null) as { usuario: Usuario, archivos: { nombre: string, url: string }[] }[];
     console.log('Usuarios con documentos:', resultado);
     return resultado;
   }
