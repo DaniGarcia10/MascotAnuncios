@@ -1,8 +1,17 @@
 <!-- Tarjeta de resumen de usuario -->
-<div class="p-2 border rounded mb-2 bg-light cursor-pointer">
+<div class="p-2 border rounded mb-2 cursor-pointer
+  "
+  [ngClass]="{
+    'bg-danger text-white': usuario.documentacion?.estado === 'RECHAZADO',
+    'bg-warning': usuario.documentacion?.estado === 'PENDIENTE',
+    'bg-success text-white': usuario.documentacion?.estado === 'ACEPTADO',
+    'bg-light': !usuario.documentacion?.estado
+  }"
+>
   <strong>{{ usuario.usuario.nombre }} {{ usuario.usuario.apellidos }}</strong><br>
   <small>{{ usuario.usuario.email }}</small><br>
   <small>{{ usuario.usuario.telefono }}</small><br>
-  <small>Estado: {{ usuario.documentacion?.estado || 'Sin estado' }}</small><br>
-  <small>Motivo: {{ usuario.documentacion?.motivo || 'Sin motivo' }}</small>
+  <small *ngIf="(usuario.documentacion?.motivo ?? '').trim() !== ''">
+    Motivo: {{ usuario.documentacion?.motivo }}
+  </small>
 </div>

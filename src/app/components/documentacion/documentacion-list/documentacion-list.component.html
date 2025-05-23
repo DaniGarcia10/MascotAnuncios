@@ -2,28 +2,65 @@
   <div *ngIf="loading">Cargando archivos...</div>
 
   <!-- Filtros y Ordenar por -->
-  <div class="d-flex justify-content-between align-items-center mb-3" *ngIf="!loading && !usuarioSeleccionado">
-    <div class="flex-grow-1 me-3">
-      <input type="text" class="form-control buscador-ancho" placeholder="Buscar por nombre, apellidos, teléfono o email"
-        [(ngModel)]="filtroBusqueda" (ngModelChange)="aplicarFiltros()" />
-    </div>
-    <div class="ordenar-por ms-auto">
-      <ng-select
-        [items]="opcionesOrden"
-        bindLabel="label"
-        bindValue="value"
-        [(ngModel)]="ordenSeleccionado"
-        placeholder="Ordenar por..."
-        (change)="aplicarFiltros()"
-        class="custom-ng-select"
-        [searchable]="false">
-      </ng-select>
+  <div class="mb-3" *ngIf="!loading && !usuarioSeleccionado">
+    <div class="row g-2 align-items-center">
+      <!-- Filtro de búsqueda -->
+      <div class="col-12 col-md-4">
+        <input type="text" class="form-control buscador-ancho" placeholder="Buscar por nombre, apellidos, teléfono o email"
+          [(ngModel)]="filtroBusqueda" (ngModelChange)="aplicarFiltros()" />
+      </div>
+
+      <!-- Botones de estado -->
+      <div class="col-12 col-md-6">
+        <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2">
+          <button type="button" class="btn btn-secondary"
+            style="min-width: 120px;"
+            [class.active]="!estadoSeleccionado"
+            (click)="filtrarPorEstado(null)">
+            Todos
+          </button>
+          <button type="button" class="btn btn-success"
+            style="min-width: 120px;"
+            [class.active]="estadoSeleccionado === 'ACEPTADO'"
+            (click)="filtrarPorEstado('ACEPTADO')">
+            ACEPTADO
+          </button>
+          <button type="button" class="btn btn-warning"
+            style="min-width: 120px;"
+            [class.active]="estadoSeleccionado === 'PENDIENTE'"
+            (click)="filtrarPorEstado('PENDIENTE')">
+            PENDIENTE
+          </button>
+          <button type="button" class="btn btn-primary"
+            style="min-width: 120px;"
+            [class.active]="estadoSeleccionado === 'RECHAZADO'"
+            (click)="filtrarPorEstado('RECHAZADO')">
+            RECHAZADO
+          </button>
+        </div>
+      </div>
+
+      <!-- Ordenar por -->
+      <div class="col-12 col-md-2">
+        <div class="ordenar-por">
+          <ng-select
+            [items]="opcionesOrden"
+            bindLabel="label"
+            bindValue="value"
+            [(ngModel)]="ordenSeleccionado"
+            placeholder="Ordenar por..."
+            (change)="aplicarFiltros()"
+            class="custom-ng-select w-100"
+            [searchable]="false">
+          </ng-select>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="row" *ngIf="!loading">
     <!-- Lista de usuarios -->
-    <div class="col-12 col-lg-4 border-end">
+    <div class="col-12 col-lg-4 border-end mb-3 mb-lg-0">
       <app-documentacion-resume
         *ngFor="let usuario of usuariosFiltrados"
         [usuario]="usuario"
@@ -44,11 +81,11 @@
           <div class="card h-100 shadow-sm">
             <div class="card-body">
               <h6 class="card-title">{{ archivo.nombre.includes('dni') ? 'DNI / NIE' : 'Núcleo Zoológico' }}</h6>
-              <a href="#" 
-                 (click)="verArchivo(archivo); $event.preventDefault()" 
-                 class="text-decoration-none text-dark">
+              <button type="button"
+                      class="btn-default"
+                      (click)="verArchivo(archivo)">
                 Ver documento
-              </a>
+              </button>
             </div>
           </div>
         </div>

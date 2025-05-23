@@ -38,6 +38,7 @@ export class DocumentacionListComponent implements OnInit {
 
   filtroBusqueda: string = '';
   ordenSeleccionado: string | null = null;
+  estadoSeleccionado: string | null = null;
   opcionesOrden = [
     { label: 'Recientemente añadido', value: 'reciente' },
     { label: 'Añadido más antiguo', value: 'antiguo' },
@@ -56,16 +57,20 @@ export class DocumentacionListComponent implements OnInit {
   }
 
   aplicarFiltros() {
-    // Filtrado
     const filtro = this.filtroBusqueda.trim().toLowerCase();
     let filtrados = this.usuarios.filter(u => {
       const usuario = u.usuario;
-      return (
+      // Filtro por texto
+      const coincideTexto =
         usuario.nombre?.toLowerCase().includes(filtro) ||
         usuario.apellidos?.toLowerCase().includes(filtro) ||
         usuario.telefono?.toLowerCase().includes(filtro) ||
-        usuario.email?.toLowerCase().includes(filtro)
-      );
+        usuario.email?.toLowerCase().includes(filtro);
+
+      // Filtro por estado
+      const coincideEstado = !this.estadoSeleccionado || u.documentacion?.estado === this.estadoSeleccionado;
+
+      return coincideTexto && coincideEstado;
     });
 
     // Ordenación
@@ -89,6 +94,11 @@ export class DocumentacionListComponent implements OnInit {
     }
 
     this.usuariosFiltrados = filtrados;
+  }
+
+  filtrarPorEstado(estado: string | null) {
+    this.estadoSeleccionado = estado;
+    this.aplicarFiltros();
   }
 
   seleccionarUsuario(usuario: { usuario: Usuario, archivos: { nombre: string, url: string }[] }) {

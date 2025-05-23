@@ -110,3 +110,10 @@
     width: 100%;
   }
 }
+
+/* Forzar btn-primary a rojo (sin usar btn-danger) solo en este componente */
+:host ::ng-deep .btn.btn-primary {
+  background-color: #dc3545 !important; /* rojo Bootstrap */
+  border-color: #dc3545 !important;
+  color: #fff !important;
+}
