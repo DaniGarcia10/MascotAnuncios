@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Database } from '@angular/fire/database';
 import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
 
 @Injectable({
@@ -9,7 +8,6 @@ export class DocumentacionService {
   private COLLECTION_NAME = "documentacion";
 
   constructor(
-    private database: Database,
     private firestore: Firestore
   ) {}
 

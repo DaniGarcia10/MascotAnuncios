@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Database, ref, set } from '@angular/fire/database';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
 import { Usuario } from '../models/Usuario.model';
 
 @Injectable({
@@ -26,7 +26,7 @@ export class UsuarioService {
 
       if (userDocSnap.exists()) {
         const usuarioData = userDocSnap.data() as Usuario;
-        return usuarioData;
+        return { ...usuarioData, id: userId }; 
       } else {
         return null;
       }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
 import { Criadero } from '../models/Criadero.model';
 
 @Injectable({
@@ -27,4 +27,19 @@ export class CriaderoService {
       throw error;
     }
   }
+
+  /**
+   * Marca al usuario como vendedor verificado (vendedor = true por defecto)
+   */
+  async actualizarVerificado(userId: string, verificado: boolean = true): Promise<void> {
+    try {
+      const userDocRef = doc(this.firestore, this.COLLECTION_NAME, userId);
+      // Actualiza el campo verificado
+      await setDoc(userDocRef, { verificado }, { merge: true });
+    } catch (error) {
+      console.error('Error al marcar criadero como criadero verificado:', error);
+      throw error;
+    }
+  }
+
 }

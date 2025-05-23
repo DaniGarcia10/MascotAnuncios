@@ -21,20 +21,18 @@
           </button>
           <button type="button" class="btn btn-success"
             style="min-width: 120px;"
-            [class.active]="estadoSeleccionado === 'ACEPTADO'"
-            (click)="filtrarPorEstado('ACEPTADO')">
-            ACEPTADO
-          </button>
+            [class.active]="estadoSeleccionado === Estado.ACEPTADO"
+            (click)="filtrarPorEstado(Estado.ACEPTADO)">ACEPTADO</button>
           <button type="button" class="btn btn-warning"
             style="min-width: 120px;"
-            [class.active]="estadoSeleccionado === 'PENDIENTE'"
-            (click)="filtrarPorEstado('PENDIENTE')">
+            [class.active]="estadoSeleccionado === Estado.PENDIENTE"
+            (click)="filtrarPorEstado(Estado.PENDIENTE)">
             PENDIENTE
           </button>
           <button type="button" class="btn btn-primary"
             style="min-width: 120px;"
-            [class.active]="estadoSeleccionado === 'RECHAZADO'"
-            (click)="filtrarPorEstado('RECHAZADO')">
+            [class.active]="estadoSeleccionado === Estado.RECHAZADO"
+            (click)="filtrarPorEstado(Estado.RECHAZADO)">
             RECHAZADO
           </button>
         </div>
@@ -74,7 +72,17 @@
         <i class="bi bi-arrow-left me-1"></i> Volver
       </button>
 
-      <h4 class="mb-4">Archivos de {{ usuarioSeleccionado.usuario.nombre }} {{ usuarioSeleccionado.usuario.apellidos }}</h4>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">
+          Archivos de {{ usuarioSeleccionado.usuario.nombre }} {{ usuarioSeleccionado.usuario.apellidos }}
+        </h4>
+        <button 
+          *ngIf="usuarioSeleccionado.documentacion"
+          class="btn-default ms-2"
+          (click)="abrirModalEstado()">
+          Cambiar estado
+        </button>
+      </div>
 
       <div class="row g-3">
         <div class="col-12 col-md-6" *ngFor="let archivo of usuarioSeleccionado.archivos">
@@ -90,6 +98,14 @@
           </div>
         </div>
       </div>
+      <!-- Mostrar solo motivo y botón para cambiar estado -->
+      <div *ngIf="usuarioSeleccionado.documentacion" class="mt-4">
+          <div *ngIf="usuarioSeleccionado.documentacion.motivo && usuarioSeleccionado.documentacion.motivo.trim() !== ''" class="mt-3">
+            <div class="p-3 border rounded bg-white">
+              <strong>Motivo:</strong> {{ usuarioSeleccionado.documentacion.motivo }}
+            </div>
+          </div>
+      </div>
     </div>
   </div>
 
@@ -103,6 +119,65 @@
         </div>
         <div class="modal-body p-0" style="height: 80vh;">
           <iframe [src]="archivoSeleccionado.url | safeUrl" width="100%" height="100%" style="border: none;"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Cambiar Estado -->
+  <div *ngIf="mostrarModalEstado" class="modal d-block bg-dark bg-opacity-75" tabindex="-1" (click)="cerrarModalEstado()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Cambiar estado de documentación</h5>
+          <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalEstado()"></button>
+        </div>
+        <div class="modal-body">
+          <p>Selecciona el nuevo estado:</p>
+          <div class="d-grid gap-2 mb-3">
+            <button 
+              class="btn btn-success"
+              [class.active]="estadoSeleccionadoParaCambio === Estado.ACEPTADO"
+              (click)="seleccionarEstadoParaCambio(Estado.ACEPTADO)">
+              ACEPTADO
+            </button>
+            <button 
+              class="btn btn-warning"
+              [class.active]="estadoSeleccionadoParaCambio === Estado.PENDIENTE"
+              (click)="seleccionarEstadoParaCambio(Estado.PENDIENTE)">
+              PENDIENTE
+            </button>
+            <button 
+              class="btn btn-primary"
+              [class.active]="estadoSeleccionadoParaCambio === Estado.RECHAZADO"
+              (click)="seleccionarEstadoParaCambio(Estado.RECHAZADO)">
+              RECHAZADO
+            </button>
+          </div>
+          <label for="motivoCambio" class="form-label">Introduce el motivo</label>
+          <textarea id="motivoCambio" class="form-control" [(ngModel)]="motivoCambioEstado" rows="2" placeholder="Motivo del cambio de estado"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-default w-100" [disabled]="!estadoSeleccionadoParaCambio" (click)="guardarCambioEstado()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Confirmación de cambio de estado -->
+  <div *ngIf="mostrarModalConfirmacion" class="modal d-block bg-dark bg-opacity-75" tabindex="-1" (click)="cancelarCambioEstado()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirmar cambio de estado</h5>
+          <button type="button" class="btn-close" aria-label="Cerrar" (click)="cancelarCambioEstado()"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de que deseas cambiar el estado a <strong>{{ estadoPendienteCambio }}</strong>?</p>
+          <div class="d-flex justify-content-end gap-2">
+            <button class="btn btn-secondary" (click)="cancelarCambioEstado()">Cancelar</button>
+            <button class="btn btn-primary" (click)="aplicarCambioEstadoConfirmado()">Confirmar</button>
+          </div>
         </div>
       </div>
     </div>

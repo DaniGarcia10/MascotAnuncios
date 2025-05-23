@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ArchivosService } from '../../../services/archivos.service';
 import { SafeUrlPipe } from '../../../pipes/safe-url.pipe';
 import { Usuario } from '../../../models/Usuario.model';
-import { Documentacion } from '../../../models/documentacion.model';
+import { Documentacion, Estado } from '../../../models/documentacion.model';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DocumentacionResumeComponent } from '../documentacion-resume/documentacion-resume.component';
+import { DocumentacionService } from '../../../services/documentacion.service';
+import { CriaderoService } from '../../../services/criadero.service'; 
 
 @Component({
   selector: 'app-documentacion-list',
@@ -22,18 +24,26 @@ import { DocumentacionResumeComponent } from '../documentacion-resume/documentac
   styleUrls: ['./documentacion-list.component.css']
 })
 export class DocumentacionListComponent implements OnInit {
+  Estado = Estado; 
   usuarios: { 
     usuario: Usuario, 
     archivos: { nombre: string, url: string }[], 
-    documentacion?: Documentacion
+    documentacion?: Documentacion,
+    criadero?: any
   }[] = [];
   usuariosFiltrados: { 
     usuario: Usuario, 
     archivos: { nombre: string, url: string }[], 
-    documentacion?: Documentacion
+    documentacion?: Documentacion,
+    criadero?: any
   }[] = [];
   loading = true;
-  usuarioSeleccionado: { usuario: Usuario, archivos: { nombre: string, url: string }[] } | null = null;
+  usuarioSeleccionado: { 
+    usuario: Usuario, 
+    archivos: { nombre: string, url: string }[], 
+    documentacion?: Documentacion,
+    criadero?: any
+  } | null = null;
   archivoSeleccionado: { nombre: string, url: string } | null = null;
 
   filtroBusqueda: string = '';
@@ -45,13 +55,21 @@ export class DocumentacionListComponent implements OnInit {
     { label: 'Nombre A-Z', value: 'nombreAsc' },
     { label: 'Nombre Z-A', value: 'nombreDesc' }
   ];
+  mostrarModalEstado = false;
+  mostrarModalConfirmacion = false;
+  estadoPendienteCambio: Estado | null = null;
+  motivoCambioEstado: string = '';
+  estadoSeleccionadoParaCambio: Estado | null = null; 
 
-  constructor(private archivosService: ArchivosService) {}
+  constructor(
+    private archivosService: ArchivosService,
+    private documentacionService: DocumentacionService,
+    private criaderoService: CriaderoService
+  ) {}
 
   async ngOnInit() {
-
-    // Cargar estado y motivo para cada usuario
-    this.usuarios = await this.archivosService.getUsuariosConDocumentos();
+    // Cargar estado, motivo y criadero para cada usuario
+    this.usuarios = await this.archivosService.getUsuariosConDocumentosYCriadero();
     this.aplicarFiltros();
     this.loading = false;
   }
@@ -96,12 +114,12 @@ export class DocumentacionListComponent implements OnInit {
     this.usuariosFiltrados = filtrados;
   }
 
-  filtrarPorEstado(estado: string | null) {
-    this.estadoSeleccionado = estado;
-    this.aplicarFiltros();
+  filtrarPorEstado(estado: Estado | null) {
+  this.estadoSeleccionado = estado;
+  this.aplicarFiltros();
   }
 
-  seleccionarUsuario(usuario: { usuario: Usuario, archivos: { nombre: string, url: string }[] }) {
+  seleccionarUsuario(usuario: { usuario: Usuario, archivos: { nombre: string, url: string }[], documentacion?: Documentacion }) {
     this.usuarioSeleccionado = usuario;
     this.archivoSeleccionado = null;
   }
@@ -117,5 +135,79 @@ export class DocumentacionListComponent implements OnInit {
   cerrarArchivosUsuario() {
     this.usuarioSeleccionado = null;
     this.archivoSeleccionado = null;
+  }
+
+  abrirModalEstado() {
+    this.motivoCambioEstado = '';
+    this.estadoSeleccionadoParaCambio = null;
+    this.mostrarModalEstado = true;
+  }
+
+  cerrarModalEstado() {
+    this.mostrarModalEstado = false;
+  }
+
+  // NUEVO: Seleccionar el estado antes de guardar
+  seleccionarEstadoParaCambio(estado: Estado) {
+    this.estadoSeleccionadoParaCambio = estado;
+  }
+
+  // Cambia para usar el estado seleccionado al pulsar guardar
+  guardarCambioEstado() {
+    if (!this.estadoSeleccionadoParaCambio) return;
+    this.confirmarCambioEstado(this.estadoSeleccionadoParaCambio);
+  }
+
+  confirmarCambioEstado(nuevoEstado: Estado) {
+    this.estadoPendienteCambio = nuevoEstado;
+    this.mostrarModalConfirmacion = true;
+    this.mostrarModalEstado = false; 
+  }
+
+  async aplicarCambioEstadoConfirmado() {
+    if (!this.usuarioSeleccionado?.documentacion || !this.estadoPendienteCambio) return;
+
+    // Actualiza en memoria
+    this.usuarioSeleccionado.documentacion.estado = this.estadoPendienteCambio;
+    this.usuarioSeleccionado.documentacion.motivo = this.motivoCambioEstado;
+
+    console.log('Usuario seleccionado:', this.usuarioSeleccionado);
+
+    // Actualiza en Firebase
+    try {
+      await this.documentacionService.guardarDocumentacion(
+        this.usuarioSeleccionado.usuario.id,
+        {
+          ...this.usuarioSeleccionado.documentacion,
+          estado: this.estadoPendienteCambio,
+          motivo: this.motivoCambioEstado
+        }
+      );
+
+      // Si el estado es ACEPTADO, marca el usuario como criadero verificado
+      if (this.estadoPendienteCambio === Estado.ACEPTADO) {
+        await this.criaderoService.actualizarVerificado(this.usuarioSeleccionado.usuario.id_criadero);
+        this.usuarioSeleccionado.criadero.verificado = true;
+      }
+      // Si el estado anterior era ACEPTADO y el nuevo NO es ACEPTADO, desmarca como verificado
+      else if (this.usuarioSeleccionado.criadero.verificado === true && this.estadoPendienteCambio === Estado.PENDIENTE || this.estadoPendienteCambio === Estado.RECHAZADO) {
+        await this.criaderoService.actualizarVerificado(this.usuarioSeleccionado.usuario.id_criadero, false);
+        this.usuarioSeleccionado.criadero.verificado = false;
+      }
+
+    } catch (error) {
+      console.error('Error al actualizar la documentación:', error);
+    }
+
+    this.mostrarModalEstado = false;
+    this.mostrarModalConfirmacion = false;
+    this.estadoPendienteCambio = null;
+    this.motivoCambioEstado = '';
+    this.aplicarFiltros();
+  }
+
+  cancelarCambioEstado() {
+    this.mostrarModalConfirmacion = false;
+    this.estadoPendienteCambio = null;
   }
 }

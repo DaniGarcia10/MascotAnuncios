@@ -4,6 +4,7 @@ import { UsuarioService } from './usuario.service';
 import { Usuario } from '../models/Usuario.model';
 import { DocumentacionService } from './documentacion.service'; // Importa el servicio
 import { push, child, Database, ref as dbRef } from '@angular/fire/database';
+import { CriaderoService } from './criadero.service'; // Asegúrate de importar el servicio
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,8 @@ export class ArchivosService {
     private storage: Storage,
     private database: Database,
     private usuarioService: UsuarioService,
-    private documentacionService: DocumentacionService 
+    private documentacionService: DocumentacionService,
+    private criaderoService: CriaderoService // Inyecta el servicio
   ) {}
 
 
@@ -146,35 +148,6 @@ async obtenerUrlImagen(ruta: string): Promise<string> {
     }
   }
 
-
-
-  async getUsuariosConDocumentos(): Promise<{ usuario: Usuario, archivos: { nombre: string, url: string }[], documentacion: any }[]> {
-    const docRef = ref(this.storage, 'documentacion/');
-    const carpetas = await listAll(docRef);
-    console.log('Carpetas encontradas:', carpetas.prefixes.map(c => c.name));
-    const usuarios = await Promise.all(
-      carpetas.prefixes.map(async carpetaRef => {
-        const userId = carpetaRef.name;
-        const usuarioObj = await this.usuarioService.getUsuarioById(userId);
-        const documentacion = await this.documentacionService.obtenerDocumentacion(userId); // Obtiene la documentación
-
-        const archivos = await listAll(carpetaRef);
-        if (usuarioObj && archivos.items.length > 0) {
-          const archivosArr = await Promise.all(
-            archivos.items.map(async archivoRef => ({
-              nombre: archivoRef.name,
-              url: await getDownloadURL(archivoRef)
-            }))
-          );
-          return { usuario: usuarioObj, archivos: archivosArr, documentacion };
-        }
-        return null;
-      })
-    );
-    const resultado = usuarios.filter(u => u !== null) as { usuario: Usuario, archivos: { nombre: string, url: string }[], documentacion: any }[];
-    return resultado;
-  }
-
   async listarArchivosUsuario(userId: string) {
     const testRef = ref(this.storage, `documentacion/${userId}/`);
     const testArchivos = await listAll(testRef);
@@ -218,5 +191,48 @@ async obtenerUrlImagen(ruta: string): Promise<string> {
       throw new Error('Formato de documento no compatible.');
     }
     return extension;
+  }
+
+  async getUsuariosConDocumentosYCriadero(): Promise<{
+    usuario: Usuario,
+    archivos: { nombre: string, url: string }[],
+    documentacion: any,
+    criadero: any
+  }[]> {
+    const docRef = ref(this.storage, 'documentacion/');
+    const carpetas = await listAll(docRef);
+    console.log('Carpetas encontradas:', carpetas.prefixes.map(c => c.name));
+    const usuarios = await Promise.all(
+      carpetas.prefixes.map(async carpetaRef => {
+        const userId = carpetaRef.name;
+        const usuarioObj = await this.usuarioService.getUsuarioById(userId);
+        const documentacion = await this.documentacionService.obtenerDocumentacion(userId);
+
+        const archivos = await listAll(carpetaRef);
+
+        if (usuarioObj && archivos.items.length > 0) {
+          // Obtener el criadero usando el id_criadero del usuario
+          let criadero = null;
+          if (usuarioObj.id_criadero) {
+            criadero = await this.criaderoService.getCriaderoById(usuarioObj.id_criadero);
+          }
+          const archivosArr = await Promise.all(
+            archivos.items.map(async archivoRef => ({
+              nombre: archivoRef.name,
+              url: await getDownloadURL(archivoRef)
+            }))
+          );
+          return { usuario: usuarioObj, archivos: archivosArr, documentacion, criadero };
+        }
+        return null;
+      })
+    );
+    const resultado = usuarios.filter(u => u !== null) as {
+      usuario: Usuario,
+      archivos: { nombre: string, url: string }[],
+      documentacion: any,
+      criadero: any
+    }[];
+    return resultado;
   }
 }

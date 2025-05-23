@@ -2,16 +2,14 @@
 <div class="p-2 border rounded mb-2 cursor-pointer
   "
   [ngClass]="{
-    'bg-danger text-white': usuario.documentacion?.estado === 'RECHAZADO',
-    'bg-warning': usuario.documentacion?.estado === 'PENDIENTE',
-    'bg-success text-white': usuario.documentacion?.estado === 'ACEPTADO',
+    'bg-danger': usuario.documentacion?.estado === 'RECHAZADO',
+    'bg-white': usuario.documentacion?.estado === 'PENDIENTE',
+    'bg-success': usuario.documentacion?.estado === 'ACEPTADO',
     'bg-light': !usuario.documentacion?.estado
   }"
+  [class.text-white]="usuario.documentacion?.estado === 'RECHAZADO' || usuario.documentacion?.estado === 'ACEPTADO'"
 >
   <strong>{{ usuario.usuario.nombre }} {{ usuario.usuario.apellidos }}</strong><br>
   <small>{{ usuario.usuario.email }}</small><br>
   <small>{{ usuario.usuario.telefono }}</small><br>
-  <small *ngIf="(usuario.documentacion?.motivo ?? '').trim() !== ''">
-    Motivo: {{ usuario.documentacion?.motivo }}
-  </small>
 </div>
