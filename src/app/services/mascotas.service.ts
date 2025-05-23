@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Firestore, doc, getDoc, collection, collectionData, query, where, getDocs } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Mascota } from '../models/Mascota.model';
-import { ImagenService } from './imagen.service';
-import { Auth } from '@angular/fire/auth'; // Importar el servicio de autenticación
+import { ArchivosService } from './archivos.service';
+import { Auth } from '@angular/fire/auth'; 
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ import { Auth } from '@angular/fire/auth'; // Importar el servicio de autenticac
 export class MascotasService {
   private COLLECTION_NAME = 'mascotas';
 
-  constructor(private firestore: Firestore, private imagenService: ImagenService, private auth: Auth) {}
+  constructor(private firestore: Firestore, private archivosService: ArchivosService, private auth: Auth) {}
 
   async getMascotaById(id: string): Promise<Mascota | undefined> {
     const mascotaDocRef = doc(this.firestore, this.COLLECTION_NAME, id);
@@ -31,7 +31,7 @@ export class MascotasService {
       if (mascota.imagenes && mascota.imagenes.length > 0) {
         console.log('Cargando imágenes para la mascota:', mascota.nombre);
         const imagenesConRuta = mascota.imagenes.map(img => `mascotas/${user.uid}/${img}`);
-        mascota.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
+        mascota.imagenes = await this.archivosService.cargarImagenes(imagenesConRuta);
       }
 
       return mascota;
@@ -56,7 +56,7 @@ export class MascotasService {
       // Cargar las imágenes de la mascota usando el idUsuario proporcionado
       if (mascota.imagenes && mascota.imagenes.length > 0) {
         const imagenesConRuta = mascota.imagenes.map(img => `mascotas/${idUsuario}/${img}`);
-        mascota.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
+        mascota.imagenes = await this.archivosService.cargarImagenes(imagenesConRuta);
       }
 
       return mascota;
@@ -87,7 +87,7 @@ export class MascotasService {
       // Cargar imágenes si existen
       if (mascota.imagenes && mascota.imagenes.length > 0) {
         const imagenesConRuta = mascota.imagenes.map(img => `mascotas/${idUsuario}/${img}`);
-        mascota.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
+        mascota.imagenes = await this.archivosService.cargarImagenes(imagenesConRuta);
       }
       mascotas.push(mascota);
     }

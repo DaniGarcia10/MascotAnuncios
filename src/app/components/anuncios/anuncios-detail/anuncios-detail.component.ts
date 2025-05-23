@@ -9,7 +9,7 @@ import { Criadero } from '../../../models/Criadero.model';
 import { UsuarioService } from '../../../services/usuario.service';
 import { CachorrosService } from '../../../services/cachorros.service'; 
 import { Cachorro } from '../../../models/Cachorro.model';
-import { ImagenService } from '../../../services/imagen.service';
+import { ArchivosService } from '../../../services/archivos.service';
 import { FavoritosService } from '../../../services/favoritos.service';
 import { AuthService } from '../../../services/auth.service';
 import { doc, setDoc, updateDoc, arrayUnion, arrayRemove, getDoc } from '@angular/fire/firestore';
@@ -62,7 +62,7 @@ export class AnunciosDetailComponent implements OnInit {
     private usuarioService: UsuarioService,
     private criaderoService: CriaderoService,
     private cachorrosService: CachorrosService,
-    private imagenService: ImagenService,
+    private archivosService: ArchivosService,
     private favoritosService: FavoritosService,
     private authService: AuthService,
     private firestore: Firestore
@@ -84,7 +84,7 @@ export class AnunciosDetailComponent implements OnInit {
           const padre = await this.mascotasService.getMascotaByIdAndUsuario(this.anuncio.id_padre, this.anuncio.id_usuario);
           if (padre?.imagenes?.length) {
             // Si las imágenes no son URLs completas, ajusta la ruta
-            this.padresImagenes['padre'] = await this.imagenService.cargarImagenes(
+            this.padresImagenes['padre'] = await this.archivosService.cargarImagenes(
               padre.imagenes.map((img: string) => img.startsWith('http') ? img : `mascotas/${this.anuncio?.id_padre}/${img}`)
             );
           }
@@ -93,7 +93,7 @@ export class AnunciosDetailComponent implements OnInit {
         if (this.anuncio?.id_madre && this.anuncio?.id_usuario) {
           const madre = await this.mascotasService.getMascotaByIdAndUsuario(this.anuncio.id_madre, this.anuncio.id_usuario);
           if (madre?.imagenes?.length) {
-            this.padresImagenes['madre'] = await this.imagenService.cargarImagenes(
+            this.padresImagenes['madre'] = await this.archivosService.cargarImagenes(
               madre.imagenes.map((img: string) => img.startsWith('http') ? img : `mascotas/${this.anuncio?.id_madre}/${img}`)
             );
           }
@@ -116,7 +116,7 @@ export class AnunciosDetailComponent implements OnInit {
               // Cargar la foto del criadero si existe
               if (criadero.foto_perfil) {
                 const ruta = `criaderos/${criadero.foto_perfil}`;
-                criadero.foto_perfil = await this.imagenService.obtenerUrlImagen(ruta);
+                criadero.foto_perfil = await this.archivosService.obtenerUrlImagen(ruta);
               }
             }
           } else {
@@ -139,7 +139,7 @@ export class AnunciosDetailComponent implements OnInit {
                 const imagenesConRuta = cachorro.imagenes.map((img: string) =>
                   img.startsWith('http') ? img : `cachorros/${this.anuncio?.id}/${img}`
                 );
-                cachorro.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
+                cachorro.imagenes = await this.archivosService.cargarImagenes(imagenesConRuta);
               }
             }
 

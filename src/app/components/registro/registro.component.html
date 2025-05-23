@@ -107,42 +107,55 @@
               </div>
             </div>
             <!-- Bloque de verificación de criadero profesional -->
-            <div class="mt-4 p-3 border rounded">
-              <h5 class="mb-2">Verificación de Criadero Profesional</h5>
-              <p class="mb-2">
-                Para poder publicar anuncios necesitamos verificar tu identidad y autorización legal, para así garantizar la confianza de los compradores.<br>
-                Revisaremos tu documentación en menos de 24 horas.
-              </p>
-              <div class="mb-2">
-                <span class="fw-bold">📑 Documentación obligatoria:</span>
-                <ul class="mb-1">
-                  <li>DNI/NIE del titular (anverso y reverso en una sola imagen o PDF)</li>
-                  <li>Número de Núcleo Zoológico (NNZ) válido</li>
-                  <li>Certificado de inscripción en el Registro de Núcleos Zoológicos</li>
-                </ul>
-              </div>
-              <div class="mb-2">
-                <span class="fw-bold">📤 Sube tus archivos:</span><br>
-                <input type="file" class="form-control mt-1" multiple accept=".pdf,.jpg,.jpeg,.png" (change)="onDocumentacionFilesSelected($event)">
-                <small class="text-muted">
-                  Formatos admitidos: PDF, JPG, PNG<br>
-                  Tamaño máximo: 20 MB por archivo
-                </small>
-                <div *ngIf="isSubmitting && isVendedor() && documentacionFiles.length === 0" class="text-danger mt-1">
-                  <small>La documentación del criadero es obligatoria.</small>
-                </div>
-              </div>
-              <div class="mb-2">
-                <span class="fw-bold">✅ Importante:</span>
-                <ul class="mb-1">
-                  <li>La información debe coincidir con el titular de la cuenta.</li>
-                  <li>Nos reservamos el derecho de rechazar documentos ilegibles o inválidos.</li>
-                </ul>
-              </div>
-              <div>
-                Una vez verificado, tus anuncios aparecerán como “Criadero verificado” y podrás destacar tus cachorros.
-              </div>
-            </div>
+<div class="mt-4 p-3 border rounded">
+  <h5 class="mb-2">Verificación de Criadero Profesional</h5>
+  <p class="mb-2">
+    Para poder publicar anuncios necesitamos verificar tu identidad y autorización legal, para así garantizar la confianza de los compradores.<br>
+    Revisaremos tu documentación en menos de 24 horas.
+  </p>
+
+  <div class="mb-2">
+    <span class="fw-bold">📑 Documentación obligatoria:</span>
+    <ul class="mb-1">
+      <li>DNI/NIE del titular (anverso y reverso en una sola imagen o PDF)</li>
+      <li>Número de Núcleo Zoológico (NNZ) válido</li>
+      <li>Certificado de inscripción en el Registro de Núcleos Zoológicos</li>
+    </ul>
+  </div>
+
+  <div class="mb-3">
+    <label class="fw-bold">📤 DNI / NIE</label>
+    <input type="file" class="form-control mt-1" accept=".pdf,.jpg,.jpeg,.png"
+           (change)="onDniFileSelected($event)">
+    <small class="text-muted">PDF, JPG o PNG – máx. 20MB</small>
+    <div *ngIf="isSubmitting && !dniFile" class="text-danger mt-1">
+      <small>El DNI/NIE es obligatorio.</small>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label class="fw-bold">📤 Núcleo Zoológico</label>
+    <input type="file" class="form-control mt-1" accept=".pdf,.jpg,.jpeg,.png"
+           (change)="onNzFileSelected($event)">
+    <small class="text-muted">PDF, JPG o PNG – máx. 20MB</small>
+    <div *ngIf="isSubmitting && !nzFile" class="text-danger mt-1">
+      <small>El certificado del Núcleo Zoológico es obligatorio.</small>
+    </div>
+  </div>
+
+  <div class="mb-2">
+    <span class="fw-bold">✅ Importante:</span>
+    <ul class="mb-1">
+      <li>La información debe coincidir con el titular de la cuenta.</li>
+      <li>Nos reservamos el derecho de rechazar documentos ilegibles o inválidos.</li>
+    </ul>
+  </div>
+
+  <div>
+    Una vez verificado, tus anuncios aparecerán como “Criadero verificado” y podrás destacar tus cachorros.
+  </div>
+</div>
+
           </div>
           <button type="submit" class="btn-default w-100" [disabled]="isSubmitting">
             {{ isSubmitting ? 'Registrando...' : 'Registrarse' }}

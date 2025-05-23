@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MascotasService } from '../../../services/mascotas.service';
-import { ImagenService } from '../../../services/imagen.service';
+import { ArchivosService } from '../../../services/archivos.service';
 import { Firestore, doc, updateDoc } from '@angular/fire/firestore';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -36,7 +36,7 @@ export class MascotasDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private mascotasService: MascotasService,
     private fb: FormBuilder,
-    private imagenService: ImagenService,
+    private archivosService: ArchivosService,
     private firestore: Firestore,
     private snackBar: MatSnackBar,
     private router: Router,
@@ -98,7 +98,7 @@ export class MascotasDetailComponent implements OnInit {
                   img.startsWith('http') ? img : `mascotas/${user.uid}/${img}`
                 );
                 try {
-                  const urls = await this.imagenService.cargarImagenes(imagenesConRuta);
+                  const urls = await this.archivosService.cargarImagenes(imagenesConRuta);
                   mascota.imagenes = urls;
                 } catch (error) {
                   console.error(`Error al cargar imágenes de la mascota ${mascota.nombre}:`, error);
@@ -277,7 +277,7 @@ export class MascotasDetailComponent implements OnInit {
       // Si se han subido nuevas imágenes, súmalas al array
       if (this.imagenesMascota.length > 0 && this.mascota) {
         for (const file of this.imagenesMascota) {
-          const nombreArchivo = await this.imagenService.subirImagen(
+          const nombreArchivo = await this.archivosService.subirImagen(
             file,
             'mascota',
             this.mascota.id_usuario
@@ -289,7 +289,7 @@ export class MascotasDetailComponent implements OnInit {
       // Eliminar imágenes del storage si corresponde
       if (this.imagenesEliminadas.length > 0 && this.mascota) {
         try {
-          await this.imagenService.eliminarImagenes('mascota', this.mascota.id_usuario, this.imagenesEliminadas);
+          await this.archivosService.eliminarImagenes('mascota', this.mascota.id_usuario, this.imagenesEliminadas);
         } catch (e) {
           console.warn('No se pudo eliminar del storage:', e);
         }

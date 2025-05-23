@@ -1,27 +1,43 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DocumentacionService } from '../../../services/documentacion.service';
+import { ArchivosService } from '../../../services/archivos.service';
 import { SafeUrlPipe } from '../../../pipes/safe-url.pipe';
 import { Usuario } from '../../../models/Usuario.model';
+import { Documentacion } from '../../../models/documentacion.model';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { DocumentacionResumeComponent } from '../documentacion-resume/documentacion-resume.component';
 
 @Component({
   selector: 'app-documentacion-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgSelectModule, SafeUrlPipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    NgSelectModule,
+    SafeUrlPipe,
+    DocumentacionResumeComponent,
+  ],
   templateUrl: './documentacion-list.component.html',
   styleUrls: ['./documentacion-list.component.css']
 })
 export class DocumentacionListComponent implements OnInit {
-  usuarios: { usuario: Usuario, archivos: { nombre: string, url: string }[] }[] = [];
-  usuariosFiltrados: { usuario: Usuario, archivos: { nombre: string, url: string }[] }[] = [];
+  usuarios: { 
+    usuario: Usuario, 
+    archivos: { nombre: string, url: string }[], 
+    documentacion?: Documentacion
+  }[] = [];
+  usuariosFiltrados: { 
+    usuario: Usuario, 
+    archivos: { nombre: string, url: string }[], 
+    documentacion?: Documentacion
+  }[] = [];
   loading = true;
   usuarioSeleccionado: { usuario: Usuario, archivos: { nombre: string, url: string }[] } | null = null;
   archivoSeleccionado: { nombre: string, url: string } | null = null;
 
   filtroBusqueda: string = '';
-  ordenSeleccionado: string = '';
+  ordenSeleccionado: string | null = null;
   opcionesOrden = [
     { label: 'Recientemente añadido', value: 'reciente' },
     { label: 'Añadido más antiguo', value: 'antiguo' },
@@ -29,10 +45,12 @@ export class DocumentacionListComponent implements OnInit {
     { label: 'Nombre Z-A', value: 'nombreDesc' }
   ];
 
-  constructor(private documentacionService: DocumentacionService) {}
+  constructor(private archivosService: ArchivosService) {}
 
   async ngOnInit() {
-    this.usuarios = await this.documentacionService.getUsuariosConDocumentos();
+
+    // Cargar estado y motivo para cada usuario
+    this.usuarios = await this.archivosService.getUsuariosConDocumentos();
     this.aplicarFiltros();
     this.loading = false;
   }
@@ -53,7 +71,7 @@ export class DocumentacionListComponent implements OnInit {
     // Ordenación
     switch (this.ordenSeleccionado) {
       case 'reciente':
-        filtrados = filtrados.slice().reverse(); // Asume que el array original está de antiguo a reciente
+        filtrados = filtrados.slice().reverse(); 
         break;
       case 'antiguo':
         // Nada, ya está por defecto

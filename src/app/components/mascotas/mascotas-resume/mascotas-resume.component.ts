@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Mascota } from '../../../models/Mascota.model';
 import { MascotasService } from '../../../services/mascotas.service';
-import { ImagenService } from '../../../services/imagen.service';
+import { ArchivosService } from '../../../services/archivos.service';
 import { CommonModule } from '@angular/common';
 import { Auth } from '@angular/fire/auth'; // Importar el servicio de autenticación
 
@@ -17,7 +17,7 @@ export class MascotasResumeComponent implements OnInit {
 
   constructor(
     private mascotasService: MascotasService,
-    private imagenService: ImagenService,
+    private archivosService: ArchivosService,
     private auth: Auth // Inyectar el servicio de autenticación
   ) {}
 
@@ -33,7 +33,7 @@ export class MascotasResumeComponent implements OnInit {
       const imagenesConRuta = this.mascota.imagenes.map(img =>
         img.startsWith('http') ? img : `mascotas/${user.uid}/${img}`
       );
-      this.imagenService.cargarImagenes([imagenesConRuta[0]]).then(urls => {
+      this.archivosService.cargarImagenes([imagenesConRuta[0]]).then((urls: string[]) => {
         console.log('URL de la mascota:', urls[0]); // Verifica la URL generada
         this.mascota.imagenes[0] = urls[0]; // Asigna la URL a la imagen de la mascota
       });
@@ -46,7 +46,7 @@ export class MascotasResumeComponent implements OnInit {
           const imagenesConRuta = padre.imagenes.map(img =>
             img.startsWith('http') ? img : `mascotas/${user.uid}/${img}`
           );
-          this.imagenService.cargarImagenes([imagenesConRuta[0]]).then(urls => {
+          this.archivosService.cargarImagenes([imagenesConRuta[0]]).then((urls: string[]) => {
             console.log('URL del padre:', urls[0]); // Verifica la URL generada
             this.padresImagenes['padre'] = urls[0];
           });
@@ -61,7 +61,7 @@ export class MascotasResumeComponent implements OnInit {
           const imagenesConRuta = madre.imagenes.map(img =>
             img.startsWith('http') ? img : `mascotas/${user.uid}/${img}`
           );
-          this.imagenService.cargarImagenes([imagenesConRuta[0]]).then(urls => {
+          this.archivosService.cargarImagenes([imagenesConRuta[0]]).then((urls: string[]) => {
             console.log('URL de la madre:', urls[0]); // Verifica la URL generada
             this.padresImagenes['madre'] = urls[0];
           });

@@ -4,7 +4,7 @@ import { Storage, ref, deleteObject } from '@angular/fire/storage';
 import { Observable, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Anuncio } from '../models/Anuncio.model';
-import { ImagenService } from './imagen.service';
+import { ArchivosService } from './archivos.service';
 import { CachorrosService } from './cachorros.service';
 
 @Injectable({
@@ -20,8 +20,8 @@ export class AnunciosService {
   constructor(
     private firestore: Firestore,
     private storage: Storage,
-    private imagenService: ImagenService,
-    private cachorrosService: CachorrosService 
+    private archivosService: ArchivosService,
+    private cachorrosService: CachorrosService
   ) { }
 
   getAnuncios(): Observable<Anuncio[]> {
@@ -38,7 +38,7 @@ export class AnunciosService {
               const imagenesConRuta = anuncio.imagenes.map((img: string) =>
                 img.startsWith('http') ? img : `anuncios/${anuncio.id}/${img}`
               );
-              anuncio.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
+              anuncio.imagenes = await this.archivosService.cargarImagenes(imagenesConRuta);
             }
             return anuncio;
           })
@@ -61,7 +61,7 @@ export class AnunciosService {
               const imagenesConRuta = anuncio.imagenes.map((img: string) =>
                 img.startsWith('http') ? img : `anuncios/${anuncio.id}/${img}`
               );
-              anuncio.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
+              anuncio.imagenes = await this.archivosService.cargarImagenes(imagenesConRuta);
             }
             return anuncio;
           })
@@ -76,8 +76,8 @@ export class AnunciosService {
     return from(this.cachorrosService.getCachorrosByAnuncioId(id)).pipe(
       switchMap(async (cachorros) => {
         // Eliminar carpeta de imágenes de cachorros
-        await this.imagenService.eliminarCarpeta('cachorro', id);
-  
+        await this.archivosService.eliminarCarpeta('cachorro', id);
+
         // Eliminar documentos de cachorros
         for (const cachorro of cachorros) {
           const cachorroRef = doc(this.firestore, `cachorros/${cachorro.id}`);
@@ -86,7 +86,7 @@ export class AnunciosService {
       }),
       switchMap(() =>
         // Eliminar carpeta de imágenes del anuncio
-        from(this.imagenService.eliminarCarpeta('anuncio', id))
+        from(this.archivosService.eliminarCarpeta('anuncio', id))
       ),
       switchMap(() =>
         // Eliminar el documento del anuncio
@@ -115,7 +115,7 @@ export class AnunciosService {
     // Subir imágenes del anuncio y actualizar el documento con las URLs
     const imagenesAnuncioUrls = await Promise.all(
       imagenesAnuncio.map(async (file) => {
-        return await this.imagenService.subirImagen(file, 'anuncio', id_anuncio);
+        return await this.archivosService.subirImagen(file, 'anuncio', id_anuncio);
       })
     );
     await updateDoc(anuncioDocRef, { imagenes: imagenesAnuncioUrls });
@@ -127,7 +127,7 @@ export class AnunciosService {
 
       const imagenesCachorroUrls = await Promise.all(
         imagenesCachorro.map(async (file) => {
-          return await this.imagenService.subirImagen(file, 'cachorro', id_anuncio);
+          return await this.archivosService.subirImagen(file, 'cachorro', id_anuncio);
         })
       );
       cachorro.imagenes = imagenesCachorroUrls;

@@ -7,7 +7,7 @@ import { MascotasService } from '../../../services/mascotas.service';
 import { CriaderoService } from '../../../services/criadero.service';
 import { UsuarioService } from '../../../services/usuario.service';
 import { CachorrosService } from '../../../services/cachorros.service';
-import { ImagenService } from '../../../services/imagen.service';
+import { ArchivosService } from '../../../services/archivos.service';
 import { Cachorro } from '../../../models/Cachorro.model';
 import { Criadero } from '../../../models/Criadero.model';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -81,7 +81,7 @@ export class MisanunciosDetailComponent implements OnInit {
     private usuarioService: UsuarioService,
     private criaderoService: CriaderoService,
     private cachorrosService: CachorrosService,
-    private imagenService: ImagenService,
+    private archivosService: ArchivosService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar
   ) {}
@@ -114,7 +114,7 @@ export class MisanunciosDetailComponent implements OnInit {
               this.criaderoData = criadero;
               if (criadero.foto_perfil) {
                 const ruta = `criaderos/${criadero.foto_perfil}`;
-                criadero.foto_perfil = await this.imagenService.obtenerUrlImagen(ruta);
+                criadero.foto_perfil = await this.archivosService.obtenerUrlImagen(ruta);
               }
             }
           }
@@ -130,7 +130,7 @@ export class MisanunciosDetailComponent implements OnInit {
               const imagenesConRuta = cachorro.imagenes.map((img: string) =>
                 img.startsWith('http') ? img : `cachorros/${this.anuncio?.id}/${img}`
               );
-              cachorro.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
+              cachorro.imagenes = await this.archivosService.cargarImagenes(imagenesConRuta);
             }
           }
           this.cachorros = cachorros;
@@ -151,7 +151,7 @@ export class MisanunciosDetailComponent implements OnInit {
     for (const mascota of mascotas) {
       if (mascota.imagenes?.length > 0 && !mascota.imagenes[0].startsWith('http')) {
         const imagenesConRuta = mascota.imagenes.map(img => `mascotas/${this.anuncio?.id_usuario}/${img}`);
-        mascota.imagenes = await this.imagenService.cargarImagenes(imagenesConRuta);
+        mascota.imagenes = await this.archivosService.cargarImagenes(imagenesConRuta);
       }
     }
 
@@ -331,7 +331,7 @@ export class MisanunciosDetailComponent implements OnInit {
       }
     }
 
-    this.imagenService.cargarImagenes(imagenesConRuta).then(imagenesParaMostrar => {
+    this.archivosService.cargarImagenes(imagenesConRuta).then(imagenesParaMostrar => {
       this.formAnuncio = this.fb.group({
         titulo: [
           this.anuncio?.titulo || '',
@@ -436,7 +436,7 @@ export class MisanunciosDetailComponent implements OnInit {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       try {
-        this.imagenService['validarExtension'](file);
+        this.archivosService['validarExtension'](file);
         this.nuevasImagenesAnuncio.push(file);
         const url = URL.createObjectURL(file);
         nuevasImagenes.push(url);
@@ -468,7 +468,7 @@ export class MisanunciosDetailComponent implements OnInit {
       if (typeof imagenes[i] === 'string' && imagenes[i].startsWith('blob:')) {
         const file = this.nuevasImagenesAnuncio[fileIndex++];
         if (file) {
-          const nombreArchivo = await this.imagenService.subirImagen(
+          const nombreArchivo = await this.archivosService.subirImagen(
             file,
             'anuncio',
             this.anuncio?.id || ''
@@ -492,7 +492,7 @@ export class MisanunciosDetailComponent implements OnInit {
       img => typeof img === 'string' && !img.startsWith('blob:') && !img.startsWith('http')
     );
     if (eliminadas.length && this.anuncio?.id) {
-      await this.imagenService.eliminarImagenes('anuncio', this.anuncio.id, eliminadas);
+      await this.archivosService.eliminarImagenes('anuncio', this.anuncio.id, eliminadas);
     }
     this.nuevasImagenesAnuncio = [];
     // Convertir tipo a booleano antes de guardar
@@ -524,7 +524,7 @@ export class MisanunciosDetailComponent implements OnInit {
       ...valores,
       edad,
       perro: tipoBooleano,
-      imagenes: await this.imagenService.cargarImagenes(imagenesConRuta)
+      imagenes: await this.archivosService.cargarImagenes(imagenesConRuta)
     };
     this.isGuardandoAnuncio = false;
     this.cerrarModalAnuncio();
@@ -560,7 +560,7 @@ export class MisanunciosDetailComponent implements OnInit {
     const imagenesConRuta = imagenesSoloNombre.map(nombre =>
       nombre.startsWith('http') ? nombre : `cachorros/${this.anuncio?.id}/${nombre}`
     );
-    const imagenesParaMostrar = await this.imagenService.cargarImagenes(imagenesConRuta);
+    const imagenesParaMostrar = await this.archivosService.cargarImagenes(imagenesConRuta);
 
     this.formCachorro = this.fb.group({
       color: [this.cachorroEditando.color, []],
@@ -621,7 +621,7 @@ export class MisanunciosDetailComponent implements OnInit {
       if (typeof imagenes[i] === 'string' && imagenes[i].startsWith('blob:')) {
         const file = this.nuevasImagenesCachorro[fileIndex++];
         if (file) {
-          const nombreArchivo = await this.imagenService.subirImagen(
+          const nombreArchivo = await this.archivosService.subirImagen(
             file,
             'cachorro',
             this.anuncio?.id || ''
@@ -655,7 +655,7 @@ export class MisanunciosDetailComponent implements OnInit {
       const imagenesConRuta = imagenes.map(nombre =>
         nombre.startsWith('http') ? nombre : `cachorros/${this.anuncio?.id}/${nombre}`
       );
-      const urls = await this.imagenService.cargarImagenes(imagenesConRuta);
+      const urls = await this.archivosService.cargarImagenes(imagenesConRuta);
       const cachorroCreado = {
         ...nuevoCachorro,
         id: idNuevo,
@@ -678,7 +678,7 @@ export class MisanunciosDetailComponent implements OnInit {
         img => typeof img === 'string' && !img.startsWith('blob:') && !img.startsWith('http')
       );
       if (eliminadas.length && this.anuncio?.id) {
-        await this.imagenService.eliminarImagenes('cachorro', this.anuncio.id, eliminadas);
+        await this.archivosService.eliminarImagenes('cachorro', this.anuncio.id, eliminadas);
       }
 
       // Obtener el id de forma robusta
@@ -707,7 +707,7 @@ export class MisanunciosDetailComponent implements OnInit {
         const imagenesConRuta = imagenes.map(nombre =>
           nombre.startsWith('http') ? nombre : `cachorros/${this.anuncio?.id}/${nombre}`
         );
-        const urls = await this.imagenService.cargarImagenes(imagenesConRuta);
+        const urls = await this.archivosService.cargarImagenes(imagenesConRuta);
         this.cachorros[indexEditando] = {
           ...this.cachorros[indexEditando],
           ...valores,
@@ -732,7 +732,7 @@ export class MisanunciosDetailComponent implements OnInit {
       const file = files[i];
       try {
         // Validar extensión usando el servicio
-        this.imagenService['validarExtension'](file);
+        this.archivosService['validarExtension'](file);
         this.nuevasImagenesCachorro.push(file);
         // Solo para previsualización, no subir aún
         const url = URL.createObjectURL(file);
@@ -861,7 +861,7 @@ export class MisanunciosDetailComponent implements OnInit {
       }).filter(Boolean);
 
       if (nombresImagenes.length > 0) {
-        await this.imagenService.eliminarImagenes('cachorro', idAnuncio, nombresImagenes);
+        await this.archivosService.eliminarImagenes('cachorro', idAnuncio, nombresImagenes);
         console.log(`Imágenes eliminadas de Firebase Storage:`, nombresImagenes);
       }
     }

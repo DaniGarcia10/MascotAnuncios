@@ -6,7 +6,7 @@ import { Usuario } from '../../models/Usuario.model';
 import { Criadero } from '../../models/Criadero.model';
 import { UsuarioService } from '../../services/usuario.service';
 import { CriaderoService } from '../../services/criadero.service';
-import { ImagenService } from '../../services/imagen.service';
+import { ArchivosService } from '../../services/archivos.service';
 
 @Component({
   selector: 'app-perfil',
@@ -30,7 +30,7 @@ export class PerfilComponent implements OnInit {
     private auth: Auth,
     private usuarioService: UsuarioService,
     private criaderoService: CriaderoService,
-    private imagenService: ImagenService
+    private archivosService: ArchivosService
   ) {
     this.perfilForm = new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.maxLength(30)]),
@@ -57,7 +57,7 @@ export class PerfilComponent implements OnInit {
 
           if (this.usuario.foto_perfil) {
             const ruta = `usuarios/${this.usuario.foto_perfil}`;
-            this.imagenUrlPerfil = await this.imagenService.obtenerUrlImagen(ruta);
+            this.imagenUrlPerfil = await this.archivosService.obtenerUrlImagen(ruta);
           }
 
           if (this.usuario.id_criadero) {
@@ -79,7 +79,7 @@ export class PerfilComponent implements OnInit {
 
       if (this.criadero?.foto_perfil) {
         const ruta = `criaderos/${this.criadero.foto_perfil}`;
-        this.imagenUrlCriadero = await this.imagenService.obtenerUrlImagen(ruta);
+        this.imagenUrlCriadero = await this.archivosService.obtenerUrlImagen(ruta);
       }
     } catch (err) {
       console.error('Error al obtener los datos del criadero:', err);

@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule, ValidationErro
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { ImagenService } from '../../services/imagen.service';
+import { ArchivosService } from '../../services/archivos.service';
 import { Firestore, doc, setDoc, collection, addDoc } from '@angular/fire/firestore';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
@@ -20,15 +20,16 @@ export class RegistroComponent {
   fotoPerfil: File | null = null;
   fotoPerfilCriadero: File | null = null;
   isSubmitting: boolean = false;
-  documentacionFiles: File[] = [];
+  dniFile: File | null = null;
+  nzFile: File | null = null;
 
   constructor(
     private authService: AuthService,
-    private imagenService: ImagenService,
     private firestore: Firestore,
     private router: Router,
     private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private archivosService: ArchivosService
   ) {
     this.formRegistro = new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.maxLength(30)]),
@@ -86,7 +87,7 @@ export class RegistroComponent {
     const file = event.target.files[0];
     if (file) {
       try {
-        this.imagenService['validarExtension'](file);
+        this.archivosService['validarExtension'](file);
         this.fotoPerfil = file;
         console.log('Foto de perfil seleccionada:', file.name);
       } catch (error: any) {
@@ -110,7 +111,7 @@ export class RegistroComponent {
     const file = event.target.files[0];
     if (file) {
       try {
-        this.imagenService['validarExtension'](file);
+        this.archivosService['validarExtension'](file);
         this.fotoPerfilCriadero = file;
         console.log('Foto de perfil del criadero seleccionada:', file.name);
       } catch (error: any) {
@@ -130,38 +131,50 @@ export class RegistroComponent {
     }
   }
 
-  // Manejar selección de archivos de documentación
-  onDocumentacionFilesSelected(event: any): void {
-    if (event.target.files && event.target.files.length > 0) {
-      const archivos: File[] = Array.from(event.target.files);
-      const archivosValidos: File[] = [];
-      let extensionInvalida = false;
-
-      for (const file of archivos) {
-        try {
-          this.imagenService['validarExtension'](file);
-          archivosValidos.push(file);
-        } catch (error: any) {
-          extensionInvalida = true;
-          const extension = file.name.split('.').pop()?.toLowerCase();
-          const mensaje = `El formato "${extension}" no es válido. Formatos soportados: jpg, jpeg, png, webp, pdf.`;
-          const modal = document.getElementById('modalErrorExtensionImagen');
-          const mensajeElem = document.getElementById('mensajeErrorExtensionImagen');
-          if (mensajeElem) mensajeElem.textContent = mensaje;
-          if (modal && (window as any).bootstrap) {
-            // @ts-ignore
-            const bsModal = new (window as any).bootstrap.Modal(modal);
-            bsModal.show();
-          }
+  // Manejar selección de DNI/NIE
+  onDniFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      try {
+        this.archivosService['validarExtension'](file);
+        this.dniFile = file;
+      } catch (error: any) {
+        const extension = file.name.split('.').pop()?.toLowerCase();
+        const mensaje = `El formato "${extension}" no es válido. Formatos soportados: jpg, jpeg, png, webp, pdf.`;
+        const modal = document.getElementById('modalErrorExtensionImagen');
+        const mensajeElem = document.getElementById('mensajeErrorExtensionImagen');
+        if (mensajeElem) mensajeElem.textContent = mensaje;
+        if (modal && (window as any).bootstrap) {
+          // @ts-ignore
+          const bsModal = new (window as any).bootstrap.Modal(modal);
+          bsModal.show();
         }
-      }
-
-      if (extensionInvalida) {
         event.target.value = '';
-        this.documentacionFiles = [];
-      } else {
-        this.documentacionFiles = archivosValidos;
-        console.log('Archivos de documentación seleccionados:', this.documentacionFiles.map(f => f.name));
+        this.dniFile = null;
+      }
+    }
+  }
+
+  // Manejar selección de Núcleo Zoológico
+  onNzFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      try {
+        this.archivosService['validarExtension'](file);
+        this.nzFile = file;
+      } catch (error: any) {
+        const extension = file.name.split('.').pop()?.toLowerCase();
+        const mensaje = `El formato "${extension}" no es válido. Formatos soportados: jpg, jpeg, png, webp, pdf.`;
+        const modal = document.getElementById('modalErrorExtensionImagen');
+        const mensajeElem = document.getElementById('mensajeErrorExtensionImagen');
+        if (mensajeElem) mensajeElem.textContent = mensaje;
+        if (modal && (window as any).bootstrap) {
+          // @ts-ignore
+          const bsModal = new (window as any).bootstrap.Modal(modal);
+          bsModal.show();
+        }
+        event.target.value = '';
+        this.nzFile = null;
       }
     }
   }
@@ -183,13 +196,11 @@ export class RegistroComponent {
     // Validación de archivos obligatorios
     const faltaFotoPerfil = !this.fotoPerfil;
     const faltaFotoCriadero = this.isVendedor() && !this.fotoPerfilCriadero;
-    const faltaDocumentacion = this.isVendedor() && this.documentacionFiles.length === 0;
 
     if (
       this.formRegistro.invalid ||
       faltaFotoPerfil ||
-      faltaFotoCriadero ||
-      faltaDocumentacion
+      faltaFotoCriadero
     ) {
       this.isSubmitting = false;
       this.cdr.markForCheck(); // Forzar actualización de la vista
@@ -207,7 +218,7 @@ export class RegistroComponent {
       if (this.fotoPerfil) {
         const extension = this.fotoPerfil.name.split('.').pop()?.toLowerCase();
         nombreFotoPerfil = `${userId}.${extension}`;
-        await this.imagenService.subirImagen(this.fotoPerfil, 'usuario', userId);
+        await this.archivosService.subirImagen(this.fotoPerfil, 'usuario', userId);
         console.log('Foto de perfil subida:', nombreFotoPerfil);
       }
 
@@ -231,20 +242,12 @@ export class RegistroComponent {
         if (this.fotoPerfilCriadero) {
           const extension = this.fotoPerfilCriadero.name.split('.').pop()?.toLowerCase();
           const nombreFotoCriadero = `${idCriadero}.${extension}`;
-          await this.imagenService.subirImagen(this.fotoPerfilCriadero, 'criadero', idCriadero);
+          await this.archivosService.subirImagen(this.fotoPerfilCriadero, 'criadero', idCriadero);
 
           await setDoc(doc(this.firestore, 'criaderos', idCriadero), {
             ...criaderoData,
             foto_perfil: nombreFotoCriadero
           });
-        }
-
-        // Subir archivos de documentación (NO guardar nombres en Firestore)
-        if (this.documentacionFiles.length > 0) {
-          for (const file of this.documentacionFiles) {
-            await this.imagenService.subirImagen(file, 'documentacion', userId);
-          }
-          // No guardar la propiedad documentacion en Firestore
         }
       }
 
@@ -259,6 +262,14 @@ export class RegistroComponent {
       };
 
       await setDoc(doc(this.firestore, 'usuarios', userId), usuarioDoc);
+
+      // Subir documentación adicional si existe
+      if (this.dniFile) {
+        await this.archivosService.subirDocumentacion(this.dniFile, 'dni', userId);
+      }
+      if (this.nzFile) {
+        await this.archivosService.subirDocumentacion(this.nzFile, 'nz', userId);
+      }
 
       //Mostrar mensaje bonito y redirigir
       this.snackBar.open('¡Registro exitoso!', 'Cerrar', {

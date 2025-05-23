@@ -1,22 +1,8 @@
-<!-- Indicador de carga -->
-<div *ngIf="loading" class="d-flex justify-content-center align-items-center p-5">
-  <div class="spinner-border text-primary me-2" role="status"></div>
-  <span class="fs-5">Cargando IDs de carpetas...</span>
-</div>
-
-<!-- Lista de usuarios en tarjetas -->
-<div *ngIf="!loading" class="row g-3">
-  <div *ngFor="let item of usuarios" class="col-12 col-md-6 col-lg-4">
-    <div class="card shadow-sm h-100">
-      <div class="card-body">
-        <h5 class="card-title mb-2">{{ item.usuario.nombre }} {{ item.usuario.apellidos }}</h5>
-        <p class="card-text mb-1">
-          {{ item.usuario.email }}
-        </p>
-        <p class="card-text mb-0">
-          {{ item.usuario.telefono }}
-        </p>
-      </div>
-    </div>
-  </div>
+<!-- Tarjeta de resumen de usuario -->
+<div class="p-2 border rounded mb-2 bg-light cursor-pointer">
+  <strong>{{ usuario.usuario.nombre }} {{ usuario.usuario.apellidos }}</strong><br>
+  <small>{{ usuario.usuario.email }}</small><br>
+  <small>{{ usuario.usuario.telefono }}</small><br>
+  <small>Estado: {{ usuario.documentacion?.estado || 'Sin estado' }}</small><br>
+  <small>Motivo: {{ usuario.documentacion?.motivo || 'Sin motivo' }}</small>
 </div>

@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CriaderoService } from '../../../services/criadero.service';
 import { UsuarioService } from '../../../services/usuario.service';
 import { CachorrosService } from '../../../services/cachorros.service';
-import { ImagenService } from '../../../services/imagen.service';
+import { ArchivosService } from '../../../services/archivos.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -25,7 +25,7 @@ export class AnunciosResumeComponent implements OnInit {
     private usuarioService: UsuarioService,
     private criaderoService: CriaderoService,
     private cachorrosService: CachorrosService,
-    private imagenService: ImagenService
+    private archivosService: ArchivosService
   ) {}
 
   async ngOnInit() {
@@ -36,7 +36,7 @@ export class AnunciosResumeComponent implements OnInit {
 
         if (this.criaderoData?.foto_perfil) {
           const ruta = `criaderos/${this.criaderoData.foto_perfil}`;
-          this.imagenUrlCriadero = await this.imagenService.obtenerUrlImagen(ruta);
+          this.imagenUrlCriadero = await this.archivosService.obtenerUrlImagen(ruta);
         }
       }
     }

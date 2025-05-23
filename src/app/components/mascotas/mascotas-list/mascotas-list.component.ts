@@ -6,7 +6,7 @@ import { Mascota } from '../../../models/Mascota.model';
 import { MascotasResumeComponent } from '../mascotas-resume/mascotas-resume.component';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
-import { ImagenService } from '../../../services/imagen.service';
+import { ArchivosService } from '../../../services/archivos.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Firestore, collection, addDoc, doc, deleteDoc } from '@angular/fire/firestore';
@@ -37,7 +37,7 @@ export class MascotasListComponent implements OnInit {
     private mascotasService: MascotasService,
     private fb: FormBuilder,
     private authService: AuthService,
-    private imagenService: ImagenService,
+    private archivosService: ArchivosService,
     private snackBar: MatSnackBar,
     private firestore: Firestore,
     private router: Router
@@ -70,7 +70,7 @@ export class MascotasListComponent implements OnInit {
                   img.startsWith('http') ? img : `mascotas/${user.uid}/${img}`
                 );
                 try {
-                  const urls = await this.imagenService.cargarImagenes(imagenesConRuta);
+                  const urls = await this.archivosService.cargarImagenes(imagenesConRuta);
                   mascota.imagenes = urls;
                 } catch (error) {
                   console.error(`Error al cargar imágenes de la mascota ${mascota.nombre}:`, error);
@@ -148,7 +148,7 @@ export class MascotasListComponent implements OnInit {
       for (const file of archivos) {
         try {
           // Validar extensión usando el servicio
-          this.imagenService['validarExtension'](file);
+          this.archivosService['validarExtension'](file);
           archivosValidos.push(file);
         } catch (error: any) {
           extensionInvalida = true;
@@ -219,7 +219,7 @@ export class MascotasListComponent implements OnInit {
           let imagenesNombres: string[] = [];
           if (this.imagenesMascota && this.imagenesMascota.length > 0) {
             for (const file of this.imagenesMascota) {
-              const nombreArchivo = await this.imagenService.subirImagen(
+              const nombreArchivo = await this.archivosService.subirImagen(
                 file,
                 'mascota',
                 user.uid
@@ -311,7 +311,7 @@ export class MascotasListComponent implements OnInit {
             return img;
           }
         });
-        await this.imagenService.eliminarImagenes(
+        await this.archivosService.eliminarImagenes(
           'mascota',
           this.mascotaDetalle.id_usuario,
           imagenesNombres

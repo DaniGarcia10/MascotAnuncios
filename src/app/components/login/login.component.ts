@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { ImagenService } from '../../services/imagen.service';
+import { ArchivosService } from '../../services/archivos.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router'; // Importar Router
 
@@ -17,7 +17,7 @@ export class LoginComponent implements OnInit {
   imagenUrl: string | null = null; 
   constructor(
     private authService: AuthService, 
-    private imagenService: ImagenService,
+    private archivosService: ArchivosService,
     private router: Router // Inyectar Router
   ) {
     this.formLogin = new FormGroup({
@@ -27,6 +27,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Si necesitas cargar imágenes aquí, usa archivosService
   }
 
   onSubmit(): void {

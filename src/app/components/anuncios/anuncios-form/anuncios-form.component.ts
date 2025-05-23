@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { RAZAS } from '../../../data/razas';
 import { PROVINCIAS_ESPAÑA } from '../../../data/provincias';
 import { Firestore, collection } from '@angular/fire/firestore';
-import { ImagenService } from '../../../services/imagen.service';
+import { ArchivosService } from '../../../services/archivos.service';
 import { AuthService } from '../../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -34,7 +34,7 @@ export class AnunciosFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private firestore: Firestore,
-    private imagenService: ImagenService,
+    private archivosService: ArchivosService,
     private authService: AuthService,
     private router: Router,
     private snackBar: MatSnackBar,
@@ -119,7 +119,7 @@ export class AnunciosFormComponent implements OnInit {
                 img.startsWith('http') ? img : `mascotas/${userId}/${img}`
               );
               try {
-                const urls = await this.imagenService.cargarImagenes(imagenesConRuta);
+                const urls = await this.archivosService.cargarImagenes(imagenesConRuta);
                 mascota.imagenes = urls; 
               } catch (error) {
                 console.error(`Error al cargar imágenes de la mascota ${mascota.nombre}:`, error);
@@ -191,7 +191,7 @@ export class AnunciosFormComponent implements OnInit {
     for (const file of fileArray) {
       try {
         // Validar extensión usando el servicio
-        this.imagenService['validarExtension'](file);
+        this.archivosService['validarExtension'](file);
         archivosValidos.push(file);
       } catch (error: any) {
         errorDetectado = true;
@@ -228,7 +228,7 @@ export class AnunciosFormComponent implements OnInit {
 
     for (const file of fileArray) {
       try {
-        this.imagenService['validarExtension'](file);
+        this.archivosService['validarExtension'](file);
         archivosValidos.push(file);
       } catch (error: any) {
         errorDetectado = true;

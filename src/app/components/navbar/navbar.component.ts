@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
-import { ImagenService } from '../../services/imagen.service'; // Importar el servicio de imágenes
+import { ArchivosService } from '../../services/archivos.service';
 
 @Component({
   selector: 'app-navbar',
@@ -19,7 +19,7 @@ export class NavbarComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private imagenService: ImagenService // Inyectar el servicio de imágenes
+    private archivosService: ArchivosService // Inyectar el servicio de archivos
   ) {}
 
   ngOnInit(): void {
@@ -33,7 +33,7 @@ export class NavbarComponent implements OnInit {
     });
 
     // Cargar la URL del logo
-    this.imagenService.cargarImagenes(['logo1.png']).then((urls) => {
+    this.archivosService.cargarImagenes(['logo1.png']).then((urls) => {
       this.logoUrl = urls[0]; // Asignar la URL del logo
     });
   }

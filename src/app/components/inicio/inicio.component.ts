@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UsuarioService } from '../../services/usuario.service';
 import { Auth } from '@angular/fire/auth';
-import { ImagenService } from '../../services/imagen.service';
+import { ArchivosService } from '../../services/archivos.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router'; // Importar Router para la navegación
 import { RAZAS } from '../../data/razas'; // Importar el archivo de razas
@@ -23,7 +23,7 @@ export class InicioComponent implements OnInit {
   constructor(
     private auth: Auth,
     private usuarioService: UsuarioService,
-    private imagenService: ImagenService,
+    private archivosService: ArchivosService,
     private router: Router // Inyectar Router para la navegación
   ) {}
 
@@ -32,7 +32,7 @@ export class InicioComponent implements OnInit {
     if (user) {
       this.usuarioService.getUsuarioById(user.uid).then((usuario) => {
         console.log('Datos del usuario:', { user, usuario });
-      }).catch((error) => {
+      }).catch((error: any) => {
         console.error('Error al obtener los datos del usuario:', error);
       });
     } else {
@@ -40,9 +40,9 @@ export class InicioComponent implements OnInit {
     }
 
     // Cargar la imagen inicio.jpg
-    this.imagenService.cargarImagenes(['inicio.jpg']).then((urls) => {
+    this.archivosService.cargarImagenes(['inicio.jpg']).then((urls: string[]) => {
       this.imagenUrl = urls[0];
-    }).catch((error) => {
+    }).catch((error: any) => {
       console.error('Error al cargar la imagen:', error);
     });
   }
