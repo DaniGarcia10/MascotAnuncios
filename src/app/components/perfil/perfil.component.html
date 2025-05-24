@@ -8,7 +8,8 @@
       <li class="list-group-item" [class.active]="activeSection === 'password'" (click)="setActiveSection('password')">
         Cambiar contraseña
       </li>
-      <li *ngIf="usuario?.id_criadero" class="list-group-item" [class.active]="activeSection === 'criadero'" (click)="setActiveSection('criadero')">
+      <li *ngIf="usuario?.id_criadero" class="list-group-item" [class.active]="activeSection === 'criadero'"
+        (click)="setActiveSection('criadero')">
         Información de mi criadero
       </li>
     </ul>
@@ -24,33 +25,38 @@
         <div class="card-body custom-card-body">
           <form [formGroup]="perfilForm" *ngIf="usuario; else noUsuario">
             <div class="text-center mb-3">
-              <img 
-                *ngIf="imagenUrlPerfil" 
-                [src]="imagenUrlPerfil" 
-                alt="Foto de perfil" 
-                class="img-thumbnail"
-              />
+              <img *ngIf="imagenUrlPerfil"
+                   [src]="imagenUrlPerfil"
+                   alt="Foto de perfil"
+                   class="border rounded mb-3"
+                   style="width: 100%; max-width: 400px; aspect-ratio: 1/1; object-fit: cover; display: block; margin-left: auto; margin-right: auto;">
             </div>
             <div class="mb-3">
               <label for="nombre" class="form-label"><strong>Nombre:</strong></label>
-              <input id="nombre" formControlName="nombre" placeholder="Introduzca su nombre" class="form-control" [readonly]="!editMode" />
+              <input id="nombre" formControlName="nombre" placeholder="Introduzca su nombre" class="form-control"
+                [readonly]="!editMode" />
             </div>
             <div class="mb-3">
               <label for="apellidos" class="form-label"><strong>Apellidos:</strong></label>
-              <input id="apellidos" formControlName="apellidos" placeholder="Introduzca sus apellidos" class="form-control" [readonly]="!editMode" />
+              <input id="apellidos" formControlName="apellidos" placeholder="Introduzca sus apellidos"
+                class="form-control" [readonly]="!editMode" />
             </div>
             <div class="mb-3">
               <label for="email" class="form-label"><strong>Email:</strong></label>
-              <input id="email" formControlName="email" placeholder="Introduzca su email" class="form-control" [readonly]="!editMode" />
+              <input id="email" formControlName="email" placeholder="Introduzca su email" class="form-control"
+                [readonly]="!editMode" />
             </div>
             <div class="mb-3">
               <label for="telefono" class="form-label"><strong>Teléfono:</strong></label>
-              <input id="telefono" formControlName="telefono" placeholder="Introduzca su teléfono" class="form-control" [readonly]="!editMode" />
+              <input id="telefono" formControlName="telefono" placeholder="Introduzca su teléfono" class="form-control"
+                [readonly]="!editMode" />
             </div>
             <div class="d-flex justify-content-center mt-4">
-              <button *ngIf="editMode" type="button" class="btn btn-danger m-2 w-50" (click)="cancelEdit()">Cancelar</button>
+              <button *ngIf="editMode" type="button" class="btn btn-danger m-2 w-50"
+                (click)="cancelEdit()">Cancelar</button>
               <button *ngIf="editMode" type="submit" class="btn-default m-2 w-50">Guardar</button>
-              <button *ngIf="!editMode" type="button" class="btn-default m-2 w-50" (click)="toggleEditMode()">Modificar Perfil</button>
+              <button *ngIf="!editMode" type="button" class="btn-default m-2 w-50" (click)="toggleEditMode()">Modificar
+                Perfil</button>
             </div>
           </form>
           <ng-template #noUsuario>
@@ -67,17 +73,64 @@
         </div>
         <div class="card-body custom-card-body">
           <form [formGroup]="passwordForm" (ngSubmit)="cambiarPassword()">
+            <!-- Contraseña actual -->
             <div class="mb-3">
               <label for="passwordActual" class="form-label"><strong>Contraseña actual:</strong></label>
-              <input id="passwordActual" formControlName="passwordActual" type="password" class="form-control" />
+              <div class="input-group">
+                <input
+                  id="passwordActual"
+                  [type]="showPasswordActual ? 'text' : 'password'"
+                  formControlName="passwordActual"
+                  class="form-control" />
+                <span class="input-group-text" style="cursor: pointer;" (click)="showPasswordActual = !showPasswordActual">
+                  <i class="bi" [ngClass]="showPasswordActual ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </span>
+              </div>
+              <small *ngIf="passwordForm.get('passwordActual')?.touched && passwordForm.get('passwordActual')?.hasError('required')" class="text-danger">
+                La contraseña actual es obligatoria.
+              </small>
             </div>
+
+            <!-- Nueva contraseña (ya lo tienes así, lo dejo igual) -->
             <div class="mb-3">
               <label for="nuevaPassword" class="form-label"><strong>Nueva contraseña:</strong></label>
-              <input id="nuevaPassword" formControlName="nuevaPassword" type="password" class="form-control" />
+              <div class="input-group">
+                <input
+                  id="nuevaPassword"
+                  [type]="showNuevaPassword ? 'text' : 'password'"
+                  formControlName="nuevaPassword"
+                  class="form-control" />
+                <span class="input-group-text" style="cursor: pointer;" (click)="showNuevaPassword = !showNuevaPassword">
+                  <i class="bi" [ngClass]="showNuevaPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </span>
+              </div>
+              <small *ngIf="passwordForm.get('nuevaPassword')?.touched && passwordForm.get('nuevaPassword')?.hasError('required')" class="text-danger">
+                La nueva contraseña es obligatoria.
+              </small>
+              <small *ngIf="passwordForm.get('nuevaPassword')?.touched && passwordForm.get('nuevaPassword')?.hasError('pattern')" class="text-danger">
+                Debe tener mínimo 8 caracteres, al menos una letra y un número.
+              </small>
             </div>
+
+            <!-- Confirmar nueva contraseña -->
             <div class="mb-3">
               <label for="confirmarPassword" class="form-label"><strong>Confirmar nueva contraseña:</strong></label>
-              <input id="confirmarPassword" formControlName="confirmarPassword" type="password" class="form-control" />
+              <div class="input-group">
+                <input
+                  id="confirmarPassword"
+                  [type]="showConfirmarPassword ? 'text' : 'password'"
+                  formControlName="confirmarPassword"
+                  class="form-control" />
+                <span class="input-group-text" style="cursor: pointer;" (click)="showConfirmarPassword = !showConfirmarPassword">
+                  <i class="bi" [ngClass]="showConfirmarPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </span>
+              </div>
+              <small *ngIf="passwordForm.get('confirmarPassword')?.touched && passwordForm.get('confirmarPassword')?.hasError('required')" class="text-danger">
+                Debe confirmar la nueva contraseña.
+              </small>
+              <small *ngIf="passwordForm.get('confirmarPassword')?.touched && passwordForm.hasError('passwordsNoMatch')" class="text-danger">
+                Las contraseñas no coinciden.
+              </small>
             </div>
             <button type="submit" class="btn-default w-100">Cambiar Contraseña</button>
           </form>
@@ -91,7 +144,11 @@
           <h3 class="card-title-grande">Información del Criadero</h3>
         </div>
         <div class="card-body custom-card-body text-center">
-          <img *ngIf="imagenUrlCriadero" [src]="imagenUrlCriadero" alt="Foto del criadero" class="img-thumbnail mb-3" />
+          <img *ngIf="imagenUrlCriadero"
+               [src]="imagenUrlCriadero"
+               alt="Foto del criadero"
+               class="border rounded mb-3"
+               style="width: 180px; height: 180px; object-fit: cover;">
           <h5><strong>Nombre:</strong> {{ criadero.nombre }}</h5>
           <p><strong>Núcleo Zoológico:</strong> {{ criadero.nucleo_zoologico }}</p>
           <p><strong>Ubicación:</strong> {{ criadero.ubicacion }}</p>
@@ -106,11 +163,47 @@
               </span>
             </ng-template>
           </p>
+          <!-- Estado y motivo de documentación -->
+          <hr class="my-4">
+                      <h5 class="mb-3">Estado de la verificación</h5>
+          <div class="d-flex justify-content-center mb-2">
+              <span 
+                class="badge fs-6 px-2 py-2"
+                [ngClass]="{
+                  'badge-verificado': documentacion?.estado === 'ACEPTADO',
+                  'badge-pendiente': documentacion?.estado === 'PENDIENTE',
+                  'badge-rechazado': documentacion?.estado === 'RECHAZADO',
+                  'bg-secondary': !['ACEPTADO', 'PENDIENTE', 'RECHAZADO'].includes(documentacion?.estado)
+                }"
+              >
+                {{ documentacion?.estado || 'No disponible' }}
+              </span>
+            </div>
+          <div class="border rounded bg-light p-3 mb-3 d-inline-block text-start mt-3">
+            <p>
+              <strong>Motivo:</strong> {{ documentacion?.motivo || 'No disponible' }}
+            </p>
+          </div>
         </div>
       </div>
       <ng-template #noCriadero>
         <p class="text-center text-danger">No se encontró información del criadero.</p>
       </ng-template>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de éxito de cambio de contraseña -->
+<div class="modal fade" id="modalExitoPassword" tabindex="-1" aria-labelledby="modalExitoPasswordLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalExitoPasswordLabel">¡Contraseña cambiada!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p class="fs-4 fw-bold mb-0">Tu contraseña se ha actualizado correctamente.</p>
+      </div>
     </div>
   </div>
 </div>

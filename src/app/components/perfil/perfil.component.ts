@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Auth } from '@angular/fire/auth';
@@ -7,6 +7,8 @@ import { Criadero } from '../../models/Criadero.model';
 import { UsuarioService } from '../../services/usuario.service';
 import { CriaderoService } from '../../services/criadero.service';
 import { ArchivosService } from '../../services/archivos.service';
+import { DocumentacionService } from '../../services/documentacion.service';
+import { getAuth, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
 
 @Component({
   selector: 'app-perfil',
@@ -25,12 +27,21 @@ export class PerfilComponent implements OnInit {
   perfilForm: FormGroup;
   passwordForm: FormGroup;
   activeSection: string = 'general';
+  documentacion: any = null;
+
+  showPasswordActual: boolean = false;
+  showNuevaPassword: boolean = false;
+  showConfirmarPassword: boolean = false;
+  mensajeErrorPassword: string = '';
+
+  @ViewChild('modalExitoPassword') modalExitoPassword!: ElementRef;
 
   constructor(
     private auth: Auth,
     private usuarioService: UsuarioService,
     private criaderoService: CriaderoService,
-    private archivosService: ArchivosService
+    private archivosService: ArchivosService,
+    private documentacionService: DocumentacionService
   ) {
     this.perfilForm = new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.maxLength(30)]),
@@ -41,7 +52,11 @@ export class PerfilComponent implements OnInit {
 
     this.passwordForm = new FormGroup({
       passwordActual: new FormControl('', [Validators.required]),
-      nuevaPassword: new FormControl('', [Validators.required, Validators.minLength(6)]),
+      nuevaPassword: new FormControl('', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).{8,}$/)
+      ]),
       confirmarPassword: new FormControl('', [Validators.required]),
     });
   }
@@ -81,6 +96,13 @@ export class PerfilComponent implements OnInit {
         const ruta = `criaderos/${this.criadero.foto_perfil}`;
         this.imagenUrlCriadero = await this.archivosService.obtenerUrlImagen(ruta);
       }
+
+      // Cargar documentación asociada al criadero
+      if (this.usuario?.id) {
+        this.documentacion = await this.documentacionService.obtenerDocumentacion(this.usuario.id);
+      } else {
+        this.documentacion = null;
+      }
     } catch (err) {
       console.error('Error al obtener los datos del criadero:', err);
     }
@@ -104,14 +126,59 @@ export class PerfilComponent implements OnInit {
   }
 
   cambiarPassword(): void {
+    // Marcar todos los campos como tocados
+    this.passwordForm.markAllAsTouched();
+
     if (this.passwordForm.valid) {
       const { passwordActual, nuevaPassword, confirmarPassword } = this.passwordForm.value;
+
       if (nuevaPassword !== confirmarPassword) {
-        alert('Las contraseñas no coinciden.');
+        this.mensajeErrorPassword = 'Las contraseñas no coinciden.';
+        const modal = new (window as any).bootstrap.Modal(document.getElementById('modalErrorPassword'));
+        modal.show();
         return;
       }
-      // Aquí va la lógica real para cambiar la contraseña
-      console.log('Contraseña cambiada:', nuevaPassword);
+
+      const auth = getAuth();
+      const usuario = auth.currentUser;
+
+      if (!usuario || !usuario.email) {
+        this.mensajeErrorPassword = 'Usuario no autenticado.';
+        const modal = new (window as any).bootstrap.Modal(document.getElementById('modalErrorPassword'));
+        modal.show();
+        return;
+      }
+
+      const credential = EmailAuthProvider.credential(usuario.email, passwordActual);
+
+      reauthenticateWithCredential(usuario, credential)
+        .then(() => {
+          return updatePassword(usuario, nuevaPassword);
+        })
+        .then(() => {
+          // Mostrar el modal de éxito
+          this.passwordForm.reset();
+          // Bootstrap 5: mostrar modal por id
+          const modal = new (window as any).bootstrap.Modal(document.getElementById('modalExitoPassword'));
+          modal.show();
+        })
+        .catch(error => {
+          console.error(error);
+          // Ahora también detecta 'auth/invalid-credential' como contraseña incorrecta
+          if (
+            error.code === 'auth/wrong-password' ||
+            error.code === 'auth/user-mismatch' ||
+            error.code === 'auth/invalid-credential' ||
+            error.message?.includes('wrong-password')
+          ) {
+            this.mensajeErrorPassword = 'La contraseña actual es incorrecta.';
+          } else {
+            this.mensajeErrorPassword = 'Error al cambiar la contraseña.';
+          }
+          // Mostrar el modal de error
+          const modal = new (window as any).bootstrap.Modal(document.getElementById('modalErrorPassword'));
+          modal.show();
+        });
     }
   }
 }
