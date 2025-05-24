@@ -1,0 +1,108 @@
+<div class="d-flex flex-column flex-lg-row">
+  <!-- Menú lateral -->
+  <div class="menu-lateral p-3 col-12 col-lg-3">
+    <ul class="list-group shadow-lg">
+      <li class="list-group-item" [class.active]="activeSection === 'ver'" (click)="setActiveSection('ver')">
+        Ver suscripción
+      </li>
+      <li class="list-group-item" [class.active]="activeSection === 'contratar'"
+        (click)="setActiveSection('contratar')">
+        Contratar suscripción
+      </li>
+    </ul>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="contenido-principal flex-grow-1 p-4 col-12 col-lg-9">
+    <!-- Contratar suscripción -->
+    <div *ngIf="activeSection === 'contratar'">
+      <div class="formulario-suscripcion bg-white rounded shadow-lg p-4">
+        <form [formGroup]="suscripcionForm" (ngSubmit)="crearSuscripcion()">
+          <div class="mb-3">
+            <h3 class="mb-4 card-title-grande text-center">Contratar suscripción</h3>
+            <!-- Beneficios en dos columnas -->
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-10">
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <ul class="list-unstyled text-start mx-auto">
+                      <li><i class="bi bi-check-circle-fill text-success me-2"></i> Anuncios destacados ilimitados
+                      </li>
+                      <li><i class="bi bi-check-circle-fill text-success me-2"></i> Máxima visibilidad en los
+                        listados</li>
+                    </ul>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <ul class="list-unstyled text-start mx-auto">
+                      <li><i class="bi bi-check-circle-fill text-success me-2"></i> Destacado durante toda la
+                        duración</li>
+                      <li><i class="bi bi-check-circle-fill text-success me-2"></i> Sin renovaciones automáticas
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h4>Selecciona tu plan:</h4>
+            <div class="row text-center">
+              <div class="col-md-3" *ngFor="let plan of planes" (click)="seleccionar(plan)"
+                [class.selected]="plan.value === suscripcionForm.get('duracion')?.value">
+                <div class="card plan-card mb-3 shadow-sm border">
+                  <div class="plan-header text-white text-center py-2 rounded-top">
+                    <h5 class="fw-bold mb-0">{{ plan.label }}</h5>
+                  </div>
+                  <div class="p-3">
+                    <p class="text-success fw-semibold" *ngIf="plan.ahorro">{{ plan.ahorro }}</p>
+                   <p><strong>{{ plan.precio }}€</strong></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Precio y botón -->
+          <div *ngIf="precioSeleccionado !== null" class="text-center mt-4">
+            <h4>Precio final:
+              <span class="card-title-grande ms-2">
+                {{ precioSeleccionado }}€
+              </span>
+            </h4>
+            <button type="submit" class="btn-default w-50 mt-2" [disabled]="suscripcionForm.invalid">
+              Ir al pago
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Ver suscripción -->
+    <div *ngIf="activeSection === 'ver'">
+      <div *ngIf="suscripcion$ | async as suscripcion; else noSuscripcion"
+        class="detalles-suscripcion bg-white rounded shadow-lg p-4">
+        <h3 class="mb-4 card-title-grande">Detalles de la suscripción</h3>
+        <p>
+          <span *ngIf="suscripcion.activa; else inactiva">
+            <i class="bi bi-check-circle-fill text-success"> Activa</i>
+          </span>
+          <ng-template #inactiva>
+            <i class="bi bi-x-circle-fill text-danger"> Inactiva</i>
+          </ng-template>
+        </p>
+        <p><strong>Duración: </strong> {{ suscripcion.duracion }} días</p>
+        <p><strong>Fecha de alta: </strong> {{ suscripcion.fecha_alta | date: 'longDate' }}</p>
+        <p><strong>Fecha de expiracion: </strong> {{ suscripcion.fecha_fin | date: 'longDate' }}</p>
+      </div>
+      <ng-template #noSuscripcion>
+        <div class="card text-center shadow-lg p-4 my-4">
+          <div class="card-body">
+            <p class="no-suscripcion">No se encontró ninguna suscripción.</p>
+            <p class="card-text">¡Destaca tus anuncios y consigue más visibilidad!</p>
+            <button class="btn-default w-50" (click)="setActiveSection('contratar')">
+              Contratar suscripción
+            </button>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

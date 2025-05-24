@@ -11,12 +11,35 @@
           <div class="mb-3">
             <label for="email" class="form-label">Correo electrónico:</label>
             <input id="email" formControlName="email" type="email" class="form-control" placeholder="Introduce tu correo" required>
+            <small class="text-danger" *ngIf="formLogin.get('email')?.touched && formLogin.get('email')?.hasError('required')">
+              El correo es obligatorio.
+            </small>
+            <small class="text-danger" *ngIf="formLogin.get('email')?.touched && formLogin.get('email')?.hasError('email')">
+              El correo no es válido.
+            </small>
           </div>
           <div class="mb-3">
             <label for="password" class="form-label">Contraseña:</label>
-            <input id="password" formControlName="password" type="password" class="form-control" placeholder="Introduce tu contraseña" required>
+            <div class="input-group">
+              <input
+                id="password"
+                formControlName="password"
+                [type]="showPassword ? 'text' : 'password'"
+                class="form-control"
+                placeholder="Introduce tu contraseña"
+                required>
+              <span class="input-group-text" style="cursor: pointer;" (click)="showPassword = !showPassword">
+                <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </span>
+            </div>
+            <small class="text-danger" *ngIf="formLogin.get('password')?.touched && formLogin.get('password')?.hasError('required')">
+              La contraseña es obligatoria.
+            </small>
           </div>
           <button type="submit" class="btn-default w-100">Iniciar sesión</button>
+          <div *ngIf="serverError" class="mt-2">
+            <small class="text-danger">{{ serverError }}</small>
+          </div>
         </form>
       </div>
     </div>

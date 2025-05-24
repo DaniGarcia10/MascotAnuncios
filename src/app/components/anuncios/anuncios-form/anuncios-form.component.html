@@ -5,38 +5,56 @@
         <h3 class="card-title-grande">Publicar Anuncio</h3>
       </div>
       <div class="card-body custom-card-body">
+        <!-- Indicador de destacado -->
+        <div
+          class="mb-3 d-flex align-items-start align-items-lg-center flex-column flex-lg-row justify-content-between gap-2">
+          <div class="d-flex align-items-center">
+            <ng-container *ngIf="formAnuncio.get('destacado')?.value; else noDestacado">
+              <span class="anuncio-destacado badge d-inline-flex align-items-center px-3 py-2 rounded-pill">
+                <i class="bi bi-star-fill me-2"></i> Este anuncio aparecerá destacado
+              </span>
+
+            </ng-container>
+            <ng-template #noDestacado>
+              <span class="anuncio-no-destacado badge d-inline-flex align-items-center px-3 py-2 rounded-pill">
+                <i class="bi bi-x-circle-fill me-2"></i> El anuncio no será destacado
+              </span>
+            </ng-template>
+          </div>
+          <button *ngIf="!formAnuncio.get('destacado')?.value"
+            class="btn btn-warning text-dark fw-bold ms-0 ms-lg-3 mt-2 mt-lg-0" (click)="destacarAnuncio()"
+            type="button">
+            <i class="bi bi-star-fill me-1"></i> Destacar anuncio
+          </button>
+        </div>
         <form [formGroup]="formAnuncio" (ngSubmit)="onSubmit()">
           <!-- Tipo -->
           <div class="mb-3">
             <label class="form-label">Tipo:</label>
-            <ng-select [items]="[{label: 'Perro', value: true}, {label: 'Gato', value: false}]"
-                       bindLabel="label" bindValue="value"
-                       formControlName="perro"
-                       placeholder="Selecciona tipo"
-                       class="custom-ng-select"
-                         [searchable]="false">>
+            <ng-select [items]="[{label: 'Perro', value: true}, {label: 'Gato', value: false}]" bindLabel="label"
+              bindValue="value" formControlName="perro" placeholder="Selecciona tipo" class="custom-ng-select"
+              [searchable]="false">>
             </ng-select>
-            <div *ngIf="formAnuncio.get('perro')?.invalid && formAnuncio.get('perro')?.touched" class="text-danger">Tipo es obligatorio.</div>
+            <div *ngIf="formAnuncio.get('perro')?.invalid && formAnuncio.get('perro')?.touched" class="text-danger">Tipo
+              es obligatorio.</div>
           </div>
-        
+
           <!-- Raza -->
           <div class="mb-3">
             <label class="form-label">Raza:</label>
-            <ng-select [items]="filteredRazas"
-                       bindLabel="label" bindValue="value"
-                       formControlName="raza"
-                       placeholder="Selecciona raza"
-                       class="custom-ng-select">
+            <ng-select [items]="filteredRazas" bindLabel="label" bindValue="value" formControlName="raza"
+              placeholder="Selecciona raza" class="custom-ng-select">
             </ng-select>
-            <div *ngIf="formAnuncio.get('raza')?.invalid && formAnuncio.get('raza')?.touched" class="text-danger">Raza es obligatoria.</div>
+            <div *ngIf="formAnuncio.get('raza')?.invalid && formAnuncio.get('raza')?.touched" class="text-danger">Raza
+              es obligatoria.</div>
           </div>
-        
+
           <!-- Título -->
           <div class="mb-3">
             <label class="form-label">Título:</label>
-            <input type="text" class="form-control" placeholder="Ingresa el título"
-                   formControlName="titulo">
-            <div *ngIf="formAnuncio.get('titulo')?.invalid && formAnuncio.get('titulo')?.touched" class="text-danger">Título es obligatorio.</div>
+            <input type="text" class="form-control" placeholder="Ingresa el título" formControlName="titulo">
+            <div *ngIf="formAnuncio.get('titulo')?.invalid && formAnuncio.get('titulo')?.touched" class="text-danger">
+              Título es obligatorio.</div>
           </div>
 
           <!-- Edad -->
@@ -44,32 +62,28 @@
             <label class="form-label">Edad:</label>
             <div class="d-flex">
               <input type="number" class="form-control me-2" placeholder="Ingresa la edad" formControlName="edadValor">
-              <ng-select [items]="['meses', 'semanas']"
-                         bindLabel="this"
-                         bindValue="this"
-                         formControlName="edadUnidad"
-                         placeholder="Semanas/Meses"
-                         class="custom-ng-select"
-                         [searchable]="false">
+              <ng-select [items]="['meses', 'semanas']" bindLabel="this" bindValue="this" formControlName="edadUnidad"
+                placeholder="Semanas/Meses" class="custom-ng-select" [searchable]="false">
               </ng-select>
             </div>
-            <small *ngIf="(formAnuncio.get('edadValor')?.invalid && formAnuncio.get('edadValor')?.touched)" class="text-danger">
+            <small *ngIf="(formAnuncio.get('edadValor')?.invalid && formAnuncio.get('edadValor')?.touched)"
+              class="text-danger">
               La edad es obligatoria.
             </small>
-            <small *ngIf="(formAnuncio.get('edadUnidad')?.invalid && formAnuncio.get('edadUnidad')?.touched)" class="text-danger">
+            <small *ngIf="(formAnuncio.get('edadUnidad')?.invalid && formAnuncio.get('edadUnidad')?.touched)"
+              class="text-danger">
               Elige una unidad de edad.
             </small>
           </div>
-        
+
           <!-- Provincia -->
           <div class="mb-3">
             <label class="form-label">Provincia:</label>
-            <ng-select [items]="provincias"
-                       formControlName="ubicacion"
-                       placeholder="Selecciona provincia"
-                       class="custom-ng-select">
+            <ng-select [items]="provincias" formControlName="ubicacion" placeholder="Selecciona provincia"
+              class="custom-ng-select">
             </ng-select>
-            <div *ngIf="formAnuncio.get('ubicacion')?.invalid && formAnuncio.get('ubicacion')?.touched" class="text-danger">Provincia es obligatoria.</div>
+            <div *ngIf="formAnuncio.get('ubicacion')?.invalid && formAnuncio.get('ubicacion')?.touched"
+              class="text-danger">Provincia es obligatoria.</div>
           </div>
 
           <!-- Precio -->
@@ -89,8 +103,10 @@
           <!-- Teléfono -->
           <div class="mb-3">
             <label class="form-label">Teléfono de contacto:</label>
-            <input type="tel" class="form-control" formControlName="telefono" placeholder="Introduce tu teléfono (9 dígitos)">
-            <div *ngIf="formAnuncio.get('telefono')?.invalid && formAnuncio.get('telefono')?.touched" class="text-danger">
+            <input type="tel" class="form-control" formControlName="telefono"
+              placeholder="Introduce tu teléfono (9 dígitos)">
+            <div *ngIf="formAnuncio.get('telefono')?.invalid && formAnuncio.get('telefono')?.touched"
+              class="text-danger">
               <ng-container *ngIf="formAnuncio.get('telefono')?.errors?.['required']">
                 El teléfono es obligatorio.
               </ng-container>
@@ -103,24 +119,24 @@
           <!-- Descripción principal -->
           <div class="mb-3">
             <label class="form-label">Descripción del anuncio:</label>
-            <textarea class="form-control"
-                      formControlName="descripcion"
-                      placeholder="Describe tu anuncio (máx. 360 caracteres)"
-                      maxlength="360"
-                      rows="4"></textarea>
+            <textarea class="form-control" formControlName="descripcion"
+              placeholder="Describe tu anuncio (máx. 360 caracteres)" maxlength="360" rows="4"></textarea>
             <small class="text-muted">
               {{ formAnuncio.get('descripcion')?.value?.length || 0 }}/360 caracteres
             </small>
-            <div *ngIf="formAnuncio.get('descripcion')?.errors?.['maxlength'] && formAnuncio.get('descripcion')?.touched" class="text-danger">
+            <div
+              *ngIf="formAnuncio.get('descripcion')?.errors?.['maxlength'] && formAnuncio.get('descripcion')?.touched"
+              class="text-danger">
               Máximo 360 caracteres.
             </div>
           </div>
-        
+
           <!-- Imágenes -->
           <div class="mb-3">
             <label class="form-label">Imágenes:</label>
             <input type="file" class="form-control" (change)="onFileSelected($event)" multiple>
-            <div *ngIf="formAnuncio.get('imagenes')?.invalid && formAnuncio.get('imagenes')?.touched" class="text-danger">Debe subir al menos una imagen.</div>
+            <div *ngIf="formAnuncio.get('imagenes')?.invalid && formAnuncio.get('imagenes')?.touched"
+              class="text-danger">Debe subir al menos una imagen.</div>
           </div>
 
           <!-- Checkbox para especificar padres -->
@@ -133,12 +149,8 @@
           <div *ngIf="formAnuncio.get('especificarPadres')?.value">
             <div class="mb-3">
               <label class="form-label">Padre:</label>
-              <ng-select [items]="machos"
-                         bindLabel="nombre"
-                         bindValue="id"
-                         placeholder="Selecciona un padre"
-                         class="custom-ng-select"
-                         (change)="seleccionarPadre($event)">
+              <ng-select [items]="machos" bindLabel="nombre" bindValue="id" placeholder="Selecciona un padre"
+                class="custom-ng-select" (change)="seleccionarPadre($event)">
                 <ng-template ng-option-tmp let-item="item">
                   <div class="d-flex align-items-center">
                     <img [src]="item.imagenes[0]" alt="Foto" class="me-2" width="40" height="40">
@@ -153,12 +165,8 @@
 
             <div class="mb-3">
               <label class="form-label">Madre:</label>
-              <ng-select [items]="hembras"
-                         bindLabel="nombre"
-                         bindValue="id"
-                         placeholder="Selecciona una madre"
-                         class="custom-ng-select"
-                         (change)="seleccionarMadre($event)">
+              <ng-select [items]="hembras" bindLabel="nombre" bindValue="id" placeholder="Selecciona una madre"
+                class="custom-ng-select" (change)="seleccionarMadre($event)">
                 <ng-template ng-option-tmp let-item="item">
                   <div class="d-flex align-items-center">
                     <img [src]="item.imagenes[0]" alt="Foto" class="me-2" width="40" height="40">
@@ -171,13 +179,14 @@
               </ng-select>
             </div>
           </div>
-        
+
           <!-- Checkbox cachorros -->
           <div class="form-check mb-3">
-            <input type="checkbox" class="form-check-input" formControlName="especificar_cachorros" id="especificarCachorros">
+            <input type="checkbox" class="form-check-input" formControlName="especificar_cachorros"
+              id="especificarCachorros">
             <label for="especificarCachorros" class="form-check-label">¿Anunciar cachorros individualmente?</label>
           </div>
-        
+
           <!-- Selección número de cachorros -->
           <div *ngIf="formAnuncio.get('especificar_cachorros')?.value">
             <div class="mb-3">
@@ -186,31 +195,27 @@
                 <option *ngFor="let num of [1,2,3,4,5,6,7,8,9,10]" [value]="num">{{ num }}</option>
               </select>
             </div>
-        
+
             <!-- Campos dinámicos de cachorros -->
             <div formArrayName="cachorros">
-              <div *ngFor="let cachorro of cachorros.controls; let i = index" [formGroupName]="i" class="border p-3 mb-3">
+              <div *ngFor="let cachorro of cachorros.controls; let i = index" [formGroupName]="i"
+                class="border p-3 mb-3">
                 <h5>Cachorro {{ i + 1 }}</h5>
-        
+
                 <div class="mb-3">
                   <label class="form-label">Color:</label>
                   <input type="text" class="form-control" formControlName="color" placeholder="Ingresa el color">
                 </div>
-        
+
                 <div class="mb-3">
                   <label class="form-label">Sexo:</label>
-                  <ng-select [items]="['Macho', 'Hembra']"
-                             bindLabel="this"
-                             bindValue="this"
-                             formControlName="sexo"
-                             placeholder="Selecciona sexo"
-                             class="custom-ng-select"
-                             [searchable]="false"
-                             [clearable]="false">
+                  <ng-select [items]="['Macho', 'Hembra']" bindLabel="this" bindValue="this" formControlName="sexo"
+                    placeholder="Selecciona sexo" class="custom-ng-select" [searchable]="false" [clearable]="false">
                   </ng-select>
-                  <div *ngIf="cachorro.get('sexo')?.invalid && cachorro.get('sexo')?.touched" class="text-danger">El sexo es obligatorio.</div>
+                  <div *ngIf="cachorro.get('sexo')?.invalid && cachorro.get('sexo')?.touched" class="text-danger">El
+                    sexo es obligatorio.</div>
                 </div>
-        
+
                 <div class="mb-3">
                   <label class="form-label">Precio:</label>
                   <input type="number" class="form-control" formControlName="precio" placeholder="Ingresa el precio">
@@ -223,19 +228,23 @@
                     </ng-container>
                   </small>
                 </div>
-        
+
                 <div class="mb-3">
                   <label class="form-label">Descripción:</label>
-                  <textarea class="form-control" formControlName="descripcion" placeholder="Ingresa una descripción"></textarea>
-                  <small *ngIf="cachorro.get('descripcion')?.errors?.['maxlength'] && cachorro.get('descripcion')?.touched" class="text-danger">
+                  <textarea class="form-control" formControlName="descripcion"
+                    placeholder="Ingresa una descripción"></textarea>
+                  <small
+                    *ngIf="cachorro.get('descripcion')?.errors?.['maxlength'] && cachorro.get('descripcion')?.touched"
+                    class="text-danger">
                     Máximo 45 caracteres.
                   </small>
                 </div>
-        
+
                 <div class="mb-3">
                   <label class="form-label">Imágenes:</label>
                   <input type="file" class="form-control" (change)="onCachorroFileSelected($event, i)" multiple>
-                  <div *ngIf="cachorro.get('imagenes')?.invalid && cachorro.get('imagenes')?.touched" class="text-danger">Debe subir al menos una imagen.</div>
+                  <div *ngIf="cachorro.get('imagenes')?.invalid && cachorro.get('imagenes')?.touched"
+                    class="text-danger">Debe subir al menos una imagen.</div>
                 </div>
               </div>
             </div>
@@ -244,14 +253,15 @@
           <button type="submit" class="btn-default w-100" [disabled]="isSubmitting">
             {{ isSubmitting ? 'Publicando...' : 'Publicar Anuncio' }}
           </button>
-        </form>        
+        </form>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Modal para error de extensión de imagen -->
-<div class="modal fade" id="modalErrorExtensionImagen" tabindex="-1" aria-labelledby="modalErrorExtensionImagenLabel" aria-hidden="true">
+<div class="modal fade" id="modalErrorExtensionImagen" tabindex="-1" aria-labelledby="modalErrorExtensionImagenLabel"
+  aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content text-center">
       <div class="modal-header">

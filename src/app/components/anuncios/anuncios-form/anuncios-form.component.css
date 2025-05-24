@@ -1,0 +1,13 @@
+.anuncio-destacado {
+  background-color: #fff3cd; /* fondo amarillo claro tipo alerta Bootstrap */
+  color: #856404;            /* texto marrón oscuro tipo alerta warning */
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.anuncio-no-destacado {
+  background-color: #f8d7da; /* fondo rojo claro tipo alerta Bootstrap */
+  color: #842029;            /* texto rojo oscuro tipo alerta danger */
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}

@@ -166,13 +166,17 @@ export class AnunciosService {
    * @param idUsuario ID del usuario
    * @returns Promise<string | null>
    */
-  async telefonoByIdUsuario(idUsuario: string): Promise<string | null> {
+  getTelefonoByIdUsuario(idUsuario: string): Promise<string | null> {
     const usuarioRef = doc(this.firestore, 'usuarios', idUsuario);
-    const usuarioSnap = await getDoc(usuarioRef);
-    if (usuarioSnap.exists()) {
-      const data = usuarioSnap.data() as any;
-      return data.telefono || null;
-    }
-    return null;
+    return getDoc(usuarioRef).then(usuarioSnap => {
+      if (usuarioSnap.exists()) {
+        const data = usuarioSnap.data() as any;
+        return data.telefono || null;
+      }
+      return null;
+    }).catch(error => {
+      console.error('Error al obtener el teléfono del usuario:', error);
+      return null;
+    });
   }
 }

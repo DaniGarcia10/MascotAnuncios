@@ -9,7 +9,7 @@ import { AnunciosListComponent } from './components/anuncios/anuncios-list/anunc
 import { AnunciosDetailComponent } from './components/anuncios/anuncios-detail/anuncios-detail.component';
 import { MascotasListComponent } from './components/mascotas/mascotas-list/mascotas-list.component';
 import { AnunciosFormComponent } from './components/anuncios/anuncios-form/anuncios-form.component';
-import { SuscripcionesComponent } from './components/suscripciones/suscripciones/suscripciones.component';
+import { SuscripcionesComponent } from './components/suscripciones/suscripciones.component';
 import { MisanunciosListComponent } from './components/misanuncios/misanuncios-list/misanuncios-list.component';
 import { MisanunciosDetailComponent } from './components/misanuncios/misanuncios-detail/misanuncios-detail.component';
 import { FavoritosListComponent } from './components/favoritos/favoritos-list/favoritos-list.component';

@@ -12,12 +12,6 @@ export class UsuarioService {
 
   constructor(private firestore: Firestore) {}
 
-  // Guarda usuario
-  saveUser(userId: string, data: any): Promise<void> {
-    const userRef = ref(this.database, `${this.COLLECTION_NAME}/${userId}`);
-    return set(userRef, data);
-  }
-
   // Obtener datos del usuario desde Firestore
   async getUsuarioById(userId: string): Promise<Usuario | null> {
     try {
@@ -37,20 +31,33 @@ export class UsuarioService {
   }
 
   // Obtener ID del criadero de un usuario
-  async getIdCriaderoByUsuarioId(userId: string): Promise<string | null> {
+  getIdCriaderoByUsuarioId(userId: string): Promise<string | null> {
+    return this.getUsuarioById(userId).then(usuario => {
+      return usuario?.id_criadero || null;
+    }).catch(error => {
+      console.error('Error al obtener el criadero del usuario:', error);
+      return null;
+    });
+  }
+
+  getIdSuscripcionByUsuarioId(userId: string): Promise<string | null> {
+    return this.getUsuarioById(userId).then(usuario => {
+      return usuario?.suscripcion || null;
+    }).catch(error => {
+      console.error('Error al obtener la suscripción del usuario:', error);
+      return null;
+    });
+  }
+
+  // Actualizar datos del usuario en Firestore
+  async actualizarUsuario(userId: string, data: Partial<Usuario>): Promise<void> {
     try {
       const userDocRef = doc(this.firestore, this.COLLECTION_NAME, userId);
-      const userDocSnap = await getDoc(userDocRef);
-
-      if (userDocSnap.exists()) {
-        const usuarioData = userDocSnap.data() as Usuario;
-        return usuarioData.id_criadero || null;
-      } else {
-        return null;
-      }
+      await setDoc(userDocRef, data, { merge: true });
     } catch (error) {
-      console.error('Error al obtener el id del criadero:', error);
+      console.error('Error al actualizar el usuario:', error);
       throw error;
     }
   }
+
 }

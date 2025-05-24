@@ -11,15 +11,18 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 text-nowrap">
                 <li class="nav-item dropdown me-3">
-                    <a class="nav-link dropdown-toggle" routerLink="/anuncios" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" routerLink="/anuncios" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-paw"></i> Anuncios
                     </a>
                     <ul class="dropdown-menu dropdown-custom" aria-labelledby="navbarDropdown">
                         <li>
-                            <a class="dropdown-item" [routerLink]="['/anuncios']" [queryParams]="{ tipoAnimal: 'perro' }">Perros</a>
+                            <a class="dropdown-item" [routerLink]="['/anuncios']"
+                                [queryParams]="{ tipoAnimal: 'perro' }">Perros</a>
                         </li>
                         <li>
-                            <a class="dropdown-item" [routerLink]="['/anuncios']" [queryParams]="{ tipoAnimal: 'gato' }">Gatos</a>
+                            <a class="dropdown-item" [routerLink]="['/anuncios']"
+                                [queryParams]="{ tipoAnimal: 'gato' }">Gatos</a>
                         </li>
                     </ul>
                 </li>
@@ -46,24 +49,28 @@
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto"> <!-- Mover el ícono de perfil a la derecha -->
+                <ng-container *ngIf="isAuthenticated && esVendedor">
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link dropdown-toggle" id="vendedorDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-award-fill me-1"></i> Mi criadero
+                        </a>
+                        <ul class="dropdown-menu dropdown-custom" aria-labelledby="vendedorDropdown">
+                            <li><a class="dropdown-item" routerLink="/mis-anuncios">Mis anuncios</a></li>
+                            <li><a class="dropdown-item" routerLink="/mascotas">Mis mascotas</a></li>
+                            <li><a class="dropdown-item" routerLink="/suscripciones">Mi suscripción</a></li>
+                        </ul>
+                    </li>
+                </ng-container>
                 <ng-container *ngIf="isAuthenticated">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" id="profileDropdown" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
                             <i class="fas fa-user-circle fa-2x"></i> <!-- Ícono grande de perfil -->
                         </a>
-                        <ul class="dropdown-menu dropdown-custom" aria-labelledby="profileDropdown">
-                            <ng-container *ngIf="esVendedor; else nonSellerMenu">
-                                <li><a class="dropdown-item" routerLink="/perfil">Mi perfil</a></li>
-                                <li><a class="dropdown-item" routerLink="/mis-anuncios">Mis anuncios</a></li>
-                                <li><a class="dropdown-item" routerLink="/favoritos">Favoritos</a></li>
-                                <li><a class="dropdown-item" routerLink="/mascotas">Mis mascotas</a></li>
-                                <li><a class="dropdown-item" routerLink="/suscripciones">Mi suscripción</a></li>
-                                <li><a class="dropdown-item" routerLink="/favoritos">Favoritos</a></li>
-                            </ng-container>
-                            <ng-template #nonSellerMenu>
-                                <li><a class="dropdown-item" routerLink="/perfil">Mi perfil</a></li>
-                                <li><a class="dropdown-item" routerLink="/favoritos">Favoritos</a></li>
-                            </ng-template>
+                        <ul class="dropdown-menu dropdown-custom dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" routerLink="/perfil">Mi perfil</a></li>
+                            <li><a class="dropdown-item" routerLink="/favoritos">Favoritos</a></li>
                             <li><a class="dropdown-item" (click)="logout()">Cerrar sesión</a></li>
                         </ul>
                     </li>

@@ -104,6 +104,12 @@ export class AnunciosListComponent implements OnInit {
 
       return cumpleUbicacion && cumplePrecioMin && cumplePrecioMax && cumpleTipoAnimal && cumpleRaza;
     });
+
+    // Ordenar: destacados primero
+    this.anunciosFiltrados.sort((a, b) => {
+      if (a.destacado === b.destacado) return 0;
+      return a.destacado ? -1 : 1;
+    });
   }
 
   ordenarAnuncios(): void {

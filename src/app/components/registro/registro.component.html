@@ -43,7 +43,18 @@
           </div>
           <div class="mb-3">
             <label for="password" class="form-label">Contraseña:</label>
-            <input id="password" formControlName="password" type="password" class="form-control" placeholder="Ingresa tu contraseña" required>
+            <div class="input-group">
+              <input
+                id="password"
+                formControlName="password"
+                [type]="showPassword ? 'text' : 'password'"
+                class="form-control"
+                placeholder="Ingresa tu contraseña"
+                required>
+              <span class="input-group-text" style="cursor: pointer;" (click)="showPassword = !showPassword">
+                <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </span>
+            </div>
             <div *ngIf="formRegistro.get('password')?.invalid && formRegistro.get('password')?.touched" class="text-danger">
               <small *ngIf="formRegistro.get('password')?.errors?.['required']">La contraseña es obligatoria.</small>
               <small *ngIf="formRegistro.get('password')?.errors?.['minlength']">Mínimo 6 caracteres requeridos.</small>
@@ -52,7 +63,18 @@
           </div>
           <div class="mb-3">
             <label for="repetirPassword" class="form-label">Repetir contraseña:</label>
-            <input id="repetirPassword" formControlName="repetirPassword" type="password" class="form-control" placeholder="Repite tu contraseña" required>
+            <div class="input-group">
+              <input
+                id="repetirPassword"
+                formControlName="repetirPassword"
+                [type]="showRepetirPassword ? 'text' : 'password'"
+                class="form-control"
+                placeholder="Repite tu contraseña"
+                required>
+              <span class="input-group-text" style="cursor: pointer;" (click)="showRepetirPassword = !showRepetirPassword">
+                <i class="bi" [ngClass]="showRepetirPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </span>
+            </div>
             <div *ngIf="formRegistro.get('repetirPassword')?.invalid && formRegistro.get('repetirPassword')?.touched" class="text-danger">
               <small *ngIf="formRegistro.get('repetirPassword')?.errors?.['required']">Debes repetir la contraseña.</small>
             </div>

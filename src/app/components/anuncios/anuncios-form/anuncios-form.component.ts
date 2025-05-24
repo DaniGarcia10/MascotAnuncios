@@ -4,7 +4,6 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { CommonModule } from '@angular/common';
 import { RAZAS } from '../../../data/razas';
 import { PROVINCIAS_ESPAÑA } from '../../../data/provincias';
-import { Firestore, collection } from '@angular/fire/firestore';
 import { ArchivosService } from '../../../services/archivos.service';
 import { AuthService } from '../../../services/auth.service';
 import { FormsModule } from '@angular/forms';
@@ -12,6 +11,8 @@ import { Router } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AnunciosService } from '../../../services/anuncios.service';
 import { MascotasService } from '../../../services/mascotas.service';
+import { SuscripcionesService } from '../../../services/suscripciones.service';
+import { UsuarioService } from '../../../services/usuario.service';
 import { Mascota } from '../../../models/Mascota.model';
 
 @Component({
@@ -26,20 +27,22 @@ export class AnunciosFormComponent implements OnInit {
   provincias = PROVINCIAS_ESPAÑA;
   filteredRazas: { label: string; value: string }[] = [];
   especificarPadres: boolean = false;
-  isSubmitting: boolean = false; // Nueva variable
-  mascotasUsuario: Mascota[] = []; // Lista de mascotas del usuario
-  machos: Mascota[] = []; // Mascotas machos
-  hembras: Mascota[] = []; // Mascotas hembras
+  isSubmitting: boolean = false; 
+  mascotasUsuario: Mascota[] = []; 
+  machos: Mascota[] = [];
+  hembras: Mascota[] = [];
+  tieneSuscripcionActiva: boolean = false;
 
   constructor(
     private fb: FormBuilder,
-    private firestore: Firestore,
     private archivosService: ArchivosService,
     private authService: AuthService,
     private router: Router,
     private snackBar: MatSnackBar,
     private anunciosService: AnunciosService,
-    private mascotasService: MascotasService
+    private mascotasService: MascotasService,
+    private suscripcionesService: SuscripcionesService,
+    private usuarioService: UsuarioService
   ) {}
 
   ngOnInit(): void {
@@ -72,8 +75,24 @@ export class AnunciosFormComponent implements OnInit {
         this.formAnuncio.get('id_usuario')?.setValue(user.uid); 
         this.cargarMascotasUsuario(user.uid);
 
+        // Obtener el id de la suscripción y comprobar si está activa
+        this.usuarioService.getIdSuscripcionByUsuarioId(user.uid).then(idSuscripcion => {
+          if (idSuscripcion) {
+            this.suscripcionesService.obtenerSuscripcion(idSuscripcion).subscribe(suscripcion => {
+              // Establecer el valor de destacado según la suscripción
+              if (!!suscripcion && suscripcion.activa === true) {
+                this.formAnuncio.get('destacado')?.setValue(true);
+              } else {
+                this.formAnuncio.get('destacado')?.setValue(false);
+              }
+            });
+          } else {
+            this.formAnuncio.get('destacado')?.setValue(false);
+          }
+        });
+
         // Precargar el teléfono del usuario
-        this.anunciosService.telefonoByIdUsuario(user.uid).then(telefono => {
+        this.anunciosService.getTelefonoByIdUsuario(user.uid).then(telefono => {
           if (telefono) {
             this.formAnuncio.get('telefono')?.setValue(telefono);
           }
@@ -282,5 +301,10 @@ export class AnunciosFormComponent implements OnInit {
     } finally {
       this.isSubmitting = false;
     }
+  }
+
+  destacarAnuncio(): void {
+    // Redirige a la página de suscripciones y abre la sección de contratar
+    this.router.navigate(['/suscripciones'], { queryParams: { contratar: 1 } });
   }
 }

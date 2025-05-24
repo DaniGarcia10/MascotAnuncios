@@ -56,3 +56,11 @@
   font-weight: 500;
 }
 
+.plan-header {
+  background-color: var(--accent-color);
+}
+
+.plan-card.selected, .selected .plan-card {
+  box-shadow: 0 0 12px 2px rgba(139, 94, 60, 0.35) !important;
+  background-color: #f5f5dc;
+}

@@ -1,0 +1,35 @@
+@keyframes pulseHighlight {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.05);
+  }
+}
+
+.cinta-diagonal {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150px;
+  overflow: hidden;
+  height: 150px;
+  z-index: 10;
+}
+
+.cinta-diagonal span {
+  position: absolute;
+  display: block;
+  width: 200px;
+  padding: 6px 0;
+  background-color: #ffc107; 
+  color: #212529;
+  font-weight: bold;
+  text-align: center;
+  transform: rotate(45deg);
+  top: 25px;
+  right: -45px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}

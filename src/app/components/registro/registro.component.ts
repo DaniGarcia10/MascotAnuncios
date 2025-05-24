@@ -23,6 +23,9 @@ export class RegistroComponent {
   dniFile: File | null = null;
   nzFile: File | null = null;
 
+  showPassword: boolean = false; 
+  showRepetirPassword: boolean = false; 
+
   constructor(
     private authService: AuthService,
     private firestore: Firestore,

@@ -9,6 +9,7 @@ import { CriaderoService } from '../../services/criadero.service';
 import { ArchivosService } from '../../services/archivos.service';
 import { DocumentacionService } from '../../services/documentacion.service';
 import { getAuth, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 
 @Component({
   selector: 'app-perfil',
@@ -62,29 +63,27 @@ export class PerfilComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const user = this.auth.currentUser;
-    if (user) {
-      this.usuarioService.getUsuarioById(user.uid).then(async (usuario) => {
-        this.usuario = usuario;
-
-        if (this.usuario) {
-          this.perfilForm.patchValue(this.usuario);
-
-          if (this.usuario.foto_perfil) {
-            const ruta = `usuarios/${this.usuario.foto_perfil}`;
-            this.imagenUrlPerfil = await this.archivosService.obtenerUrlImagen(ruta);
+    onAuthStateChanged(this.auth, (user) => {
+      if (user) {
+        this.usuarioService.getUsuarioById(user.uid).then(async (usuario) => {
+          this.usuario = usuario;
+          if (this.usuario) {
+            this.perfilForm.patchValue(this.usuario);
+            if (this.usuario.foto_perfil) {
+              const ruta = `usuarios/${this.usuario.foto_perfil}`;
+              this.imagenUrlPerfil = await this.archivosService.obtenerUrlImagen(ruta);
+            }
+            if (this.usuario.id_criadero) {
+              await this.cargarCriadero(this.usuario.id_criadero);
+            }
           }
-
-          if (this.usuario.id_criadero) {
-            await this.cargarCriadero(this.usuario.id_criadero);
-          }
-        }
-      }).catch((err) => {
-        console.error('Error al obtener los datos del usuario:', err);
-      });
-    } else {
-      console.log('No hay usuario autenticado');
-    }
+        }).catch((err) => {
+          console.error('Error al obtener los datos del usuario:', err);
+        });
+      } else {
+        console.log('No hay usuario autenticado');
+      }
+    });
   }
 
   async cargarCriadero(id: string): Promise<void> {
@@ -110,10 +109,6 @@ export class PerfilComponent implements OnInit {
 
   toggleEditMode(): void {
     this.editMode = !this.editMode;
-    if (!this.editMode && this.perfilForm.valid) {
-      console.log('Datos guardados:', this.perfilForm.value);
-      // Aquí puedes llamar a un método para guardar los cambios si quieres
-    }
   }
 
   cancelEdit(): void {
@@ -178,6 +173,22 @@ export class PerfilComponent implements OnInit {
           // Mostrar el modal de error
           const modal = new (window as any).bootstrap.Modal(document.getElementById('modalErrorPassword'));
           modal.show();
+        });
+    }
+  }
+
+  guardarPerfil() {
+    if (this.perfilForm.valid && this.usuario) {
+      const datosActualizados = this.perfilForm.value;
+      this.usuarioService.actualizarUsuario(this.usuario.id, datosActualizados)
+        .then(() => {
+          // Actualiza el usuario local para reflejar los cambios en la vista
+          this.usuario = { ...this.usuario!, ...datosActualizados };
+          this.editMode = false;
+          // Puedes mostrar un toast o mensaje de éxito aquí
+        })
+        .catch(error => {
+          // Maneja el error (muestra mensaje, etc.)
         });
     }
   }

@@ -1,7 +1,7 @@
 <div class="d-flex flex-column flex-lg-row">
   <!-- Menú lateral -->
   <div class="menu-lateral p-3 col-12 col-lg-3">
-    <ul class="list-group">
+    <ul class="list-group shadow-lg">
       <li class="list-group-item" [class.active]="activeSection === 'general'" (click)="setActiveSection('general')">
         Información general
       </li>
@@ -23,7 +23,7 @@
           <h3 class="card-title-grande">Mi Perfil</h3>
         </div>
         <div class="card-body custom-card-body">
-          <form [formGroup]="perfilForm" *ngIf="usuario; else noUsuario">
+          <form [formGroup]="perfilForm" *ngIf="usuario; else noUsuario" (ngSubmit)="guardarPerfil()">
             <div class="text-center mb-3">
               <img *ngIf="imagenUrlPerfil"
                    [src]="imagenUrlPerfil"
@@ -54,7 +54,7 @@
             <div class="d-flex justify-content-center mt-4">
               <button *ngIf="editMode" type="button" class="btn btn-danger m-2 w-50"
                 (click)="cancelEdit()">Cancelar</button>
-              <button *ngIf="editMode" type="submit" class="btn-default m-2 w-50">Guardar</button>
+              <button *ngIf="editMode" type="submit" class="btn-default m-2 w-50" (click)="guardarPerfil()">Guardar</button>
               <button *ngIf="!editMode" type="button" class="btn-default m-2 w-50" (click)="toggleEditMode()">Modificar
                 Perfil</button>
             </div>
