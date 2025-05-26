@@ -67,7 +67,10 @@
                 {{ precioSeleccionado }}€
               </span>
             </h4>
-            <button type="submit" class="btn-default w-50 mt-2" (click)="crearSuscripcion()" [disabled]="suscripcionForm.invalid">
+            <button
+              type="submit"
+              class="btn-default w-50 mt-2"
+              [disabled]="suscripcionForm.invalid || procesando">
               Ir al pago
             </button>
           </div>
@@ -81,16 +84,19 @@
         class="detalles-suscripcion bg-white rounded shadow-lg p-4">
         <h3 class="mb-4 card-title-grande">Detalles de la suscripción</h3>
         <p>
-          <span *ngIf="suscripcion.activa; else inactiva">
-            <i class="bi bi-check-circle-fill text-success"> Activa</i>
+          <span *ngIf="esSuscripcionActiva(suscripcion); else inactiva">
+            <i class="bi bi-check-circle-fill text-success">  Suscripcion activa</i>
           </span>
           <ng-template #inactiva>
             <i class="bi bi-x-circle-fill text-danger"> Inactiva</i>
           </ng-template>
         </p>
-        <p><strong>Duración: </strong> {{ suscripcion.duracion }} días</p>
-        <p><strong>Fecha de alta: </strong> {{ suscripcion.fecha_alta | date: 'longDate' }}</p>
-        <p><strong>Fecha de expiracion: </strong> {{ suscripcion.fecha_fin | date: 'longDate' }}</p>
+        <p><i class="bi bi-calendar-check me-2"></i>
+        <strong>Fecha de alta:</strong> {{ suscripcion.fecha_alta | date: 'longDate' }}</p>
+        <p><i class="bi bi-calendar-x me-2"></i>
+        <strong>Fecha de expiracion:</strong> {{ suscripcion.fecha_fin | date: 'longDate' }}</p>
+        <p><i class="bi bi-hourglass-split me-2"></i>
+        <strong>Dias restantes:</strong> {{ getDiasRestantes(suscripcion) }}</p>
       </div>
       <ng-template #noSuscripcion>
         <div class="card text-center shadow-lg p-4 my-4">

@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule, ValidationErrors, ValidatorFn, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ArchivosService } from '../../services/archivos.service';
 import { Firestore, doc, setDoc, collection, addDoc } from '@angular/fire/firestore';
@@ -14,7 +14,7 @@ import { Estado } from '../../models/documentacion.model';
   templateUrl: './registro.component.html',
   styleUrls: ['./registro.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, MatSnackBarModule]
+  imports: [ReactiveFormsModule, CommonModule, MatSnackBarModule, RouterModule]
 })
 export class RegistroComponent {
   formRegistro: FormGroup;

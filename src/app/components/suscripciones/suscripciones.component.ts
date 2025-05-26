@@ -5,7 +5,7 @@ import { SuscripcionesService } from '../../services/suscripciones.service';
 import { UsuarioService } from '../../services/usuario.service';
 import { Suscripcion } from '../../models/Suscripcion.model';
 import { Usuario } from '../../models/Usuario.model';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ActivatedRoute } from '@angular/router';
@@ -21,7 +21,8 @@ export class SuscripcionesComponent implements OnInit {
   activeSection: string = 'ver';
   suscripcionForm: FormGroup;
   suscripcion$: Observable<Suscripcion | null> | null = null;
-  precioSeleccionado: number | null = null; 
+  precioSeleccionado: number | null = null;
+  procesando: boolean = false;
 
   planes = [
     { value: 30, label: '1 mes', precio: 9.99, ahorro: 'Ahorra un 0%' },
@@ -35,7 +36,7 @@ export class SuscripcionesComponent implements OnInit {
     private suscripcionesService: SuscripcionesService,
     private usuarioService: UsuarioService,
     private authService: AuthService,
-    private route: ActivatedRoute // <--- Añadido
+    private route: ActivatedRoute
   ) {
     this.suscripcionForm = this.fb.group({
       duracion: [null, Validators.required]
@@ -76,52 +77,105 @@ export class SuscripcionesComponent implements OnInit {
     this.precioSeleccionado = plan.precio;
   }
 
-  crearSuscripcion(): void {
-    if (this.suscripcionForm.valid) {
-      const duracion = this.suscripcionForm.value.duracion;
-      const precio = this.planes.find(p => p.value === duracion)?.precio || 0;
+  async crearSuscripcion(): Promise<void> {
+    if (this.procesando) return; // Evita doble click
+    this.procesando = true;
+    try {
+      if (this.suscripcionForm.valid) {
+        const duracion = this.suscripcionForm.value.duracion;
 
-      this.authService.getUserDataAuth().subscribe({
-        next: async (authData) => {
-          const userId = authData.user?.uid || '';
-          if (!userId) {
-            console.error('Usuario no autenticado');
-            return;
-          }
+        this.authService.getUserDataAuth().subscribe({
+          next: async (authData) => {
+            const userId = authData.user?.uid || '';
+            if (!userId) {
+              return;
+            }
 
-          // Fechas de alta y fin
-          const fechaAlta = new Date();
-          const fechaFin = new Date();
-          fechaFin.setDate(fechaAlta.getDate() + duracion);
+            // Obtener usuario y su suscripción actual
+            const usuario = await this.usuarioService.getUsuarioById(userId);
+            let suscripcionId = usuario?.suscripcion || null;
 
-          // Crear objeto de suscripción
-          const nuevaSuscripcion = {
-            activa: true,
-            duracion,
-            fecha_alta: fechaAlta.toISOString(),
-            fecha_fin: fechaFin.toISOString()
-          };
+            if (suscripcionId) {
+              const suscripcionActual = await firstValueFrom(this.suscripcionesService.obtenerSuscripcion(suscripcionId));
+              if (!suscripcionActual) {
+                suscripcionId = null; // Forzar la creación de una nueva suscripción
+              } else {
+                const ahoraMadrid = new Date(
+                  new Date().toLocaleString('en-US', { timeZone: 'Europe/Madrid' })
+                );
+                const fechaFinActual = new Date(suscripcionActual.fecha_fin);
 
-          try {
-            // Crear suscripción en Firestore
-            const suscripcionId = await this.suscripcionesService.crearSuscripcion(nuevaSuscripcion);
+                let nuevaFechaFin: Date;
+                if (fechaFinActual > ahoraMadrid) {
+                  nuevaFechaFin = new Date(fechaFinActual);
+                  nuevaFechaFin.setDate(nuevaFechaFin.getDate() + duracion);
+                } else {
+                  nuevaFechaFin = new Date(ahoraMadrid);
+                  nuevaFechaFin.setDate(nuevaFechaFin.getDate() + duracion);
+                }
 
-            // Asociar la suscripción al usuario
-            await this.usuarioService.actualizarUsuario(userId, { suscripcion: suscripcionId });
+                // Actualizar la suscripción existente (sin duracion)
+                await this.suscripcionesService.actualizarSuscripcion(suscripcionId!, {
+                  fecha_fin: nuevaFechaFin.toISOString()
+                });
 
-            // Actualizar observable para mostrar la nueva suscripción
-            this.suscripcion$ = this.suscripcionesService.obtenerSuscripcion(suscripcionId);
+                this.suscripcion$ = this.suscripcionesService.obtenerSuscripcion(suscripcionId!);
+                this.activeSection = 'ver';
+                return;
+              }
+            }
 
-            // Cambiar a la sección de ver suscripción
-            this.activeSection = 'ver';
-          } catch (error) {
-            console.error('Error al crear la suscripción:', error);
-          }
-        },
-        error: (error) => {
-          console.error('Error al obtener los datos de autenticación:', error);
-        }
-      });
+            // Si llegamos aquí, es porque no hay una suscripción válida, así que creamos una nueva
+            const fechaAlta = new Date();
+            const fechaFin = new Date();
+            fechaFin.setDate(fechaAlta.getDate() + duracion);
+
+            const nuevaSuscripcion = {
+              fecha_alta: fechaAlta.toISOString(),
+              fecha_fin: fechaFin.toISOString()
+            };
+
+            try {
+              suscripcionId = await this.suscripcionesService.crearSuscripcion(nuevaSuscripcion);
+              if (!suscripcionId) {
+                return;
+              }
+              await this.usuarioService.actualizarUsuario(userId, { suscripcion: suscripcionId });
+              this.suscripcion$ = this.suscripcionesService.obtenerSuscripcion(suscripcionId);
+              this.activeSection = 'ver';
+            } catch (error) {
+              // Manejo de error opcional
+            }
+          },
+        });
+      }
+    } finally {
+      this.procesando = false;
     }
+  }
+
+  esSuscripcionActiva(suscripcion: Suscripcion): boolean {
+    if (!suscripcion.fecha_fin) return false;
+
+    // Obtener la fecha actual en horario de Madrid
+    const ahoraMadrid = new Date(
+      new Date().toLocaleString('en-US', { timeZone: 'Europe/Madrid' })
+    );
+
+    // Convertir la fecha de fin a objeto Date (asumiendo que es ISO string en UTC)
+    const fechaFin = new Date(suscripcion.fecha_fin);
+
+    return fechaFin > ahoraMadrid;
+  }
+
+  getDiasRestantes(suscripcion: Suscripcion): number {
+    if (!suscripcion.fecha_fin) return 0;
+    const ahoraMadrid = new Date(
+      new Date().toLocaleString('en-US', { timeZone: 'Europe/Madrid' })
+    );
+    const fechaFin = new Date(suscripcion.fecha_fin);
+    const diff = fechaFin.getTime() - ahoraMadrid.getTime();
+    const dias = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    return dias > 0 ? dias : 0;
   }
 }

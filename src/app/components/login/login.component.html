@@ -1,64 +1,64 @@
-<div class="position-relative vh-100">
-
-  <!-- Contenido principal -->
-  <div class="position-relative z-1 d-flex justify-content-center align-items-start h-100 pt-5">
-    <div class="card custom-card" style="max-width: 500px; width: 100%;">
-      <div class="card-header custom-card-header text-center">
-        <h3 class="card-title-grande">Iniciar Sesión</h3>
-      </div>
-      <div class="card-body custom-card-body">
-
-        <!-- Opciones de inicio social -->
-        <div class="mb-3 text-center">
-          <button type="button" class="btn btn-danger w-100 mb-2" (click)="loginWithGoogle()">
-            <i class="bi bi-google"></i> Iniciar sesión con Google
-          </button>
-          <button type="button" class="btn btn-primary w-100 mb-2" (click)="loginWithFacebook()">
-            <i class="bi bi-facebook"></i> Iniciar sesión con Facebook
-          </button>
-          <div class="my-3">
-            <span>o</span>
-          </div>
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+      <div class="card custom-card my-4" style="max-width: 100%; width: 100%;">
+        <div class="card-header custom-card-header text-center">
+          <h3 class="card-title-grande">Iniciar Sesión</h3>
         </div>
+        <div class="card-body custom-card-body">
 
-        <form [formGroup]="formLogin" (ngSubmit)="onSubmit()">
-          <div class="mb-3">
-            <label for="email" class="form-label">Correo electrónico:</label>
-            <input id="email" formControlName="email" type="email" class="form-control" placeholder="Introduce tu correo" required>
-            <small class="text-danger" *ngIf="formLogin.get('email')?.touched && formLogin.get('email')?.hasError('required')">
-              El correo es obligatorio.
-            </small>
-            <small class="text-danger" *ngIf="formLogin.get('email')?.touched && formLogin.get('email')?.hasError('email')">
-              El correo no es válido.
-            </small>
-          </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Contraseña:</label>
-            <div class="input-group">
-              <input
-                id="password"
-                formControlName="password"
-                [type]="showPassword ? 'text' : 'password'"
-                class="form-control"
-                placeholder="Introduce tu contraseña"
-                required>
-              <span class="input-group-text" style="cursor: pointer;" (click)="showPassword = !showPassword">
-                <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
-              </span>
+          <!-- Opciones de inicio social -->
+          <div class="mb-3 text-center">
+            <button type="button" class="btn btn-danger w-100 mb-2" (click)="loginWithGoogle()">
+              <i class="bi bi-google"></i> Iniciar sesión con Google
+            </button>
+            <button type="button" class="btn btn-primary w-100 mb-2" (click)="loginWithFacebook()">
+              <i class="bi bi-facebook"></i> Iniciar sesión con Facebook
+            </button>
+            <div class="my-3">
+              <span>o</span>
             </div>
-            <small class="text-danger" *ngIf="formLogin.get('password')?.touched && formLogin.get('password')?.hasError('required')">
-              La contraseña es obligatoria.
-            </small>
           </div>
-          <button type="submit" class="btn-default w-100">Iniciar sesión</button>
-          <div class="text-center mt-3">
-            <span>¿No tienes una cuenta?</span>
-            <a routerLink="/registro" class="ms-1 text-primary" style="cursor:pointer; text-decoration:underline;">Regístrate</a>
-          </div>
-          <div *ngIf="serverError" class="mt-2">
-            <small class="text-danger">{{ serverError }}</small>
-          </div>
-        </form>
+
+          <form [formGroup]="formLogin" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="email" class="form-label">Correo electrónico:</label>
+              <input id="email" formControlName="email" type="email" class="form-control" placeholder="Introduce tu correo" required>
+              <small class="text-danger" *ngIf="formLogin.get('email')?.touched && formLogin.get('email')?.hasError('required')">
+                El correo es obligatorio.
+              </small>
+              <small class="text-danger" *ngIf="formLogin.get('email')?.touched && formLogin.get('email')?.hasError('email')">
+                El correo no es válido.
+              </small>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Contraseña:</label>
+              <div class="input-group">
+                <input
+                  id="password"
+                  formControlName="password"
+                  [type]="showPassword ? 'text' : 'password'"
+                  class="form-control"
+                  placeholder="Introduce tu contraseña"
+                  required>
+                <span class="input-group-text" style="cursor: pointer;" (click)="showPassword = !showPassword">
+                  <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </span>
+              </div>
+              <small class="text-danger" *ngIf="formLogin.get('password')?.touched && formLogin.get('password')?.hasError('required')">
+                La contraseña es obligatoria.
+              </small>
+            </div>
+            <button type="submit" class="btn-default w-100">Iniciar sesión</button>
+            <div class="text-center mt-3">
+              <span>¿No tienes una cuenta?</span>
+              <a routerLink="/registro" class="ms-1 link-accent">Regístrate</a>
+            </div>
+            <div *ngIf="serverError" class="mt-2">
+              <small class="text-danger">{{ serverError }}</small>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>

@@ -221,3 +221,16 @@ form .form-control::placeholder {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* Estilo para los enlaces de login/registro */
+.link-accent {
+  color: var(--primary-text-color) !important;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.link-accent:hover,
+.link-accent:focus {
+  color: var(--accent-color) !important;
+  text-decoration: underline;
+}

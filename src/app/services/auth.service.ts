@@ -96,23 +96,19 @@ export class AuthService {
         if (user) {
           if (user.emailVerified) {
             // El correo está verificado
-            console.log('El correo está verificado');
           } else {
             // El correo NO está verificado
-            console.log('El correo NO está verificado');
           }
-          console.log('Usuario autenticado:', user);
           try {
-            const userDocRef = doc(this.firestore, 'usuarios', user.uid); // Ruta de la colección 'usuarios'
+            const userDocRef = doc(this.firestore, 'usuarios', user.uid); 
             const userDocSnap = await getDoc(userDocRef);
 
             if (userDocSnap.exists()) {
               const usuarioData = userDocSnap.data() as Usuario;
 
-              console.log('Datos del usuario obtenidos de Firestore:', usuarioData);
               observer.next({ user, usuario: usuarioData });
             } else {
-              observer.next({ user, usuario: null }); // Usuario no encontrado en Firestore
+              observer.next({ user, usuario: null });
             }
           } catch (error) {
             console.error('Error al obtener los datos del usuario:', error);
@@ -127,7 +123,7 @@ export class AuthService {
 
   getUsuarioId(): string | null {
     const user = this.auth.currentUser;
-    return user ? user.uid : null; // Retorna el UID del usuario autenticado o null si no está autenticado
+    return user ? user.uid : null; 
   }
 
 }

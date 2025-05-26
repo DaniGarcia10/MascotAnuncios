@@ -14,6 +14,7 @@ import { MascotasService } from '../../../services/mascotas.service';
 import { SuscripcionesService } from '../../../services/suscripciones.service';
 import { UsuarioService } from '../../../services/usuario.service';
 import { Mascota } from '../../../models/Mascota.model';
+import { Suscripcion } from '../../../models/Suscripcion.model';
 
 @Component({
   selector: 'app-anuncios-form',
@@ -80,7 +81,7 @@ export class AnunciosFormComponent implements OnInit {
         this.usuarioService.getIdSuscripcionByUsuarioId(user.uid).then(idSuscripcion => {
           if (idSuscripcion) {
             this.suscripcionesService.obtenerSuscripcion(idSuscripcion).subscribe(suscripcion => {
-              this.formAnuncio.get('destacado')?.setValue(!!suscripcion && suscripcion.activa === true);
+              this.formAnuncio.get('destacado')?.setValue(!!suscripcion && this.esSuscripcionActiva(suscripcion));
               this.cargandoSuscripcion = false;
             });
           } else {
@@ -97,6 +98,8 @@ export class AnunciosFormComponent implements OnInit {
         });
       }
     });
+
+    
 
     this.formAnuncio.get('perro')?.valueChanges.subscribe(() => {
       this.updateRazasList();
@@ -155,6 +158,20 @@ export class AnunciosFormComponent implements OnInit {
       },
     });
   }
+
+  esSuscripcionActiva(suscripcion: Suscripcion): boolean {
+      if (!suscripcion.fecha_fin) return false;
+  
+      // Obtener la fecha actual en horario de Madrid
+      const ahoraMadrid = new Date(
+        new Date().toLocaleString('en-US', { timeZone: 'Europe/Madrid' })
+      );
+  
+      // Convertir la fecha de fin a objeto Date (asumiendo que es ISO string en UTC)
+      const fechaFin = new Date(suscripcion.fecha_fin);
+  
+      return fechaFin > ahoraMadrid;
+    }
 
   private seleccionarMascota(event: any, controlName: string): void {
     const id = typeof event === 'string' ? event : event?.id; // Asegurarse de obtener solo el ID
