@@ -2,14 +2,14 @@ import { Component } from '@angular/core';
 import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router'; 
+import { Router, RouterModule } from '@angular/router'; 
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, RouterModule],
 })
 export class LoginComponent {
   formLogin: FormGroup;
@@ -51,6 +51,29 @@ export class LoginComponent {
       this.router.navigate(['/anuncios']);
     }).catch((error: any) => {
       // Traducir el error de Firebase si existe
+      const code = error?.code;
+      this.serverError = this.getFirebaseErrorMessage(code);
+    });
+  }
+
+  loginWithGoogle(): void {
+    this.authService.loginWithGoogle().then((result: any) => {
+      const user = result.user;
+      console.log('UID:', user.uid);
+      console.log('Nombre:', user.displayName);
+      console.log('Email:', user.email);
+      console.log('Foto:', user.photoURL);
+      this.router.navigate(['/anuncios']);
+    }).catch((error: any) => {
+      const code = error?.code;
+      this.serverError = this.getFirebaseErrorMessage(code);
+    });
+  }
+
+  loginWithFacebook(): void {
+    this.authService.loginWithFacebook().then(() => {
+      this.router.navigate(['/anuncios']);
+    }).catch((error: any) => {
       const code = error?.code;
       this.serverError = this.getFirebaseErrorMessage(code);
     });

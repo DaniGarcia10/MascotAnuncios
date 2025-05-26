@@ -34,7 +34,7 @@
             </button>
             <div class="position-relative" style="max-height: 400px;">
               <img [src]="anuncio.imagenes[imagenSeleccionada]" class="img-fluid rounded w-100"
-                style="object-fit: cover; max-height: 400px;" alt="Imagen principal">
+                style="object-fit: cover; max-height: 400px;" alt="Imagen principal" loading="lazy">
 
               <!-- Botón de abrir modal con icono -->
               <button class="btn btn-light position-absolute top-0 end-0 m-2" data-bs-toggle="modal"
@@ -51,7 +51,7 @@
           <div class="d-flex justify-content-center flex-wrap">
             <img *ngFor="let img of anuncio.imagenes; let i = index" [src]="img" (click)="seleccionarImagen(i)"
               [class.border-primary]="i === imagenSeleccionada" class="img-thumbnail m-1"
-              style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;">
+              style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;" loading="lazy">
           </div>
 
           <!-- Descripción del anuncio -->
@@ -69,7 +69,7 @@
                 style="height: 100vh; overflow: auto;">
 
                 <img [src]="anuncio.imagenes[imagenSeleccionada]" [ngStyle]="estiloImagenModal"
-                  (load)="ajustarEstiloImagen($event)" alt="Imagen en grande">
+                  (load)="ajustarEstiloImagen($event)" alt="Imagen en grande" loading="lazy">
               </div>
               <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
                 data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -92,7 +92,7 @@
                   Reservado
                 </span>
                 <img [src]="cachorro.imagenes[0]" class="card-img-top" alt="Imagen del cachorro"
-                  style="object-fit: cover; height: 200px;">
+                  style="object-fit: cover; height: 200px;" loading="lazy">
               </div>
               <div class="card-body">
                 <div class="d-flex flex-wrap justify-content-center text-center gap-2 mb-2">
@@ -143,7 +143,7 @@
                   <img *ngIf="imagenesModal[imagenCachorroSeleccionada]"
                     [src]="imagenesModal[imagenCachorroSeleccionada]" class="object-fit-contain"
                     style="max-width: 100vw; max-height: 90vh; width: auto; height: auto;" alt="Imagen grande"
-                    (load)="ajustarEstiloImagenCachorro($event)">
+                    (load)="ajustarEstiloImagenCachorro($event)" loading="lazy">
 
                   <!-- Flecha derecha -->
                   <button *ngIf="imagenesModal.length > 1"
@@ -157,7 +157,7 @@
                 <div class="d-flex justify-content-center flex-wrap mt-3" *ngIf="imagenesModal.length > 1">
                   <img *ngFor="let img of imagenesModal; let i = index" [src]="img"
                     (click)="seleccionarImagenCachorro(i)" [class.border-primary]="i === imagenCachorroSeleccionada"
-                    class="img-thumbnail m-1" style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;">
+                    class="img-thumbnail m-1" style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;" loading="lazy">
                 </div>
               </ng-container>
 
@@ -218,7 +218,7 @@
       <div class="card shadow-sm mb-3" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modalCriadero">
         <div class="card-body d-flex align-items-center gap-3">
           <img *ngIf="criaderoData?.foto_perfil?.startsWith('http')" [src]="criaderoData?.foto_perfil" alt="Criadero"
-            class="border rounded" style="width: 45px; height: 45px; object-fit: cover;">
+            class="border rounded" style="width: 45px; height: 45px; object-fit: cover;" loading="lazy">
           <div>
             <h6 class="card-title fw-bold mb-1">{{ criaderoData?.nombre }}</h6>
             <p class="text-muted mb-0">
@@ -238,7 +238,7 @@
             Padre
           </h6>
           <img [src]="padresImagenes['padre'][0]" alt="Imagen del padre" class="img-fluid w-100 h-100"
-            style="object-fit: contain; cursor:pointer;" (click)="abrirModalImagen('padre')">
+            style="object-fit: contain; cursor:pointer;" (click)="abrirModalImagen('padre')" loading="lazy">
           <div *ngIf="padresImagenes['padre'].length > 1"
             class="position-absolute bottom-0 end-0 m-1 px-2 py-1 bg-dark text-white rounded small"
             style="z-index: 10;">
@@ -254,7 +254,7 @@
             Madre
           </h6>
           <img [src]="padresImagenes['madre'][0]" alt="Imagen de la madre" class="img-fluid w-100 h-100"
-            style="object-fit: contain; cursor:pointer;" (click)="abrirModalImagen('madre')">
+            style="object-fit: contain; cursor:pointer;" (click)="abrirModalImagen('madre')" loading="lazy">
           <div *ngIf="padresImagenes['madre'].length > 1"
             class="position-absolute bottom-0 end-0 m-1 px-2 py-1 bg-dark text-white rounded small"
             style="z-index: 10;">
@@ -288,7 +288,7 @@
       </div>
       <div class="modal-body text-center">
         <img *ngIf="criaderoData?.foto_perfil?.startsWith('http')" [src]="criaderoData?.foto_perfil" alt="Criadero"
-          class="border rounded mb-3" style="width: 80px; height: 80px; object-fit: cover;">
+          class="border rounded mb-3" style="width: 80px; height: 80px; object-fit: cover;" loading="lazy">
         <h5 class="fw-bold mb-2">{{ criaderoData?.nombre }}</h5>
         <p class="mb-1"><i class="bi bi-geo-alt me-1"></i>{{ criaderoData?.ubicacion }}</p>
         <p class="mb-1"><strong>Núcleo zoológico:</strong> {{ criaderoData?.nucleo_zoologico }}</p>

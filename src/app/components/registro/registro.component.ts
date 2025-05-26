@@ -6,6 +6,8 @@ import { AuthService } from '../../services/auth.service';
 import { ArchivosService } from '../../services/archivos.service';
 import { Firestore, doc, setDoc, collection, addDoc } from '@angular/fire/firestore';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { DocumentacionService } from '../../services/documentacion.service';
+import { Estado } from '../../models/documentacion.model';
 
 @Component({
   selector: 'app-registro',
@@ -17,14 +19,13 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 export class RegistroComponent {
   formRegistro: FormGroup;
   imagenUrl: string | null = null;
-  fotoPerfil: File | null = null;
-  fotoPerfilCriadero: File | null = null;
   isSubmitting: boolean = false;
-  dniFile: File | null = null;
-  nzFile: File | null = null;
-
   showPassword: boolean = false; 
   showRepetirPassword: boolean = false; 
+  serverErrorFotoCriadero: string | null = null;
+  serverErrorDni: string | null = null;
+  serverErrorNz: string | null = null;
+  serverError: string | null = null; // Añade esto si no existe
 
   constructor(
     private authService: AuthService,
@@ -32,20 +33,24 @@ export class RegistroComponent {
     private router: Router,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
-    private archivosService: ArchivosService
+    private archivosService: ArchivosService,
+    private documentacionService: DocumentacionService
   ) {
     this.formRegistro = new FormGroup({
-      nombre: new FormControl('', [Validators.required, Validators.maxLength(30)]),
-      apellidos: new FormControl('', [Validators.required, Validators.maxLength(50)]),
+      nombre: new FormControl('', [Validators.required, Validators.maxLength(80)]),
       email: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(50)]),
       telefono: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.maxLength(15)]),
       vendedor: new FormControl(false),
       password: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(20)]),
       repetirPassword: new FormControl('', [Validators.required]),
+      fotoPerfil: new FormControl<File | null>(null, Validators.required),
+      dniFile: new FormControl<File | null>(null),
+      nzFile: new FormControl<File | null>(null),
       criadero: new FormGroup({
         nombre: new FormControl('', [Validators.maxLength(50)]),
-        nucleo_zoologico: new FormControl('', []), // Sin validadores por defecto
-        ubicacion: new FormControl('', [])
+        nucleo_zoologico: new FormControl('', [Validators.maxLength(14)]),
+        ubicacion: new FormControl('', []),
+        fotoPerfilCriadero: new FormControl<File | null>(null)
       })
     }, { validators: this.passwordsIgualesValidator });
 
@@ -67,15 +72,20 @@ export class RegistroComponent {
           Validators.required,
           Validators.maxLength(50)
         ]);
+        criaderoGroup.get('fotoPerfilCriadero')?.setValidators([
+          Validators.required
+        ]);
       } else {
         criaderoGroup.get('nucleo_zoologico')?.clearValidators();
         criaderoGroup.get('ubicacion')?.clearValidators();
         criaderoGroup.get('nombre')?.clearValidators();
+        criaderoGroup.get('fotoPerfilCriadero')?.clearValidators();
         criaderoGroup.reset();
       }
       criaderoGroup.get('nucleo_zoologico')?.updateValueAndValidity();
       criaderoGroup.get('ubicacion')?.updateValueAndValidity();
       criaderoGroup.get('nombre')?.updateValueAndValidity();
+      criaderoGroup.get('fotoPerfilCriadero')?.updateValueAndValidity();
     });
   }
 
@@ -88,11 +98,11 @@ export class RegistroComponent {
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
+    const control = this.formRegistro.get('fotoPerfil');
     if (file) {
       try {
         this.archivosService['validarExtension'](file);
-        this.fotoPerfil = file;
-        console.log('Foto de perfil seleccionada:', file.name);
+        control?.setValue(file);
       } catch (error: any) {
         const extension = file.name.split('.').pop()?.toLowerCase();
         const mensaje = `El formato "${extension}" no es válido. Formatos soportados: jpg, jpeg, png, webp, pdf.`;
@@ -105,18 +115,21 @@ export class RegistroComponent {
           bsModal.show();
         }
         event.target.value = '';
-        this.fotoPerfil = null;
+        control?.setValue(null);
       }
+    } else {
+      control?.setValue(null);
     }
+    control?.markAsTouched();
   }
 
   onFileSelectedCriadero(event: any): void {
     const file = event.target.files[0];
+    const control = this.formRegistro.get('criadero.fotoPerfilCriadero');
     if (file) {
       try {
         this.archivosService['validarExtension'](file);
-        this.fotoPerfilCriadero = file;
-        console.log('Foto de perfil del criadero seleccionada:', file.name);
+        control?.setValue(file);
       } catch (error: any) {
         const extension = file.name.split('.').pop()?.toLowerCase();
         const mensaje = `El formato "${extension}" no es válido. Formatos soportados: jpg, jpeg, png, webp, pdf.`;
@@ -129,18 +142,21 @@ export class RegistroComponent {
           bsModal.show();
         }
         event.target.value = '';
-        this.fotoPerfilCriadero = null;
+        control?.setValue(null);
       }
+    } else {
+      control?.setValue(null);
     }
+    control?.markAsTouched();
   }
 
-  // Manejar selección de DNI/NIE
   onDniFileSelected(event: any): void {
     const file = event.target.files[0];
+    const control = this.formRegistro.get('dniFile');
     if (file) {
       try {
-        this.archivosService['validarExtension'](file);
-        this.dniFile = file;
+        this.archivosService['validarExtensionDocumentos'](file);
+        control?.setValue(file);
       } catch (error: any) {
         const extension = file.name.split('.').pop()?.toLowerCase();
         const mensaje = `El formato "${extension}" no es válido. Formatos soportados: jpg, jpeg, png, webp, pdf.`;
@@ -153,18 +169,21 @@ export class RegistroComponent {
           bsModal.show();
         }
         event.target.value = '';
-        this.dniFile = null;
+        control?.setValue(null);
       }
+    } else {
+      control?.setValue(null);
     }
+    control?.markAsTouched();
   }
 
-  // Manejar selección de Núcleo Zoológico
   onNzFileSelected(event: any): void {
     const file = event.target.files[0];
+    const control = this.formRegistro.get('nzFile');
     if (file) {
       try {
-        this.archivosService['validarExtension'](file);
-        this.nzFile = file;
+        this.archivosService['validarExtensionDocumentos'](file);
+        control?.setValue(file);
       } catch (error: any) {
         const extension = file.name.split('.').pop()?.toLowerCase();
         const mensaje = `El formato "${extension}" no es válido. Formatos soportados: jpg, jpeg, png, webp, pdf.`;
@@ -177,14 +196,22 @@ export class RegistroComponent {
           bsModal.show();
         }
         event.target.value = '';
-        this.nzFile = null;
+        control?.setValue(null);
       }
+    } else {
+      control?.setValue(null);
     }
+    control?.markAsTouched();
   }
 
   async onSubmit(): Promise<void> {
     if (this.isSubmitting) return;
     this.isSubmitting = true;
+
+    // Limpiar errores previos
+    this.serverErrorFotoCriadero = null;
+    this.serverErrorDni = null;
+    this.serverErrorNz = null;
 
     this.formRegistro.markAllAsTouched();
 
@@ -193,24 +220,38 @@ export class RegistroComponent {
       criaderoGroup.markAllAsTouched();
     }
 
-    // Forzar detección de cambios para mostrar los small
     this.cdr.markForCheck();
 
-    // Validación de archivos obligatorios
-    const faltaFotoPerfil = !this.fotoPerfil;
-    const faltaFotoCriadero = this.isVendedor() && !this.fotoPerfilCriadero;
+    // Validación de archivos obligatorios usando los FormControls
+    const faltaFotoPerfil = !this.formRegistro.get('fotoPerfil')?.value;
+    const faltaFotoCriadero = this.isVendedor() && !this.formRegistro.get('criadero.fotoPerfilCriadero')?.value;
+    const faltaDni = this.isVendedor() && !this.formRegistro.get('dniFile')?.value;
+    const faltaNz = this.isVendedor() && !this.formRegistro.get('nzFile')?.value;
+
+    // Asignar errores de servidor si faltan archivos
+    if (faltaFotoCriadero) this.serverErrorFotoCriadero = 'La foto de perfil del criadero es obligatoria.';
+    if (faltaDni) this.serverErrorDni = 'El DNI/NIE es obligatorio.';
+    if (faltaNz) this.serverErrorNz = 'El certificado del Núcleo Zoológico es obligatorio.';
 
     if (
       this.formRegistro.invalid ||
       faltaFotoPerfil ||
-      faltaFotoCriadero
+      faltaFotoCriadero ||
+      faltaDni ||
+      faltaNz
     ) {
       this.isSubmitting = false;
-      this.cdr.markForCheck(); // Forzar actualización de la vista
+      this.cdr.markForCheck();
       return;
     }
 
     const usuario = this.formRegistro.value;
+
+    // Cambia las referencias a los archivos:
+    const fotoPerfil = this.formRegistro.get('fotoPerfil')?.value;
+    const fotoPerfilCriadero = this.formRegistro.get('criadero.fotoPerfilCriadero')?.value;
+    const dniFile = this.formRegistro.get('dniFile')?.value;
+    const nzFile = this.formRegistro.get('nzFile')?.value;
 
     try {
       const response: any = await this.authService.registro(usuario.email, usuario.password);
@@ -218,10 +259,10 @@ export class RegistroComponent {
       console.log('Registro exitoso:', userId);
 
       let nombreFotoPerfil = '';
-      if (this.fotoPerfil) {
-        const extension = this.fotoPerfil.name.split('.').pop()?.toLowerCase();
+      if (fotoPerfil) {
+        const extension = fotoPerfil.name.split('.').pop()?.toLowerCase();
         nombreFotoPerfil = `${userId}.${extension}`;
-        await this.archivosService.subirImagen(this.fotoPerfil, 'usuario', userId);
+        await this.archivosService.subirImagen(fotoPerfil, 'usuario', userId);
         console.log('Foto de perfil subida:', nombreFotoPerfil);
       }
 
@@ -242,10 +283,10 @@ export class RegistroComponent {
         idCriadero = docRef.id;
 
         // Subir foto de perfil del criadero si existe
-        if (this.fotoPerfilCriadero) {
-          const extension = this.fotoPerfilCriadero.name.split('.').pop()?.toLowerCase();
+        if (fotoPerfilCriadero) {
+          const extension = fotoPerfilCriadero.name.split('.').pop()?.toLowerCase();
           const nombreFotoCriadero = `${idCriadero}.${extension}`;
-          await this.archivosService.subirImagen(this.fotoPerfilCriadero, 'criadero', idCriadero);
+          await this.archivosService.subirImagen(fotoPerfilCriadero, 'criadero', idCriadero);
 
           await setDoc(doc(this.firestore, 'criaderos', idCriadero), {
             ...criaderoData,
@@ -256,7 +297,6 @@ export class RegistroComponent {
 
       const usuarioDoc = {
         nombre: usuario.nombre,
-        apellidos: usuario.apellidos,
         email: usuario.email,
         telefono: usuario.telefono,
         vendedor: usuario.vendedor,
@@ -267,11 +307,19 @@ export class RegistroComponent {
       await setDoc(doc(this.firestore, 'usuarios', userId), usuarioDoc);
 
       // Subir documentación adicional si existe
-      if (this.dniFile) {
-        await this.archivosService.subirDocumentacion(this.dniFile, 'dni', userId);
+      if (dniFile) {
+        await this.archivosService.subirDocumentacion(dniFile, 'dni', userId);
       }
-      if (this.nzFile) {
-        await this.archivosService.subirDocumentacion(this.nzFile, 'nz', userId);
+      if (nzFile) {
+        await this.archivosService.subirDocumentacion(nzFile, 'nz', userId);
+      }
+
+      //Registrar documentación automáticamente si es vendedor
+      if (this.isVendedor()) {
+        await this.documentacionService.guardarDocumentacion(userId, {
+          estado: Estado.PENDIENTE,
+          motivo: ""
+        });
       }
 
       //Mostrar mensaje bonito y redirigir
@@ -297,6 +345,40 @@ export class RegistroComponent {
     } finally {
       this.isSubmitting = false;
     }
+  }
+
+  // Registro con Google
+  registerWithGoogle(): void {
+    this.authService.loginWithGoogle().then((result: any) => {
+      const user = result.user;
+      // Aquí podrías guardar datos adicionales si lo necesitas
+      this.snackBar.open('¡Registro exitoso con Google!', 'Cerrar', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+      this.router.navigate(['/anuncios']);
+    }).catch((error: any) => {
+      const code = error?.code;
+      this.serverError = 'Error al registrarse con Google: ' + (code || 'desconocido');
+    });
+  }
+
+  // Registro con Facebook
+  registerWithFacebook(): void {
+    this.authService.loginWithFacebook().then((result: any) => {
+      this.snackBar.open('¡Registro exitoso con Facebook!', 'Cerrar', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+      this.router.navigate(['/anuncios']);
+    }).catch((error: any) => {
+      const code = error?.code;
+      this.serverError = 'Error al registrarse con Facebook: ' + (code || 'desconocido');
+    });
   }
 
   isVendedor(): boolean {

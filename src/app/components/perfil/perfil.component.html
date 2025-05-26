@@ -37,14 +37,9 @@
                 [readonly]="!editMode" />
             </div>
             <div class="mb-3">
-              <label for="apellidos" class="form-label"><strong>Apellidos:</strong></label>
-              <input id="apellidos" formControlName="apellidos" placeholder="Introduzca sus apellidos"
-                class="form-control" [readonly]="!editMode" />
-            </div>
-            <div class="mb-3">
               <label for="email" class="form-label"><strong>Email:</strong></label>
               <input id="email" formControlName="email" placeholder="Introduzca su email" class="form-control"
-                [readonly]="!editMode" />
+                [readonly]="true" [disabled]="true" />
             </div>
             <div class="mb-3">
               <label for="telefono" class="form-label"><strong>Teléfono:</strong></label>
@@ -57,6 +52,9 @@
               <button *ngIf="editMode" type="submit" class="btn-default m-2 w-50" (click)="guardarPerfil()">Guardar</button>
               <button *ngIf="!editMode" type="button" class="btn-default m-2 w-50" (click)="toggleEditMode()">Modificar
                 Perfil</button>
+            </div>
+            <div *ngIf="serverError" class="mt-2">
+              <small class="text-danger">{{ serverError }}</small>
             </div>
           </form>
           <ng-template #noUsuario>

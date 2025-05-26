@@ -18,10 +18,12 @@ import { DocumentacionListComponent } from './components/documentacion/documenta
 import { UsuariosListComponent } from './components/usuarios/usuarios-list/usuarios-list.component';
 import { NoAuthGuard } from './guards/no-auth.guard'; 
 import { AdminGuard } from './guards/admin.guard';
+import { RegistrocriaderoComponent } from './components/registrocriadero/registrocriadero.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [NoAuthGuard] },
   { path: 'registro', component: RegistroComponent, canActivate: [NoAuthGuard] },
+  { path: 'registrocriadero', component: RegistrocriaderoComponent },
   { path: 'inicio', component: InicioComponent },
   { path: 'perfil', component: PerfilComponent },
   { path: 'anuncios', component: AnunciosListComponent },

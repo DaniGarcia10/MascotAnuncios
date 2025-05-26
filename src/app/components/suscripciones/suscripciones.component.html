@@ -67,7 +67,7 @@
                 {{ precioSeleccionado }}€
               </span>
             </h4>
-            <button type="submit" class="btn-default w-50 mt-2" [disabled]="suscripcionForm.invalid">
+            <button type="submit" class="btn-default w-50 mt-2" (click)="crearSuscripcion()" [disabled]="suscripcionForm.invalid">
               Ir al pago
             </button>
           </div>

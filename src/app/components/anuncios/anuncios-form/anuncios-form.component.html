@@ -6,21 +6,17 @@
       </div>
       <div class="card-body custom-card-body">
         <!-- Indicador de destacado -->
-        <div
-          class="mb-3 d-flex align-items-start align-items-lg-center flex-column flex-lg-row justify-content-between gap-2">
-          <div class="d-flex align-items-center">
-            <ng-container *ngIf="formAnuncio.get('destacado')?.value; else noDestacado">
-              <span class="anuncio-destacado badge d-inline-flex align-items-center px-3 py-2 rounded-pill">
-                <i class="bi bi-star-fill me-2"></i> Este anuncio aparecerá destacado
-              </span>
-
-            </ng-container>
-            <ng-template #noDestacado>
-              <span class="anuncio-no-destacado badge d-inline-flex align-items-center px-3 py-2 rounded-pill">
-                <i class="bi bi-x-circle-fill me-2"></i> El anuncio no será destacado
-              </span>
-            </ng-template>
-          </div>
+        <div *ngIf="!cargandoSuscripcion">
+          <ng-container *ngIf="formAnuncio.get('destacado')?.value; else noDestacado">
+            <span class="anuncio-destacado badge d-inline-flex align-items-center px-3 py-2 rounded-pill">
+              <i class="bi bi-star-fill me-2"></i> Este anuncio aparecerá destacado
+            </span>
+          </ng-container>
+          <ng-template #noDestacado>
+            <span class="anuncio-no-destacado badge d-inline-flex align-items-center px-3 py-2 rounded-pill">
+              <i class="bi bi-x-circle-fill me-2"></i> El anuncio no será destacado
+            </span>
+          </ng-template>
           <button *ngIf="!formAnuncio.get('destacado')?.value"
             class="btn btn-warning text-dark fw-bold ms-0 ms-lg-3 mt-2 mt-lg-0" (click)="destacarAnuncio()"
             type="button">

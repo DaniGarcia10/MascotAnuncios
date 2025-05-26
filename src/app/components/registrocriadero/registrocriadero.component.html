@@ -1,0 +1,170 @@
+<div class="registro-wrapper position-relative d-flex flex-column flex-grow-1">
+    <!-- Contenido principal -->
+    <div class="d-flex justify-content-center align-items-center flex-grow-1 px-3 py-5">
+        <div class="card custom-card w-100" style="max-width: 600px;">
+            <div class="card-header custom-card-header text-center">
+                <h3 class="card-title-grande">Registro del criadero</h3>
+            </div>
+            <div class="card-body custom-card-body">
+                <form [formGroup]="formRegistro" (ngSubmit)="onSubmit()">
+                    <div class="mb-3">
+                        <label for="telefono" class="form-label">Teléfono:</label>
+                        <input id="telefono" formControlName="telefono" type="text" class="form-control"
+                            placeholder="Ingresa tu teléfono" required>
+                        <div *ngIf="formRegistro.get('telefono')?.invalid && formRegistro.get('telefono')?.touched"
+                            class="text-danger">
+                            <small *ngIf="formRegistro.get('telefono')?.errors?.['required']">El teléfono es
+                                obligatorio.</small>
+                            <small *ngIf="formRegistro.get('telefono')?.errors?.['pattern']">Solo se permiten
+                                números.</small>
+                            <small *ngIf="formRegistro.get('telefono')?.errors?.['maxlength']">Máximo 15 caracteres
+                                permitidos.</small>
+                        </div>
+                    </div>
+                    <div formGroupName="criadero">
+                        <h5 class="mt-3">Datos del Criadero</h5>
+                        <div class="mb-3">
+                            <label for="nucleo-zoologico" class="form-label">Núcleo Zoológico:</label>
+                            <input id="nucleo-zoologico" formControlName="nucleo_zoologico" type="text"
+                                class="form-control" placeholder="Ingresa el núcleo zoológico">
+                            <div *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.invalid && formRegistro.get('criadero.nucleo_zoologico')?.touched"
+                                class="text-danger">
+                                <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['required']">El
+                                    núcleo zoológico
+                                    es obligatorio.</small>
+                                <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['pattern']">Solo
+                                    se permiten
+                                    caracteres alfanuméricos.</small>
+                                <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['minlength']">Debe
+                                    tener
+                                    exactamente 12 caracteres.</small>
+                                <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['maxlength']">Debe
+                                    tener
+                                    exactamente 12 caracteres.</small>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="criadero-nombre" class="form-label">Nombre del Criadero:</label>
+                            <input id="criadero-nombre" formControlName="nombre" type="text" class="form-control"
+                                placeholder="Ingresa el nombre del criadero" required>
+                            <div *ngIf="formRegistro.get('criadero.nombre')?.invalid && formRegistro.get('criadero.nombre')?.touched"
+                                class="text-danger">
+                                <small *ngIf="formRegistro.get('criadero.nombre')?.errors?.['required']">El nombre del
+                                    criadero es
+                                    obligatorio.</small>
+                                <small *ngIf="formRegistro.get('criadero.nombre')?.errors?.['maxlength']">Máximo 50
+                                    caracteres
+                                    permitidos.</small>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="criadero-ubicacion" class="form-label">Ubicación del Criadero:</label>
+                            <input id="criadero-ubicacion" formControlName="ubicacion" type="text" class="form-control"
+                                placeholder="Ingresa la provincia del criadero">
+                            <div *ngIf="formRegistro.get('criadero.ubicacion')?.invalid && formRegistro.get('criadero.ubicacion')?.touched"
+                                class="text-danger">
+                                <small *ngIf="formRegistro.get('criadero.ubicacion')?.errors?.['required']">La ubicación
+                                    es
+                                    obligatoria.</small>
+                                <small *ngIf="formRegistro.get('criadero.ubicacion')?.errors?.['maxlength']">Máximo 100
+                                    caracteres
+                                    permitidos.</small>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fotoPerfilCriadero" class="form-label">Foto de Perfil del Criadero:</label>
+                            <input id="fotoPerfilCriadero" type="file" class="form-control"
+                                (change)="onFileSelectedCriadero($event)">
+                            <div *ngIf="formRegistro.get('criadero.fotoPerfilCriadero')?.invalid && formRegistro.get('criadero.fotoPerfilCriadero')?.touched"
+                                class="text-danger">
+                                <small>La foto de perfil del criadero es obligatoria.</small>
+                            </div>
+                        </div>
+                        <!-- Bloque de verificación de criadero profesional -->
+                        <div class="mt-4 p-3 border rounded">
+                            <h5 class="mb-2">Verificación de Criadero Profesional</h5>
+                            <p class="mb-2">
+                                Para poder publicar anuncios necesitamos verificar tu identidad y autorización legal,
+                                para así
+                                garantizar la confianza de los compradores.<br>
+                                Revisaremos tu documentación en menos de 24 horas.
+                            </p>
+
+                            <div class="mb-2">
+                                <span class="fw-bold">📑 Documentación obligatoria:</span>
+                                <ul class="mb-1">
+                                    <li>DNI/NIE del titular (anverso y reverso en una sola imagen o PDF)</li>
+                                    <li>Número de Núcleo Zoológico (NNZ) válido</li>
+                                    <li>Certificado de inscripción en el Registro de Núcleos Zoológicos</li>
+                                </ul>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="fw-bold">📤 DNI / NIE</label>
+                                <input type="file" class="form-control mt-1" accept=".pdf,.jpg,.jpeg,.png"
+                                    (change)="onDniFileSelected($event)">
+                                <small class="text-muted">PDF, JPG o PNG – máx. 20MB</small>
+                                <div *ngIf="formRegistro.get('dniFile')?.invalid && formRegistro.get('dniFile')?.touched"
+                                    class="text-danger mt-1">
+                                    <small>El DNI/NIE es obligatorio.</small>
+                                </div>
+                                <div *ngIf="serverErrorDni" class="text-danger mt-1">
+                                    <small>{{ serverErrorDni }}</small>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="fw-bold">📤 Núcleo Zoológico</label>
+                                <input type="file" class="form-control mt-1" accept=".pdf,.jpg,.jpeg,.png"
+                                    (change)="onNzFileSelected($event)">
+                                <small class="text-muted">PDF, JPG o PNG – máx. 20MB</small>
+                                <div *ngIf="formRegistro.get('nzFile')?.invalid && formRegistro.get('nzFile')?.touched"
+                                    class="text-danger mt-1">
+                                    <small>El certificado del Núcleo Zoológico es obligatorio.</small>
+                                </div>
+                                <div *ngIf="serverErrorNz" class="text-danger mt-1">
+                                    <small>{{ serverErrorNz }}</small>
+                                </div>
+                            </div>
+
+                            <div class="mb-2">
+                                <span class="fw-bold">✅ Importante:</span>
+                                <ul class="mb-1">
+                                    <li>La información debe coincidir con el titular de la cuenta.</li>
+                                    <li>Nos reservamos el derecho de rechazar documentos ilegibles o inválidos.</li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                Una vez verificado, tus anuncios aparecerán como “Criadero verificado” y podrás destacar
+                                tus cachorros.
+                            </div>
+                        </div>
+
+                    </div>
+                    <button type="submit" class="btn-default w-100" [disabled]="isSubmitting">
+                        {{ isSubmitting ? 'Registrando criadero...' : 'Registrar criadero' }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal para error de extensión de imagen -->
+<div class="modal fade" id="modalErrorExtensionImagen" tabindex="-1" aria-labelledby="modalErrorExtensionImagenLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center">
+            <div class="modal-header">
+                <h5 class="modal-title w-100" id="modalErrorExtensionImagenLabel">Formato de imagen no válido</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p class="fs-5 mb-0" id="mensajeErrorExtensionImagen"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger w-100" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

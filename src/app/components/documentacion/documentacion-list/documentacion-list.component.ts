@@ -81,7 +81,6 @@ export class DocumentacionListComponent implements OnInit {
       // Filtro por texto
       const coincideTexto =
         usuario.nombre?.toLowerCase().includes(filtro) ||
-        usuario.apellidos?.toLowerCase().includes(filtro) ||
         usuario.telefono?.toLowerCase().includes(filtro) ||
         usuario.email?.toLowerCase().includes(filtro);
 
@@ -101,12 +100,12 @@ export class DocumentacionListComponent implements OnInit {
         break;
       case 'nombreAsc':
         filtrados = filtrados.slice().sort((a, b) =>
-          (a.usuario.nombre + ' ' + a.usuario.apellidos).localeCompare(b.usuario.nombre + ' ' + b.usuario.apellidos)
+          (a.usuario.nombre).localeCompare(b.usuario.nombre)
         );
         break;
       case 'nombreDesc':
         filtrados = filtrados.slice().sort((a, b) =>
-          (b.usuario.nombre + ' ' + b.usuario.apellidos).localeCompare(a.usuario.nombre + ' ' + a.usuario.apellidos)
+          (b.usuario.nombre).localeCompare(a.usuario.nombre)
         );
         break;
     }

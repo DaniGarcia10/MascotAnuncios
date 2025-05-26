@@ -3,6 +3,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { ArchivosService } from '../../services/archivos.service';
+import { DocumentacionService } from '../../services/documentacion.service';
 
 @Component({
   selector: 'app-navbar',
@@ -16,15 +17,30 @@ export class NavbarComponent implements OnInit {
   esVendedor = false;
   esAdmin = false;
   logoUrl: string = ''; 
+  documentacionAceptada: boolean = false;
+
   constructor(
     private authService: AuthService,
     private router: Router,
-    private archivosService: ArchivosService // Inyectar el servicio de archivos
+    private archivosService: ArchivosService, 
+    private documentacionService: DocumentacionService
   ) {}
 
   ngOnInit(): void {
     this.authService.isAuthenticated().subscribe((authStatus) => {
-      this.isAuthenticated = !!authStatus; // Fuerza a booleano, nunca será null
+      this.isAuthenticated = !!authStatus;
+
+      if (this.isAuthenticated) {
+        // Solo si está autenticado, obtenemos el userId y comprobamos la documentación
+        const userId = this.authService.getUsuarioId();
+        if (userId) {
+          this.documentacionService.getComprobarEstadoById(userId).then((estado) => {
+            this.documentacionAceptada = estado;
+          });
+        }
+      } else {
+        this.documentacionAceptada = false;
+      }
     });
 
     this.authService.getUserDataAuth().subscribe(({ usuario }) => {

@@ -6,26 +6,35 @@
         <h3 class="card-title-grande">Registro</h3>
       </div>
       <div class="card-body custom-card-body">
+        <!-- Opciones de registro social -->
+<div class="mb-4 text-center">
+  <button type="button" class="btn btn-danger w-100 mb-2" (click)="registerWithGoogle()">
+    <i class="bi bi-google"></i> Registrarse con Google
+  </button>
+  <button type="button" class="btn btn-primary w-100 mb-2" (click)="registerWithFacebook()">
+    <i class="bi bi-facebook"></i> Registrarse con Facebook
+  </button>
+  <div class="d-flex align-items-center my-3">
+    <hr class="flex-grow-1">
+    <span class="mx-2 text-muted">o continúa con tu correo</span>
+    <hr class="flex-grow-1">
+  </div>
+</div>
+
         <form [formGroup]="formRegistro" (ngSubmit)="onSubmit()">
           <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre:</label>
-            <input id="nombre" formControlName="nombre" type="text" class="form-control" placeholder="Ingresa tu nombre" required>
+            <label for="nombre" class="form-label">Nombre completo:</label>
+            <input id="nombre" formControlName="nombre" type="text" class="form-control"
+              placeholder="Ingresa tu nombre completo" required>
             <div *ngIf="formRegistro.get('nombre')?.invalid && formRegistro.get('nombre')?.touched" class="text-danger">
               <small *ngIf="formRegistro.get('nombre')?.errors?.['required']">El nombre es obligatorio.</small>
               <small *ngIf="formRegistro.get('nombre')?.errors?.['maxlength']">Máximo 30 caracteres permitidos.</small>
             </div>
           </div>
           <div class="mb-3">
-            <label for="apellidos" class="form-label">Apellidos:</label>
-            <input id="apellidos" formControlName="apellidos" type="text" class="form-control" placeholder="Ingresa tus apellidos" required>
-            <div *ngIf="formRegistro.get('apellidos')?.invalid && formRegistro.get('apellidos')?.touched" class="text-danger">
-              <small *ngIf="formRegistro.get('apellidos')?.errors?.['required']">Los apellidos son obligatorios.</small>
-              <small *ngIf="formRegistro.get('apellidos')?.errors?.['maxlength']">Máximo 50 caracteres permitidos.</small>
-            </div>
-          </div>
-          <div class="mb-3">
             <label for="email" class="form-label">Correo electrónico:</label>
-            <input id="email" formControlName="email" type="email" class="form-control" placeholder="Ingresa tu correo" required>
+            <input id="email" formControlName="email" type="email" class="form-control" placeholder="Ingresa tu correo"
+              required>
             <div *ngIf="formRegistro.get('email')?.invalid && formRegistro.get('email')?.touched" class="text-danger">
               <small *ngIf="formRegistro.get('email')?.errors?.['required']">El correo es obligatorio.</small>
               <small *ngIf="formRegistro.get('email')?.errors?.['email']">El formato del correo no es válido.</small>
@@ -34,58 +43,60 @@
           </div>
           <div class="mb-3">
             <label for="telefono" class="form-label">Teléfono:</label>
-            <input id="telefono" formControlName="telefono" type="text" class="form-control" placeholder="Ingresa tu teléfono" required>
-            <div *ngIf="formRegistro.get('telefono')?.invalid && formRegistro.get('telefono')?.touched" class="text-danger">
+            <input id="telefono" formControlName="telefono" type="text" class="form-control"
+              placeholder="Ingresa tu teléfono" required>
+            <div *ngIf="formRegistro.get('telefono')?.invalid && formRegistro.get('telefono')?.touched"
+              class="text-danger">
               <small *ngIf="formRegistro.get('telefono')?.errors?.['required']">El teléfono es obligatorio.</small>
               <small *ngIf="formRegistro.get('telefono')?.errors?.['pattern']">Solo se permiten números.</small>
-              <small *ngIf="formRegistro.get('telefono')?.errors?.['maxlength']">Máximo 15 caracteres permitidos.</small>
+              <small *ngIf="formRegistro.get('telefono')?.errors?.['maxlength']">Máximo 15 caracteres
+                permitidos.</small>
             </div>
           </div>
           <div class="mb-3">
             <label for="password" class="form-label">Contraseña:</label>
             <div class="input-group">
-              <input
-                id="password"
-                formControlName="password"
-                [type]="showPassword ? 'text' : 'password'"
-                class="form-control"
-                placeholder="Ingresa tu contraseña"
-                required>
+              <input id="password" formControlName="password" [type]="showPassword ? 'text' : 'password'"
+                class="form-control" placeholder="Ingresa tu contraseña" required>
               <span class="input-group-text" style="cursor: pointer;" (click)="showPassword = !showPassword">
                 <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
               </span>
             </div>
-            <div *ngIf="formRegistro.get('password')?.invalid && formRegistro.get('password')?.touched" class="text-danger">
+            <div *ngIf="formRegistro.get('password')?.invalid && formRegistro.get('password')?.touched"
+              class="text-danger">
               <small *ngIf="formRegistro.get('password')?.errors?.['required']">La contraseña es obligatoria.</small>
               <small *ngIf="formRegistro.get('password')?.errors?.['minlength']">Mínimo 6 caracteres requeridos.</small>
-              <small *ngIf="formRegistro.get('password')?.errors?.['maxlength']">Máximo 20 caracteres permitidos.</small>
+              <small *ngIf="formRegistro.get('password')?.errors?.['maxlength']">Máximo 20 caracteres
+                permitidos.</small>
             </div>
           </div>
           <div class="mb-3">
             <label for="repetirPassword" class="form-label">Repetir contraseña:</label>
             <div class="input-group">
-              <input
-                id="repetirPassword"
-                formControlName="repetirPassword"
-                [type]="showRepetirPassword ? 'text' : 'password'"
-                class="form-control"
-                placeholder="Repite tu contraseña"
-                required>
-              <span class="input-group-text" style="cursor: pointer;" (click)="showRepetirPassword = !showRepetirPassword">
+              <input id="repetirPassword" formControlName="repetirPassword"
+                [type]="showRepetirPassword ? 'text' : 'password'" class="form-control"
+                placeholder="Repite tu contraseña" required>
+              <span class="input-group-text" style="cursor: pointer;"
+                (click)="showRepetirPassword = !showRepetirPassword">
                 <i class="bi" [ngClass]="showRepetirPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
               </span>
             </div>
-            <div *ngIf="formRegistro.get('repetirPassword')?.invalid && formRegistro.get('repetirPassword')?.touched" class="text-danger">
-              <small *ngIf="formRegistro.get('repetirPassword')?.errors?.['required']">Debes repetir la contraseña.</small>
+            <div *ngIf="formRegistro.get('repetirPassword')?.invalid && formRegistro.get('repetirPassword')?.touched"
+              class="text-danger">
+              <small *ngIf="formRegistro.get('repetirPassword')?.errors?.['required']">Debes repetir la
+                contraseña.</small>
             </div>
-            <div *ngIf="formRegistro.errors?.['passwordsNoCoinciden'] && (formRegistro.get('repetirPassword')?.touched || formRegistro.get('password')?.touched)" class="text-danger">
+            <div
+              *ngIf="formRegistro.errors?.['passwordsNoCoinciden'] && (formRegistro.get('repetirPassword')?.touched || formRegistro.get('password')?.touched)"
+              class="text-danger">
               <small>Las contraseñas no coinciden.</small>
             </div>
           </div>
           <div class="mb-3">
             <label for="fotoPerfil" class="form-label">Foto de Perfil:</label>
             <input id="fotoPerfil" type="file" class="form-control" (change)="onFileSelected($event)">
-            <div *ngIf="isSubmitting && !fotoPerfil" class="text-danger">
+            <div *ngIf="formRegistro.get('fotoPerfil')?.invalid && formRegistro.get('fotoPerfil')?.touched"
+              class="text-danger">
               <small>La foto de perfil es obligatoria.</small>
             </div>
           </div>
@@ -97,98 +108,130 @@
             <h5 class="mt-3">Datos del Criadero</h5>
             <div class="mb-3">
               <label for="nucleo-zoologico" class="form-label">Núcleo Zoológico:</label>
-              <input id="nucleo-zoologico" formControlName="nucleo_zoologico" type="text" class="form-control" placeholder="Ingresa el núcleo zoológico">
-              <div *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.invalid && formRegistro.get('criadero.nucleo_zoologico')?.touched" class="text-danger">
-                <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['required']">El núcleo zoológico es obligatorio.</small>
-                <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['pattern']">Solo se permiten caracteres alfanuméricos.</small>
-                <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['minlength']">Debe tener exactamente 12 caracteres.</small>
-                <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['maxlength']">Debe tener exactamente 12 caracteres.</small>
+              <input id="nucleo-zoologico" formControlName="nucleo_zoologico" type="text" class="form-control"
+                placeholder="Ingresa el núcleo zoológico">
+              <div
+                *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.invalid && formRegistro.get('criadero.nucleo_zoologico')?.touched"
+                class="text-danger">
+                <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['required']">El núcleo zoológico
+                  es obligatorio.</small>
+                <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['pattern']">Solo se permiten
+                  caracteres alfanuméricos.</small>
+                <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['minlength']">Debe tener
+                  exactamente 12 caracteres.</small>
+                <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['maxlength']">Debe tener
+                  exactamente 12 caracteres.</small>
               </div>
             </div>
             <div class="mb-3">
               <label for="criadero-nombre" class="form-label">Nombre del Criadero:</label>
-              <input id="criadero-nombre" formControlName="nombre" type="text" class="form-control" placeholder="Ingresa el nombre del criadero" required>
-              <div *ngIf="formRegistro.get('criadero.nombre')?.invalid && formRegistro.get('criadero.nombre')?.touched" class="text-danger">
-                <small *ngIf="formRegistro.get('criadero.nombre')?.errors?.['required']">El nombre del criadero es obligatorio.</small>
-                <small *ngIf="formRegistro.get('criadero.nombre')?.errors?.['maxlength']">Máximo 50 caracteres permitidos.</small>
+              <input id="criadero-nombre" formControlName="nombre" type="text" class="form-control"
+                placeholder="Ingresa el nombre del criadero" required>
+              <div *ngIf="formRegistro.get('criadero.nombre')?.invalid && formRegistro.get('criadero.nombre')?.touched"
+                class="text-danger">
+                <small *ngIf="formRegistro.get('criadero.nombre')?.errors?.['required']">El nombre del criadero es
+                  obligatorio.</small>
+                <small *ngIf="formRegistro.get('criadero.nombre')?.errors?.['maxlength']">Máximo 50 caracteres
+                  permitidos.</small>
               </div>
             </div>
             <div class="mb-3">
               <label for="criadero-ubicacion" class="form-label">Ubicación del Criadero:</label>
-              <input id="criadero-ubicacion" formControlName="ubicacion" type="text" class="form-control" placeholder="Ingresa la provincia del criadero">
-              <div *ngIf="formRegistro.get('criadero.ubicacion')?.invalid && formRegistro.get('criadero.ubicacion')?.touched" class="text-danger">
-                <small *ngIf="formRegistro.get('criadero.ubicacion')?.errors?.['required']">La ubicación es obligatoria.</small>
-                <small *ngIf="formRegistro.get('criadero.ubicacion')?.errors?.['maxlength']">Máximo 100 caracteres permitidos.</small>
+              <input id="criadero-ubicacion" formControlName="ubicacion" type="text" class="form-control"
+                placeholder="Ingresa la provincia del criadero">
+              <div
+                *ngIf="formRegistro.get('criadero.ubicacion')?.invalid && formRegistro.get('criadero.ubicacion')?.touched"
+                class="text-danger">
+                <small *ngIf="formRegistro.get('criadero.ubicacion')?.errors?.['required']">La ubicación es
+                  obligatoria.</small>
+                <small *ngIf="formRegistro.get('criadero.ubicacion')?.errors?.['maxlength']">Máximo 100 caracteres
+                  permitidos.</small>
               </div>
             </div>
             <div class="mb-3">
               <label for="fotoPerfilCriadero" class="form-label">Foto de Perfil del Criadero:</label>
               <input id="fotoPerfilCriadero" type="file" class="form-control" (change)="onFileSelectedCriadero($event)">
-              <div *ngIf="isSubmitting && isVendedor() && !fotoPerfilCriadero" class="text-danger">
+              <div
+                *ngIf="formRegistro.get('criadero.fotoPerfilCriadero')?.invalid && formRegistro.get('criadero.fotoPerfilCriadero')?.touched"
+                class="text-danger">
                 <small>La foto de perfil del criadero es obligatoria.</small>
               </div>
             </div>
             <!-- Bloque de verificación de criadero profesional -->
-<div class="mt-4 p-3 border rounded">
-  <h5 class="mb-2">Verificación de Criadero Profesional</h5>
-  <p class="mb-2">
-    Para poder publicar anuncios necesitamos verificar tu identidad y autorización legal, para así garantizar la confianza de los compradores.<br>
-    Revisaremos tu documentación en menos de 24 horas.
-  </p>
+            <div class="mt-4 p-3 border rounded">
+              <h5 class="mb-2">Verificación de Criadero Profesional</h5>
+              <p class="mb-2">
+                Para poder publicar anuncios necesitamos verificar tu identidad y autorización legal, para así
+                garantizar la confianza de los compradores.<br>
+                Revisaremos tu documentación en menos de 24 horas.
+              </p>
 
-  <div class="mb-2">
-    <span class="fw-bold">📑 Documentación obligatoria:</span>
-    <ul class="mb-1">
-      <li>DNI/NIE del titular (anverso y reverso en una sola imagen o PDF)</li>
-      <li>Número de Núcleo Zoológico (NNZ) válido</li>
-      <li>Certificado de inscripción en el Registro de Núcleos Zoológicos</li>
-    </ul>
-  </div>
+              <div class="mb-2">
+                <span class="fw-bold">📑 Documentación obligatoria:</span>
+                <ul class="mb-1">
+                  <li>DNI/NIE del titular (anverso y reverso en una sola imagen o PDF)</li>
+                  <li>Número de Núcleo Zoológico (NNZ) válido</li>
+                  <li>Certificado de inscripción en el Registro de Núcleos Zoológicos</li>
+                </ul>
+              </div>
 
-  <div class="mb-3">
-    <label class="fw-bold">📤 DNI / NIE</label>
-    <input type="file" class="form-control mt-1" accept=".pdf,.jpg,.jpeg,.png"
-           (change)="onDniFileSelected($event)">
-    <small class="text-muted">PDF, JPG o PNG – máx. 20MB</small>
-    <div *ngIf="isSubmitting && !dniFile" class="text-danger mt-1">
-      <small>El DNI/NIE es obligatorio.</small>
-    </div>
-  </div>
+              <div class="mb-3">
+                <label class="fw-bold">📤 DNI / NIE</label>
+                <input type="file" class="form-control mt-1" accept=".pdf,.jpg,.jpeg,.png"
+                  (change)="onDniFileSelected($event)">
+                <small class="text-muted">PDF, JPG o PNG – máx. 20MB</small>
+                <div *ngIf="formRegistro.get('dniFile')?.invalid && formRegistro.get('dniFile')?.touched"
+                  class="text-danger mt-1">
+                  <small>El DNI/NIE es obligatorio.</small>
+                </div>
+                <div *ngIf="serverErrorDni" class="text-danger mt-1">
+                  <small>{{ serverErrorDni }}</small>
+                </div>
+              </div>
 
-  <div class="mb-3">
-    <label class="fw-bold">📤 Núcleo Zoológico</label>
-    <input type="file" class="form-control mt-1" accept=".pdf,.jpg,.jpeg,.png"
-           (change)="onNzFileSelected($event)">
-    <small class="text-muted">PDF, JPG o PNG – máx. 20MB</small>
-    <div *ngIf="isSubmitting && !nzFile" class="text-danger mt-1">
-      <small>El certificado del Núcleo Zoológico es obligatorio.</small>
-    </div>
-  </div>
+              <div class="mb-3">
+                <label class="fw-bold">📤 Núcleo Zoológico</label>
+                <input type="file" class="form-control mt-1" accept=".pdf,.jpg,.jpeg,.png"
+                  (change)="onNzFileSelected($event)">
+                <small class="text-muted">PDF, JPG o PNG – máx. 20MB</small>
+                <div *ngIf="formRegistro.get('nzFile')?.invalid && formRegistro.get('nzFile')?.touched"
+                  class="text-danger mt-1">
+                  <small>El certificado del Núcleo Zoológico es obligatorio.</small>
+                </div>
+                <div *ngIf="serverErrorNz" class="text-danger mt-1">
+                  <small>{{ serverErrorNz }}</small>
+                </div>
+              </div>
 
-  <div class="mb-2">
-    <span class="fw-bold">✅ Importante:</span>
-    <ul class="mb-1">
-      <li>La información debe coincidir con el titular de la cuenta.</li>
-      <li>Nos reservamos el derecho de rechazar documentos ilegibles o inválidos.</li>
-    </ul>
-  </div>
+              <div class="mb-2">
+                <span class="fw-bold">✅ Importante:</span>
+                <ul class="mb-1">
+                  <li>La información debe coincidir con el titular de la cuenta.</li>
+                  <li>Nos reservamos el derecho de rechazar documentos ilegibles o inválidos.</li>
+                </ul>
+              </div>
 
-  <div>
-    Una vez verificado, tus anuncios aparecerán como “Criadero verificado” y podrás destacar tus cachorros.
-  </div>
-</div>
+              <div>
+                Una vez verificado, tus anuncios aparecerán como “Criadero verificado” y podrás destacar tus cachorros.
+              </div>
+            </div>
 
           </div>
           <button type="submit" class="btn-default w-100" [disabled]="isSubmitting">
             {{ isSubmitting ? 'Registrando...' : 'Registrarse' }}
           </button>
+          <div class="text-center mt-3">
+            <span>¿Ya tienes una cuenta?</span>
+            <a routerLink="/login" class="ms-1 text-primary" style="cursor:pointer; text-decoration:underline;">Acceder</a>
+          </div>
         </form>
       </div>
     </div>
   </div>
 </div>
 <!-- Modal para error de extensión de imagen -->
-<div class="modal fade" id="modalErrorExtensionImagen" tabindex="-1" aria-labelledby="modalErrorExtensionImagenLabel" aria-hidden="true">
+<div class="modal fade" id="modalErrorExtensionImagen" tabindex="-1" aria-labelledby="modalErrorExtensionImagenLabel"
+  aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content text-center">
       <div class="modal-header">

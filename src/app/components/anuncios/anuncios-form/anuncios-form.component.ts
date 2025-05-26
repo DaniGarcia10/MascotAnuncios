@@ -32,6 +32,7 @@ export class AnunciosFormComponent implements OnInit {
   machos: Mascota[] = [];
   hembras: Mascota[] = [];
   tieneSuscripcionActiva: boolean = false;
+  cargandoSuscripcion = true;
 
   constructor(
     private fb: FormBuilder,
@@ -79,15 +80,12 @@ export class AnunciosFormComponent implements OnInit {
         this.usuarioService.getIdSuscripcionByUsuarioId(user.uid).then(idSuscripcion => {
           if (idSuscripcion) {
             this.suscripcionesService.obtenerSuscripcion(idSuscripcion).subscribe(suscripcion => {
-              // Establecer el valor de destacado según la suscripción
-              if (!!suscripcion && suscripcion.activa === true) {
-                this.formAnuncio.get('destacado')?.setValue(true);
-              } else {
-                this.formAnuncio.get('destacado')?.setValue(false);
-              }
+              this.formAnuncio.get('destacado')?.setValue(!!suscripcion && suscripcion.activa === true);
+              this.cargandoSuscripcion = false;
             });
           } else {
             this.formAnuncio.get('destacado')?.setValue(false);
+            this.cargandoSuscripcion = false;
           }
         });
 

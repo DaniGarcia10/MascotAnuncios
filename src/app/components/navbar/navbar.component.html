@@ -1,81 +1,86 @@
-<nav class="navbar navbar-expand-md navbar-custom"> <!-- Cambiado de navbar-expand-lg a navbar-expand-md -->
-    <div class="container">
-        <a class="navbar-brand font-weight-bold" routerLink="/inicio">
-            <img *ngIf="logoUrl" [src]="logoUrl" alt="MascotAnuncios Logo" class="logo-img" />
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+<nav class="navbar navbar-expand-md navbar-custom">
+  <div class="container">
+    <a class="navbar-brand font-weight-bold" routerLink="/inicio">
+      <img *ngIf="logoUrl" [src]="logoUrl" alt="MascotAnuncios Logo" class="logo-img" />
+    </a>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 text-nowrap">
-                <li class="nav-item dropdown me-3">
-                    <a class="nav-link dropdown-toggle" routerLink="/anuncios" id="navbarDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-paw"></i> Anuncios
-                    </a>
-                    <ul class="dropdown-menu dropdown-custom" aria-labelledby="navbarDropdown">
-                        <li>
-                            <a class="dropdown-item" [routerLink]="['/anuncios']"
-                                [queryParams]="{ tipoAnimal: 'perro' }">Perros</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" [routerLink]="['/anuncios']"
-                                [queryParams]="{ tipoAnimal: 'gato' }">Gatos</a>
-                        </li>
-                    </ul>
-                </li>
-                <ng-container *ngIf="isAuthenticated; else guestLinks">
-                    <ng-container *ngIf="esVendedor">
-                        <li class="nav-item active me-3">
-                            <a class="nav-link" routerLink="/publicar">Publicar anuncio</a>
-                        </li>
-                    </ng-container>
-                </ng-container>
-                <ng-template #guestLinks>
-                    <li class="nav-item me-3">
-                        <a class="nav-link" routerLink="/login">Iniciar sesión</a>
-                    </li>
-                    <li class="nav-item me-3">
-                        <a class="nav-link" routerLink="/registro">Registrarse</a>
-                    </li>
-                </ng-template>
-                <li *ngIf="esAdmin" class="nav-item me-3">
-                    <a class="nav-link" routerLink="/usuarios">Usuarios</a>
-                </li>
-                <li *ngIf="esAdmin" class="nav-item me-3">
-                    <a class="nav-link" routerLink="/documentaciones">Documentación</a>
-                </li>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <!-- IZQUIERDA -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 text-nowrap">
+        <!-- Anuncios -->
+        <li class="nav-item dropdown me-3">
+          <a class="nav-link dropdown-toggle" routerLink="/anuncios" id="navbarDropdown" role="button"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-paw"></i> Anuncios
+          </a>
+          <ul class="dropdown-menu dropdown-custom" aria-labelledby="navbarDropdown">
+            <li>
+              <a class="dropdown-item" [routerLink]="['/anuncios']" [queryParams]="{ tipoAnimal: 'perro' }">Perros</a>
+            </li>
+            <li>
+              <a class="dropdown-item" [routerLink]="['/anuncios']" [queryParams]="{ tipoAnimal: 'gato' }">Gatos</a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Área del vendedor -->
+        <ng-container *ngIf="isAuthenticated && esVendedor && documentacionAceptada">
+          <li class="nav-item me-3">
+            <a class="nav-link" routerLink="/publicar">Publicar anuncio</a>
+          </li>
+          <li class="nav-item dropdown me-3">
+            <a class="nav-link dropdown-toggle" id="vendedorDropdown" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-award-fill me-1"></i> Mi criadero
+            </a>
+            <ul class="dropdown-menu dropdown-custom" aria-labelledby="vendedorDropdown">
+              <li><a class="dropdown-item" routerLink="/mis-anuncios">Mis anuncios</a></li>
+              <li><a class="dropdown-item" routerLink="/mascotas">Mis mascotas</a></li>
+              <li><a class="dropdown-item" routerLink="/suscripciones">Mi suscripción</a></li>
             </ul>
-            <ul class="navbar-nav ms-auto"> <!-- Mover el ícono de perfil a la derecha -->
-                <ng-container *ngIf="isAuthenticated && esVendedor">
-                    <li class="nav-item dropdown me-3">
-                        <a class="nav-link dropdown-toggle" id="vendedorDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-award-fill me-1"></i> Mi criadero
-                        </a>
-                        <ul class="dropdown-menu dropdown-custom" aria-labelledby="vendedorDropdown">
-                            <li><a class="dropdown-item" routerLink="/mis-anuncios">Mis anuncios</a></li>
-                            <li><a class="dropdown-item" routerLink="/mascotas">Mis mascotas</a></li>
-                            <li><a class="dropdown-item" routerLink="/suscripciones">Mi suscripción</a></li>
-                        </ul>
-                    </li>
-                </ng-container>
-                <ng-container *ngIf="isAuthenticated">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="profileDropdown" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            <i class="fas fa-user-circle fa-2x"></i> <!-- Ícono grande de perfil -->
-                        </a>
-                        <ul class="dropdown-menu dropdown-custom dropdown-menu-end" aria-labelledby="profileDropdown">
-                            <li><a class="dropdown-item" routerLink="/perfil">Mi perfil</a></li>
-                            <li><a class="dropdown-item" routerLink="/favoritos">Favoritos</a></li>
-                            <li><a class="dropdown-item" (click)="logout()">Cerrar sesión</a></li>
-                        </ul>
-                    </li>
-                </ng-container>
+          </li>
+        </ng-container>
+
+        <!-- Enlaces para administrador -->
+        <li *ngIf="esAdmin" class="nav-item me-3">
+          <a class="nav-link" routerLink="/usuarios">Usuarios</a>
+        </li>
+        <li *ngIf="esAdmin" class="nav-item me-3">
+          <a class="nav-link" routerLink="/documentaciones">Documentación</a>
+        </li>
+
+        <!-- Enlaces para invitados -->
+        <li *ngIf="!isAuthenticated" class="nav-item me-3">
+          <a class="nav-link" routerLink="/login">Iniciar sesión</a>
+        </li>
+        <li *ngIf="!isAuthenticated" class="nav-item me-3">
+          <a class="nav-link" routerLink="/registro">Registrarse</a>
+        </li>
+      </ul>
+
+      <!-- DERECHA -->
+      <ul class="navbar-nav ms-auto">
+        <!-- Perfil -->
+        <ng-container *ngIf="isAuthenticated">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="profileDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <i class="fas fa-user-circle fa-2x"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-custom dropdown-menu-end" aria-labelledby="profileDropdown">
+              <li><a class="dropdown-item" routerLink="/registrocriadero">Cuenta profesional</a></li>
+              <li><a class="dropdown-item" routerLink="/perfil">Mi perfil</a></li>
+              <li><a class="dropdown-item" routerLink="/favoritos">Favoritos</a></li>
+              <li><a class="dropdown-item" (click)="logout()">Cerrar sesión</a></li>
             </ul>
-        </div>
+          </li>
+        </ng-container>
+      </ul>
     </div>
+  </div>
 </nav>

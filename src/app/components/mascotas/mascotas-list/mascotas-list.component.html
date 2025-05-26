@@ -141,9 +141,9 @@
     </div>
     <!-- Lista de mascotas -->
     <div *ngIf="activeSection === 'ver'" class="container mt-4">
-      <div *ngIf="mascotas.length > 0; else noMascotas">
+      <div *ngIf="mascotasUsuario.length > 0; else noMascotas">
         <div class="row g-3">
-          <div class="col-12 col-md-6 col-lg-4 col-xl-3 col-xxl-2" *ngFor="let mascota of mascotas">
+          <div class="col-12 col-md-6 col-lg-4 col-xl-3 col-xxl-2" *ngFor="let mascota of mascotasUsuario">
             <div (click)="mostrarDetallesMascota(mascota)" style="cursor:pointer;">
               <app-mascotas-resume [mascota]="mascota"></app-mascotas-resume>
             </div>

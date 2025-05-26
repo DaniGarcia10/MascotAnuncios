@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { Storage, ref, listAll, getDownloadURL, uploadBytes, deleteObject } from '@angular/fire/storage';
 import { UsuarioService } from './usuario.service';
 import { Usuario } from '../models/Usuario.model';
-import { DocumentacionService } from './documentacion.service'; // Importa el servicio
+import { DocumentacionService } from './documentacion.service';
 import { push, child, Database, ref as dbRef } from '@angular/fire/database';
-import { CriaderoService } from './criadero.service'; // Asegúrate de importar el servicio
+import { CriaderoService } from './criadero.service'; 
+import imageCompression from 'browser-image-compression';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class ArchivosService {
     private database: Database,
     private usuarioService: UsuarioService,
     private documentacionService: DocumentacionService,
-    private criaderoService: CriaderoService // Inyecta el servicio
+    private criaderoService: CriaderoService 
   ) {}
 
 
@@ -45,6 +46,37 @@ async obtenerUrlImagen(ruta: string): Promise<string> {
     }
     return extension;
   }
+
+  private validarExtensionDocumentos(file: File): string {
+    if (!(file instanceof File)) {
+      throw new Error('El archivo proporcionado no es válido.');
+    }
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    const extensionesValidas = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
+    if (!extension || !extensionesValidas.includes(extension)) {
+      throw new Error('Formato de documento no compatible.');
+    }
+    return extension;
+  }
+
+  private async comprimirImagen(file: File): Promise<File> {
+    const opciones = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 1000,
+      initialQuality: 0.7,
+      useWebWorker: true,
+      fileType: 'image/jpeg'
+    };
+    try {
+      const imagenComprimida = await imageCompression(file, opciones);
+      return imagenComprimida;
+    } catch (error) {
+      console.error('Error al comprimir la imagen', error);
+      throw error;
+    }
+  }
+
+
 
   async subirImagen(
     file: File,
@@ -82,11 +114,12 @@ async obtenerUrlImagen(ruta: string): Promise<string> {
       throw new Error('Tipo de imagen no válido.');
     }
 
+    const imagenComprimida = await this.comprimirImagen(file);
+
     const storageRef = ref(this.storage, ruta);
-    await uploadBytes(storageRef, file);
+    await uploadBytes(storageRef, imagenComprimida);
 
-    console.log(`Imagen subida: ${ruta}`);
-
+    console.log(`Imagen subida (comprimida): ${ruta}`);
     return nombreArchivo;
   }
 
@@ -173,24 +206,18 @@ async obtenerUrlImagen(ruta: string): Promise<string> {
       throw new Error('Tipo de documento no válido.');
     }
 
+    let archivoSubida = file;
+
+    // Comprimir solo si es imagen (no PDF)
+    if (['jpg', 'jpeg', 'png', 'webp'].includes(extension)) {
+      archivoSubida = await this.comprimirImagen(file);
+    }
+
     const storageRef = ref(this.storage, ruta);
-    await uploadBytes(storageRef, file);
+    await uploadBytes(storageRef, archivoSubida);
 
-    console.log(`Documento subido: ${ruta}`);
-
+    console.log(`Documento subido (comprimido si era imagen): ${ruta}`);
     return nombreArchivo;
-  }
-
-  private validarExtensionDocumentos(file: File): string {
-    if (!(file instanceof File)) {
-      throw new Error('El archivo proporcionado no es válido.');
-    }
-    const extension = file.name.split('.').pop()?.toLowerCase();
-    const extensionesValidas = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
-    if (!extension || !extensionesValidas.includes(extension)) {
-      throw new Error('Formato de documento no compatible.');
-    }
-    return extension;
   }
 
   async getUsuariosConDocumentosYCriadero(): Promise<{

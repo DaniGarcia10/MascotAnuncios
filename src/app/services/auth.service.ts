@@ -1,7 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Usuario } from '../models/Usuario.model'; 
-import { Auth, User, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword } from '@angular/fire/auth';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { Auth, User, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, sendEmailVerification } from '@angular/fire/auth'; // <-- Agrega sendEmailVerification
+import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { UsuarioService } from './usuario.service'; // Importar UsuarioService
 
@@ -21,13 +21,58 @@ export class AuthService {
 
   registro(email: string, password: string): any {
     return this.ngZone.run(() => {
-      return createUserWithEmailAndPassword(this.auth, email, password);
+      return createUserWithEmailAndPassword(this.auth, email, password)
+        .then((userCredential) => {
+          // Enviar correo de verificación
+          sendEmailVerification(userCredential.user).then(() => {
+            console.log('Correo de verificación enviado');
+          });
+          return userCredential;
+        });
     });
   }
 
   login(email: string, password: string): Promise<any> {
     return this.ngZone.run(() => {
       return signInWithEmailAndPassword(this.auth, email, password);
+    });
+  }
+
+  // Método para login con Google
+  loginWithGoogle(): Promise<any> {
+    const provider = new GoogleAuthProvider();
+    return this.ngZone.run(async () => {
+      const result = await signInWithPopup(this.auth, provider);
+      const user = result.user;
+
+      // Verificar si el usuario ya existe en Firestore
+      const userDocRef = doc(this.firestore, 'usuarios', user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (!userDocSnap.exists()) {
+        // Solo crea el documento si no existe
+        await setDoc(
+          userDocRef,
+          {
+            nombre: user.displayName || '',
+            email: user.email || '',
+            foto_perfil: user.photoURL || '',
+            telefono: '',
+            vendedor: false,
+            id_criadero: null
+          }
+        );
+      }
+      // Si ya existe, no sobrescribas nada
+      return result;
+    });
+  }
+
+  // Método para login con Facebook
+  loginWithFacebook(): Promise<any> {
+    const provider = new FacebookAuthProvider();
+    return this.ngZone.run(() => {
+      return signInWithPopup(this.auth, provider);
     });
   }
 
@@ -49,6 +94,13 @@ export class AuthService {
     return new Observable(observer => {
       onAuthStateChanged(this.auth, async (user) => {
         if (user) {
+          if (user.emailVerified) {
+            // El correo está verificado
+            console.log('El correo está verificado');
+          } else {
+            // El correo NO está verificado
+            console.log('El correo NO está verificado');
+          }
           console.log('Usuario autenticado:', user);
           try {
             const userDocRef = doc(this.firestore, 'usuarios', user.uid); // Ruta de la colección 'usuarios'

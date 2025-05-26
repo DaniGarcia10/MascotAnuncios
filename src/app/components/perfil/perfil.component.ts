@@ -8,7 +8,7 @@ import { UsuarioService } from '../../services/usuario.service';
 import { CriaderoService } from '../../services/criadero.service';
 import { ArchivosService } from '../../services/archivos.service';
 import { DocumentacionService } from '../../services/documentacion.service';
-import { getAuth, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
+import { getAuth, reauthenticateWithCredential, EmailAuthProvider, updatePassword, updateEmail, sendEmailVerification } from 'firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
 
 @Component({
@@ -35,6 +35,8 @@ export class PerfilComponent implements OnInit {
   showConfirmarPassword: boolean = false;
   mensajeErrorPassword: string = '';
 
+  serverError: string = '';
+
   @ViewChild('modalExitoPassword') modalExitoPassword!: ElementRef;
 
   constructor(
@@ -46,8 +48,7 @@ export class PerfilComponent implements OnInit {
   ) {
     this.perfilForm = new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.maxLength(30)]),
-      apellidos: new FormControl('', [Validators.required, Validators.maxLength(50)]),
-      email: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(50)]),
+      email: new FormControl({ value: '', disabled: true }, [Validators.email]),
       telefono: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.maxLength(15)]),
     });
 
@@ -70,8 +71,14 @@ export class PerfilComponent implements OnInit {
           if (this.usuario) {
             this.perfilForm.patchValue(this.usuario);
             if (this.usuario.foto_perfil) {
-              const ruta = `usuarios/${this.usuario.foto_perfil}`;
-              this.imagenUrlPerfil = await this.archivosService.obtenerUrlImagen(ruta);
+              if (this.usuario.foto_perfil.startsWith('http')) {
+                // Es una URL externa (Google, Facebook, etc.)
+                this.imagenUrlPerfil = this.usuario.foto_perfil;
+              } else {
+                // Es un archivo en Firebase Storage
+                const ruta = `usuarios/${this.usuario.foto_perfil}`;
+                this.imagenUrlPerfil = await this.archivosService.obtenerUrlImagen(ruta);
+              }
             }
             if (this.usuario.id_criadero) {
               await this.cargarCriadero(this.usuario.id_criadero);
@@ -178,17 +185,18 @@ export class PerfilComponent implements OnInit {
   }
 
   guardarPerfil() {
+    this.serverError = ''; // Limpiar error anterior
     if (this.perfilForm.valid && this.usuario) {
       const datosActualizados = this.perfilForm.value;
+      delete datosActualizados.email;
+
       this.usuarioService.actualizarUsuario(this.usuario.id, datosActualizados)
         .then(() => {
-          // Actualiza el usuario local para reflejar los cambios en la vista
           this.usuario = { ...this.usuario!, ...datosActualizados };
           this.editMode = false;
-          // Puedes mostrar un toast o mensaje de éxito aquí
         })
         .catch(error => {
-          // Maneja el error (muestra mensaje, etc.)
+          this.serverError = 'Error al actualizar el perfil. Intenta de nuevo más tarde.';
         });
     }
   }

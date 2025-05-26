@@ -7,6 +7,20 @@
         <h3 class="card-title-grande">Iniciar Sesión</h3>
       </div>
       <div class="card-body custom-card-body">
+
+        <!-- Opciones de inicio social -->
+        <div class="mb-3 text-center">
+          <button type="button" class="btn btn-danger w-100 mb-2" (click)="loginWithGoogle()">
+            <i class="bi bi-google"></i> Iniciar sesión con Google
+          </button>
+          <button type="button" class="btn btn-primary w-100 mb-2" (click)="loginWithFacebook()">
+            <i class="bi bi-facebook"></i> Iniciar sesión con Facebook
+          </button>
+          <div class="my-3">
+            <span>o</span>
+          </div>
+        </div>
+
         <form [formGroup]="formLogin" (ngSubmit)="onSubmit()">
           <div class="mb-3">
             <label for="email" class="form-label">Correo electrónico:</label>
@@ -37,6 +51,10 @@
             </small>
           </div>
           <button type="submit" class="btn-default w-100">Iniciar sesión</button>
+          <div class="text-center mt-3">
+            <span>¿No tienes una cuenta?</span>
+            <a routerLink="/registro" class="ms-1 text-primary" style="cursor:pointer; text-decoration:underline;">Regístrate</a>
+          </div>
           <div *ngIf="serverError" class="mt-2">
             <small class="text-danger">{{ serverError }}</small>
           </div>

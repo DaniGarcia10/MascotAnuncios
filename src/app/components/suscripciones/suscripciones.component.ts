@@ -80,11 +80,48 @@ export class SuscripcionesComponent implements OnInit {
     if (this.suscripcionForm.valid) {
       const duracion = this.suscripcionForm.value.duracion;
       const precio = this.planes.find(p => p.value === duracion)?.precio || 0;
-      console.log('Suscripción creada:', {
-        duracion,
-        precio
+
+      this.authService.getUserDataAuth().subscribe({
+        next: async (authData) => {
+          const userId = authData.user?.uid || '';
+          if (!userId) {
+            console.error('Usuario no autenticado');
+            return;
+          }
+
+          // Fechas de alta y fin
+          const fechaAlta = new Date();
+          const fechaFin = new Date();
+          fechaFin.setDate(fechaAlta.getDate() + duracion);
+
+          // Crear objeto de suscripción
+          const nuevaSuscripcion = {
+            activa: true,
+            duracion,
+            fecha_alta: fechaAlta.toISOString(),
+            fecha_fin: fechaFin.toISOString()
+          };
+
+          try {
+            // Crear suscripción en Firestore
+            const suscripcionId = await this.suscripcionesService.crearSuscripcion(nuevaSuscripcion);
+
+            // Asociar la suscripción al usuario
+            await this.usuarioService.actualizarUsuario(userId, { suscripcion: suscripcionId });
+
+            // Actualizar observable para mostrar la nueva suscripción
+            this.suscripcion$ = this.suscripcionesService.obtenerSuscripcion(suscripcionId);
+
+            // Cambiar a la sección de ver suscripción
+            this.activeSection = 'ver';
+          } catch (error) {
+            console.error('Error al crear la suscripción:', error);
+          }
+        },
+        error: (error) => {
+          console.error('Error al obtener los datos de autenticación:', error);
+        }
       });
-      // Aquí puedes seguir con la lógica de creación o redirigir al pago
     }
   }
 }
