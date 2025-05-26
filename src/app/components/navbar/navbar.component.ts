@@ -3,7 +3,8 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { ArchivosService } from '../../services/archivos.service';
-import { DocumentacionService } from '../../services/documentacion.service';
+import { CriaderoService } from '../../services/criadero.service';
+import { UsuarioService } from '../../services/usuario.service'; // Asegúrate de importar el servicio UsuarioService
 
 @Component({
   selector: 'app-navbar',
@@ -17,13 +18,14 @@ export class NavbarComponent implements OnInit {
   esVendedor = false;
   esAdmin = false;
   logoUrl: string = ''; 
-  documentacionAceptada: boolean = false;
+  verificado: boolean = false;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private archivosService: ArchivosService, 
-    private documentacionService: DocumentacionService
+    private criaderoService: CriaderoService,
+    private usuarioService: UsuarioService 
   ) {}
 
   ngOnInit(): void {
@@ -34,12 +36,18 @@ export class NavbarComponent implements OnInit {
         // Solo si está autenticado, obtenemos el userId y comprobamos la documentación
         const userId = this.authService.getUsuarioId();
         if (userId) {
-          this.documentacionService.getComprobarEstadoById(userId).then((estado) => {
-            this.documentacionAceptada = estado;
+          this.usuarioService.getIdCriaderoByUsuarioId(userId).then((idCriadero) => {
+            if (idCriadero) {
+              this.criaderoService.getVerficadoById(idCriadero).then((verificado) => {
+                this.verificado = verificado;
+              }).catch((error) => {
+                console.error('Error al obtener el estado de verificación del criadero:', error);
+              });
+            }
+          }).catch((error) => {
+            console.error('Error al obtener el id del criadero:', error);
           });
         }
-      } else {
-        this.documentacionAceptada = false;
       }
     });
 

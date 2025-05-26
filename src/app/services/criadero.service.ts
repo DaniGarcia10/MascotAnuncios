@@ -28,6 +28,26 @@ export class CriaderoService {
     }
   }
 
+  getVerficadoById(id: string): Promise<boolean> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const criaderoDocRef = doc(this.firestore, this.COLLECTION_NAME, id);
+        const criaderoDocSnap = await getDoc(criaderoDocRef);
+
+        if (criaderoDocSnap.exists()) {
+          const criaderoData = criaderoDocSnap.data();
+          resolve(criaderoData["verificado"] || false);
+        } else {
+          console.warn('Criadero no encontrado');
+          resolve(false);
+        }
+      } catch (error) {
+        console.error('Error al obtener el estado de verificación del criadero:', error);
+        reject(error);
+      }
+    });
+  }
+
   /**
    * Marca al usuario como vendedor verificado (vendedor = true por defecto)
    */

@@ -21,15 +21,5 @@ export class DocumentacionService {
     const userDocSnap = await getDoc(userDocRef);
     return userDocSnap.exists() ? userDocSnap.data() : null;
   }
-
-  getComprobarEstadoById(userId: string): Promise<boolean> {
-    return this.obtenerDocumentacion(userId).then(data => {
-      if (data && data.estado) {
-        if (data.estado === 'ACEPTADO') {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  
 }
