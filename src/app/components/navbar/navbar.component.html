@@ -73,7 +73,7 @@
               <i class="fas fa-user-circle fa-2x"></i>
             </a>
             <ul class="dropdown-menu dropdown-custom dropdown-menu-end" aria-labelledby="profileDropdown">
-              <li *ngIf="!verificado"><a class="dropdown-item" routerLink="/registrocriadero">Cuenta profesional</a></li>
+              <li *ngIf="!verificado || !documentacionCargada"><a class="dropdown-item" routerLink="/registrocriadero">Cuenta profesional</a></li>
               <li><a class="dropdown-item" routerLink="/perfil">Mi perfil</a></li>
               <li><a class="dropdown-item" routerLink="/favoritos">Favoritos</a></li>
               <li><a class="dropdown-item" (click)="logout()">Cerrar sesión</a></li>

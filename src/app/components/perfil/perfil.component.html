@@ -12,11 +12,45 @@
         (click)="setActiveSection('criadero')">
         Información de mi criadero
       </li>
+      <li *ngIf="usuario?.id_criadero" class="list-group-item" [class.active]="activeSection === 'verificacion'"
+        (click)="setActiveSection('verificacion')">
+        Estado de la verificación
+      </li>
     </ul>
   </div>
 
   <!-- Contenido principal -->
   <div class="contenido-principal flex-grow-1 p-4 col-12 col-lg-9 ">
+    <!-- Estado y motivo de documentación en menú lateral -->
+    <div *ngIf="activeSection === 'verificacion' && usuario?.id_criadero">
+      <div class="card custom-card mx-auto">
+        <div class="card-header custom-card-header text-center">
+          <h3 class="card-title-grande">Estado de la verificación</h3>
+        </div>
+        <div class="card-body custom-card-body text-center">
+          <div class="mb-3">
+            <span 
+              class="badge fs-6 px-2 py-2"
+              [ngClass]="{
+                'badge-verificado': documentacion?.estado === 'ACEPTADO',
+                'badge-pendiente': documentacion?.estado === 'PENDIENTE',
+                'badge-rechazado': documentacion?.estado === 'RECHAZADO',
+                'bg-secondary': !['ACEPTADO', 'PENDIENTE', 'RECHAZADO'].includes(documentacion?.estado)
+              }"
+            >
+              {{ documentacion?.estado || 'No disponible' }}
+            </span>
+          </div>
+          <div 
+            class="border rounded bg-white p-2 mt-2"
+            *ngIf="documentacion?.motivo && documentacion?.motivo.trim() !== ''"
+          >
+            <strong>Motivo:</strong>
+            <span>{{ documentacion?.motivo }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
     <div *ngIf="activeSection === 'general'">
       <div class="card custom-card mx-auto">
         <div class="card-header custom-card-header text-center">
@@ -161,27 +195,6 @@
               </span>
             </ng-template>
           </p>
-          <!-- Estado y motivo de documentación -->
-          <hr class="my-4">
-                      <h5 class="mb-3">Estado de la verificación</h5>
-          <div class="d-flex justify-content-center mb-2">
-              <span 
-                class="badge fs-6 px-2 py-2"
-                [ngClass]="{
-                  'badge-verificado': documentacion?.estado === 'ACEPTADO',
-                  'badge-pendiente': documentacion?.estado === 'PENDIENTE',
-                  'badge-rechazado': documentacion?.estado === 'RECHAZADO',
-                  'bg-secondary': !['ACEPTADO', 'PENDIENTE', 'RECHAZADO'].includes(documentacion?.estado)
-                }"
-              >
-                {{ documentacion?.estado || 'No disponible' }}
-              </span>
-            </div>
-          <div class="border rounded bg-light p-3 mb-3 d-inline-block text-start mt-3">
-            <p>
-              <strong>Motivo:</strong> {{ documentacion?.motivo || 'No disponible' }}
-            </p>
-          </div>
         </div>
       </div>
       <ng-template #noCriadero>

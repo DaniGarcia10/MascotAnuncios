@@ -19,28 +19,32 @@ import { UsuariosListComponent } from './components/usuarios/usuarios-list/usuar
 import { NoAuthGuard } from './guards/no-auth.guard'; 
 import { AdminGuard } from './guards/admin.guard';
 import { RegistrocriaderoComponent } from './components/registrocriadero/registrocriadero.component';
+import { criadorGuard } from './guards/criador.guard';
+import { noCriaderoGuard } from './guards/no-criadero.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [NoAuthGuard] },
   { path: 'registro', component: RegistroComponent, canActivate: [NoAuthGuard] },
-  { path: 'registrocriadero', component: RegistrocriaderoComponent },
+  { path: 'registrocriadero', component: RegistrocriaderoComponent, canActivate: [noCriaderoGuard] },
   { path: 'inicio', component: InicioComponent },
   { path: 'perfil', component: PerfilComponent },
   { path: 'anuncios', component: AnunciosListComponent },
   { path: 'anuncios/:id', component: AnunciosDetailComponent },
-  { path: 'mis-anuncios', component: MisanunciosListComponent },
-  { path: 'mis-anuncios/:id', component: MisanunciosDetailComponent },
-  { path: 'mascotas', component: MascotasListComponent },
-  { path: 'mascotas/:id', component: MascotasDetailComponent },
-  { path: 'publicar', component: AnunciosFormComponent },
+  { path: 'mis-anuncios', component: MisanunciosListComponent, canActivate: [criadorGuard] },
+  { path: 'mis-anuncios/:id', component: MisanunciosDetailComponent, canActivate: [criadorGuard] },
+  { path: 'mascotas', component: MascotasListComponent, canActivate: [criadorGuard] },
+  { path: 'mascotas/:id', component: MascotasDetailComponent, canActivate: [criadorGuard] },
+  { path: 'publicar', component: AnunciosFormComponent, canActivate: [criadorGuard] },
   { path: 'favoritos', component: FavoritosListComponent },
-  { path: 'suscripciones', component: SuscripcionesComponent },
+  { path: 'suscripciones', component: SuscripcionesComponent, canActivate: [criadorGuard] },
   { path: 'documentaciones', component: DocumentacionListComponent, canActivate: [AdminGuard] },
   { path: 'usuarios', component: UsuariosListComponent, canActivate: [AdminGuard] },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    RouterModule.forRoot(routes, { onSameUrlNavigation: 'reload' }),
+  ],
   exports: [RouterModule]
 })
 export class AppRoutes {}

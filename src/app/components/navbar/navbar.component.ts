@@ -4,8 +4,8 @@ import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { ArchivosService } from '../../services/archivos.service';
 import { CriaderoService } from '../../services/criadero.service';
-import { UsuarioService } from '../../services/usuario.service'; // Asegúrate de importar el servicio UsuarioService
-
+import { UsuarioService } from '../../services/usuario.service'; 
+import { DocumentacionService } from '../../services/documentacion.service'; 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -19,13 +19,15 @@ export class NavbarComponent implements OnInit {
   esAdmin = false;
   logoUrl: string = ''; 
   verificado: boolean = false;
+  documentacionCargada: boolean = false;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private archivosService: ArchivosService, 
     private criaderoService: CriaderoService,
-    private usuarioService: UsuarioService 
+    private usuarioService: UsuarioService,
+    private documentacionService: DocumentacionService 
   ) {}
 
   ngOnInit(): void {
@@ -46,6 +48,13 @@ export class NavbarComponent implements OnInit {
             }
           }).catch((error) => {
             console.error('Error al obtener el id del criadero:', error);
+          });
+          this.documentacionService.obtenerDocumentacion(userId).then((documentacion) => {
+            if (documentacion) {
+              this.documentacionCargada = true;
+            }
+          }).catch((error) => {
+            console.error('Error al obtener la documentación del usuario:', error);
           });
         }
       }
