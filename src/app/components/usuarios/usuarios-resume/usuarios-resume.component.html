@@ -1,0 +1,28 @@
+<li 
+  class="list-group-item p-3 shadow-sm mb-2 rounded border border-secondary-subtle"
+  *ngFor="let usuario of usuarios"
+  (click)="toggleUsuario(usuario)"
+  [class.bg-light]="usuario === usuarioExpandido"
+  style="cursor:pointer"
+>
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h5 class="mb-1">{{ usuario.nombre }}</h5>
+      <p class="mb-0 text-muted small">{{ usuario.email }} | {{ usuario.telefono }}</p>
+    </div>
+    <i class="bi bi-chevron-down" *ngIf="usuario !== usuarioExpandido"></i>
+    <i class="bi bi-chevron-up" *ngIf="usuario === usuarioExpandido"></i>
+  </div>
+
+  <div *ngIf="usuario === usuarioExpandido" class="mt-3 border-top pt-3">
+    <p><strong>ID:</strong> {{ usuario.id }}</p>
+    <p><strong>Criador:</strong> {{ usuario.vendedor ? 'Sí' : 'No' }}</p>
+    <p><strong>ID Criadero:</strong> {{ usuario.id_criadero }}</p>
+    <p><strong>Foto perfil:</strong> {{ usuario.foto_perfil }}</p>
+    <p><strong>Suscripción:</strong> {{ usuario.suscripcion }}</p>
+    <!-- Botones de acciones -->
+    <div class="mt-4 d-flex gap-2">
+      <button class="btn btn-warning w-100" (click)="restablecerContrasena(usuario); $event.stopPropagation()">Restablecer contraseña</button>
+    </div>
+  </div>
+</li>

@@ -1,8 +1,12 @@
 <div class="container mt-4">
-  <h2>Lista de usuarios</h2>
+  <!-- Filtro de búsqueda -->
+  <div class="row mb-3">
+    <div class="col-12 col-md-4">
+      <input type="text" class="form-control buscador-ancho" placeholder="Buscar por nombre, apellidos, teléfono o email"
+        [(ngModel)]="filtroBusqueda" (ngModelChange)="aplicarFiltros()" />
+    </div>
+  </div>
   <ul class="list-group">
-    <li class="list-group-item" *ngFor="let usuario of usuarios">
-      <strong>{{ usuario.nombre }}</strong> - {{ usuario.email }} - {{ usuario.telefono }}
-    </li>
+    <app-usuarios-resume [usuarios]="usuariosFiltrados"></app-usuarios-resume>
   </ul>
 </div>

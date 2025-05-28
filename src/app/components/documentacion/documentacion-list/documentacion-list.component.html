@@ -76,12 +76,6 @@
         <h4 class="mb-0">
           Archivos de {{ usuarioSeleccionado.usuario.nombre }}
         </h4>
-        <button 
-          *ngIf="usuarioSeleccionado.documentacion"
-          class="btn-default ms-2"
-          (click)="abrirModalEstado()">
-          Cambiar estado
-        </button>
       </div>
 
       <div class="row g-3">
@@ -94,6 +88,44 @@
                       (click)="verArchivo(archivo)">
                 Ver documento
               </button>
+            </div>
+          </div>
+        </div>
+        <!-- Card de estado de la documentación ocupa todo el ancho -->
+        <div class="col-12">
+          <div class="card h-100 shadow-sm d-flex flex-column justify-content-center align-items-center" style="min-height: 100%;">
+            <div class="card-body w-100">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="card-title mb-0">Estado de la documentación</h6>
+                <button 
+                  *ngIf="usuarioSeleccionado.documentacion"
+                  class="btn-default ms-2"
+                  (click)="abrirModalEstado()">
+                  Cambiar estado
+                </button>
+              </div>
+              <div class="mb-2">
+                <span class="badge"
+                  [ngClass]="{
+                    'bg-success': usuarioSeleccionado.documentacion?.estado === 'ACEPTADO',
+                    'bg-warning text-dark': usuarioSeleccionado.documentacion?.estado === 'PENDIENTE',
+                    'bg-primary': usuarioSeleccionado.documentacion?.estado === 'RECHAZADO'
+                  }">
+                  {{ usuarioSeleccionado.documentacion?.estado || 'Sin estado' }}
+                </span>
+              </div>
+              <ng-container *ngIf="usuarioSeleccionado.documentacion as doc">
+                <div *ngIf="doc.motivo && doc.motivo.trim() !== ''">
+                  <strong>Motivo:</strong>
+                  <div class="border rounded p-2 bg-light mt-1">{{ doc.motivo }}</div>
+                </div>
+                <div *ngIf="!doc.motivo || doc.motivo.trim() === ''" class="text-muted">
+                  Sin motivo registrado
+                </div>
+              </ng-container>
+              <ng-container *ngIf="!usuarioSeleccionado.documentacion">
+                <div class="text-muted">Sin motivo registrado</div>
+              </ng-container>
             </div>
           </div>
         </div>

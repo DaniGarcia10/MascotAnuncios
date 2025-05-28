@@ -3,7 +3,7 @@ import { Usuario } from '../models/Usuario.model';
 import { Auth, User, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, sendEmailVerification } from '@angular/fire/auth'; // <-- Agrega sendEmailVerification
 import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { UsuarioService } from './usuario.service'; // Importar UsuarioService
+import { UsuarioService } from './usuario.service'; 
 
 @Injectable({
   providedIn: 'root'
