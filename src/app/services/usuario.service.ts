@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Database, ref, set } from '@angular/fire/database';
-import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
+import { Firestore, doc, getDoc, setDoc, collection, getDocs } from '@angular/fire/firestore';
 import { Usuario } from '../models/Usuario.model';
 
 @Injectable({
@@ -58,6 +58,17 @@ export class UsuarioService {
       console.error('Error al actualizar el usuario:', error);
       throw error;
     }
+  }
+
+  async getAllUsuarios(): Promise<Usuario[]> {
+    const usuarios: Usuario[] = [];
+    const usuariosCollection = collection(this.firestore, this.COLLECTION_NAME);
+    const snapshot = await getDocs(usuariosCollection);
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data() as Usuario;
+      usuarios.push({ ...data, id: docSnap.id });
+    });
+    return usuarios;
   }
 
 }

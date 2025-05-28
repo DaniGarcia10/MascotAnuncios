@@ -1,1 +1,8 @@
-<p>usuarios-list works!</p>
+<div class="container mt-4">
+  <h2>Lista de usuarios</h2>
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let usuario of usuarios">
+      <strong>{{ usuario.nombre }}</strong> - {{ usuario.email }} - {{ usuario.telefono }}
+    </li>
+  </ul>
+</div>
