@@ -15,8 +15,7 @@ import { Mascota } from '../../../models/Mascota.model';
 import { FormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { RAZAS } from '../../../data/razas';
-import { PROVINCIAS_ESPAÑA } from '../../../data/provincias';
+import { DatosService } from '../../../services/datos.service';
 
 @Component({
   selector: 'app-misanuncios-detail',
@@ -83,10 +82,11 @@ export class MisanunciosDetailComponent implements OnInit {
     private cachorrosService: CachorrosService,
     private archivosService: ArchivosService,
     private fb: FormBuilder,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private datosService: DatosService // <-- Inyecta el servicio
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.anunciosService.getAnuncios().subscribe(async anuncios => {
@@ -95,7 +95,7 @@ export class MisanunciosDetailComponent implements OnInit {
         // Asigna el tipo de mascota y las razas aquí, cuando ya tienes el anuncio
         if (this.anuncio) {
           this.tipoMascota = this.anuncio.perro;
-          this.razas = this.anuncio.perro ? RAZAS.perros : RAZAS.gatos;
+          await this.cargarRazas(this.anuncio.perro ? 'Perro' : 'Gato');
         }
 
         await this.actualizarImagenesPadres();
@@ -141,7 +141,14 @@ export class MisanunciosDetailComponent implements OnInit {
       });
     }
 
-    this.provincias = PROVINCIAS_ESPAÑA;
+    // Provincias desde DatosService (opcional, si quieres también cachearlas)
+    this.provincias = await this.datosService.obtenerProvincias();
+  }
+
+  // Nueva función para cargar razas usando DatosService y su caché
+  async cargarRazas(tipo: 'Perro' | 'Gato') {
+    const tipoKey = tipo.toLowerCase() as 'perro' | 'gato';
+    this.razas = await this.datosService.obtenerRazas(tipoKey);
   }
 
   async cargarMascotasPadres() {
@@ -371,8 +378,8 @@ export class MisanunciosDetailComponent implements OnInit {
         ],
       });
       // Escuchar cambios en el tipo para actualizar razas
-      this.formAnuncio.get('tipo')?.valueChanges.subscribe((nuevoTipo: string) => {
-        this.razas = nuevoTipo === 'Perro' ? RAZAS.perros : RAZAS.gatos;
+      this.formAnuncio.get('tipo')?.valueChanges.subscribe(async (nuevoTipo: string) => {
+        await this.cargarRazas(nuevoTipo as 'Perro' | 'Gato');
         // Opcional: resetear la raza seleccionada si no pertenece al nuevo tipo
         if (!this.razas.includes(this.formAnuncio?.get('raza')?.value)) {
           this.formAnuncio?.get('raza')?.setValue('');

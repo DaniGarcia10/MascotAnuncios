@@ -44,8 +44,8 @@ export class RegistrocriaderoComponent{
         nucleo_zoologico: new FormControl('', [
           Validators.required,
           Validators.pattern('^[a-zA-Z0-9]+$'),
-          Validators.minLength(12),
-          Validators.maxLength(12)
+          Validators.minLength(10),
+          Validators.maxLength(18)
         ]),
         ubicacion: new FormControl('', [Validators.required, Validators.maxLength(100)]),
         fotoPerfilCriadero: new FormControl<File | null>(null, Validators.required)
@@ -202,6 +202,13 @@ export class RegistrocriaderoComponent{
         const extension = fotoPerfilCriadero.name.split('.').pop()?.toLowerCase();
         const nombreFotoCriadero = `${idCriadero}.${extension}`;
         await this.archivosService.subirImagen(fotoPerfilCriadero, 'criadero', idCriadero);
+
+        // Actualizar el campo foto_perfil en el documento del criadero
+        await setDoc(
+          doc(this.firestore, 'criaderos', idCriadero),
+          { foto_perfil: nombreFotoCriadero },
+          { merge: true }
+        );
       }
 
       // Actualizar usuario con id_criadero (deberías tener el userId del usuario logueado)

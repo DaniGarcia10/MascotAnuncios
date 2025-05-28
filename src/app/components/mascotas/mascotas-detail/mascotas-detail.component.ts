@@ -7,10 +7,10 @@ import { ArchivosService } from '../../../services/archivos.service';
 import { Firestore, doc, updateDoc } from '@angular/fire/firestore';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { RAZAS } from '../../../data/razas';
 import { Mascota } from '../../../models/Mascota.model';
 import { from } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
+import { DatosService } from '../../../services/datos.service';
 
 @Component({
   selector: 'app-mascotas-detail',
@@ -40,7 +40,8 @@ export class MascotasDetailComponent implements OnInit {
     private firestore: Firestore,
     private snackBar: MatSnackBar,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private datosService: DatosService // <--- Añadir aquí
   ) {
     this.formMascota = this.fb.group({
       nombre: ['', [Validators.required, Validators.maxLength(30)]],
@@ -57,7 +58,7 @@ export class MascotasDetailComponent implements OnInit {
   ngOnInit(): void {
     this.mascotaId = this.route.snapshot.paramMap.get('id');
     if (this.mascotaId) {
-      from(this.mascotasService.getMascotaById(this.mascotaId)).subscribe(mascota => {
+      from(this.mascotasService.getMascotaById(this.mascotaId)).subscribe(async mascota => {
         if (mascota) {
           this.mascota = mascota;
           this.imagenSeleccionada = 0;
@@ -71,17 +72,28 @@ export class MascotasDetailComponent implements OnInit {
             id_padre: mascota.id_padre || null,
             id_madre: mascota.id_madre || null 
           });
-          this.updateRazasList();
+          await this.updateRazasList(); // <-- ahora es async
           this.cargarMascotasUsuario();
         }
       });
     }
 
-    this.formMascota.get('perro')?.valueChanges.subscribe(() => {
-      this.updateRazasList();
+    this.formMascota.get('perro')?.valueChanges.subscribe(async () => {
+      await this.updateRazasList();
       this.formMascota.get('raza')?.setValue(null);
       this.cargarMascotasUsuario();
     });
+  }
+
+  async updateRazasList(): Promise<void> {
+    const tipo = this.formMascota.get('perro')?.value;
+    if (tipo === null || tipo === undefined) {
+      this.filteredRazas = [];
+      return;
+    }
+    const tipoStr: 'perro' | 'gato' = tipo ? 'perro' : 'gato';
+    const razas = await this.datosService.obtenerRazas(tipoStr);
+    this.filteredRazas = (razas || []).map(raza => ({ label: raza, value: raza }));
   }
 
   async cargarMascotasUsuario() {
@@ -117,16 +129,6 @@ export class MascotasDetailComponent implements OnInit {
         });
       }
     });
-  }
-
-  updateRazasList(): void {
-    const tipo = this.formMascota.get('perro')?.value;
-    if (tipo === null || tipo === undefined) {
-      this.filteredRazas = [];
-      return;
-    }
-    const tipoStr = tipo ? 'perros' : 'gatos';
-    this.filteredRazas = (RAZAS[tipoStr] || []).map(raza => ({ label: raza, value: raza }));
   }
 
   onFileSelectedMascota(event: any): void {

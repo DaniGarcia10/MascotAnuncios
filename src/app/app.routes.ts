@@ -22,6 +22,8 @@ import { RegistrocriaderoComponent } from './components/registrocriadero/registr
 import { criadorGuard } from './guards/criador.guard';
 import { noCriaderoGuard } from './guards/no-criadero.guard';
 
+
+
 export const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [NoAuthGuard] },
   { path: 'registro', component: RegistroComponent, canActivate: [NoAuthGuard] },

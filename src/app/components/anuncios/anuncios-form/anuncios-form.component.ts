@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CommonModule } from '@angular/common';
-import { RAZAS } from '../../../data/razas';
-import { PROVINCIAS_ESPAÑA } from '../../../data/provincias';
 import { ArchivosService } from '../../../services/archivos.service';
 import { AuthService } from '../../../services/auth.service';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +11,7 @@ import { AnunciosService } from '../../../services/anuncios.service';
 import { MascotasService } from '../../../services/mascotas.service';
 import { SuscripcionesService } from '../../../services/suscripciones.service';
 import { UsuarioService } from '../../../services/usuario.service';
+import { DatosService } from '../../../services/datos.service';
 import { Mascota } from '../../../models/Mascota.model';
 import { Suscripcion } from '../../../models/Suscripcion.model';
 
@@ -25,8 +24,8 @@ import { Suscripcion } from '../../../models/Suscripcion.model';
 })
 export class AnunciosFormComponent implements OnInit {
   formAnuncio!: FormGroup;
-  provincias = PROVINCIAS_ESPAÑA;
   filteredRazas: { label: string; value: string }[] = [];
+  provincias: string[] = []; 
   especificarPadres: boolean = false;
   isSubmitting: boolean = false; 
   mascotasUsuario: Mascota[] = []; 
@@ -44,10 +43,12 @@ export class AnunciosFormComponent implements OnInit {
     private anunciosService: AnunciosService,
     private mascotasService: MascotasService,
     private suscripcionesService: SuscripcionesService,
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    private datosService: DatosService 
   ) {}
 
   ngOnInit(): void {
+
     this.formAnuncio = this.fb.group({
       perro: [null, Validators.required],
       raza: [null, Validators.required],
@@ -124,6 +125,15 @@ export class AnunciosFormComponent implements OnInit {
         this.clearCachorros();
       }
     });
+
+    // Llamada inicial para cargar razas si ya hay valor
+    this.updateRazasList();
+
+    // Cargar provincias usando el servicio y su caché
+    this.datosService.obtenerProvincias().then(provincias => {
+      this.provincias = provincias;
+      console.log('Provincias cargadas:', this.provincias); // <-- Añade esto
+    });
   }
 
   cargarMascotasUsuario(userId: string): void {
@@ -186,9 +196,10 @@ export class AnunciosFormComponent implements OnInit {
     this.seleccionarMascota(event, 'id_madre');
   }
 
-  updateRazasList(): void {
-    const tipo = this.formAnuncio.get('perro')?.value ? 'perros' : 'gatos';
-    this.filteredRazas = (RAZAS[tipo] || []).map(raza => ({ label: raza, value: raza }));
+  async updateRazasList(): Promise<void> {
+    const tipo = this.formAnuncio.get('perro')?.value ? 'perro' : 'gato';
+    const razas = await this.datosService.obtenerRazas(tipo);
+    this.filteredRazas = (razas || []).map(raza => ({ label: raza, value: raza }));
   }
 
   get cachorros(): FormArray {

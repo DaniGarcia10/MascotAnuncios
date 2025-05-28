@@ -45,3 +45,23 @@
 .filtros-header span.flecha {
     color: #6b4226;
 }
+
+.btn-icon-selector {
+  border: 2px solid #ccc;
+  background-color: #fff;
+  border-radius: 1rem;
+  width: 48px; 
+  height: 48px; 
+  font-size: 1.5rem; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.btn-icon-selector.active {
+  background-color:  #6b4226;
+  color: white;
+  border-color: #6b4226;
+}

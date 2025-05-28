@@ -1,5 +1,5 @@
-<div class="container-fluid mt-4"> 
-  <div class="row gx-3 p-3 pt-0"> 
+<div class="container-fluid mt-4">
+  <div class="row gx-3 p-3 pt-0">
 
     <!-- Filtros Header and Ordenar por -->
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -11,20 +11,13 @@
 
       <!-- Ordenar por -->
       <div class="ordenar-por ms-auto">
-        <ng-select 
-          [items]="[
+        <ng-select [items]="[
             { label: 'Precio: Menor a mayor', value: 'precioAsc' },
             { label: 'Precio: Mayor a menor', value: 'precioDesc' },
             { label: 'Más reciente', value: 'fechaReciente' },
             { label: 'Más antiguo', value: 'fechaAntigua' }
-          ]" 
-          bindLabel="label" 
-          bindValue="value" 
-          [(ngModel)]="ordenSeleccionado" 
-          placeholder="Ordenar por..."
-          (change)="ordenarAnuncios()" 
-          class="custom-ng-select"
-          [searchable]="false"> <!-- Deshabilitar la búsqueda -->
+          ]" bindLabel="label" bindValue="value" [(ngModel)]="ordenSeleccionado" placeholder="Ordenar por..."
+          (change)="ordenarAnuncios()" class="custom-ng-select" [searchable]="false"> <!-- Deshabilitar la búsqueda -->
         </ng-select>
       </div>
     </div>
@@ -35,29 +28,42 @@
         <h5 class="card-title">Filtros</h5>
         <form (ngSubmit)="aplicarFiltros()">
           <div class="mb-3">
-            <label for="tipoAnimal" class="form-label">Tipo de animal</label>
+            <label for="tipoAnimal" class="form-label">Especie</label>
             <ng-select
               [items]="[{label: 'Todos', value: ''}, {label: 'Perro', value: 'perro'}, {label: 'Gato', value: 'gato'}]"
               bindLabel="label" bindValue="value" [(ngModel)]="filtros.tipoAnimal" name="tipoAnimal"
-              placeholder="Selecciona tipo de animal" (change)="updateRazasList()" class="custom-ng-select" [searchable]="false">
+              placeholder="Selecciona una especie" (change)="updateRazasList()" class="custom-ng-select"
+              [searchable]="false">
             </ng-select>
           </div>
           <div class="mb-3">
             <label for="raza" class="form-label">Raza</label>
-            <ng-select [items]="filteredRazas" bindLabel="label" bindValue="value" [(ngModel)]="filtros.raza"
-              name="raza" placeholder="Selecciona una raza" [searchable]="true" (search)="onSearchRaza($event)"
-              class="custom-ng-select">
+            <ng-select
+              [items]="filteredRazas"
+              bindLabel="label"
+              bindValue="value"
+              [(ngModel)]="filtros.raza"
+              name="raza"
+              placeholder="Selecciona una raza"
+              [searchable]="true"
+              (search)="onSearchRaza($event)"
+              class="custom-ng-select"
+              [notFoundText]="filtros.tipoAnimal ? 'No se encontraron razas' : 'Selecciona una especie'">
             </ng-select>
           </div>
           <div class="mb-3">
             <label for="ubicacion" class="form-label">Ubicación</label>
             <div class="input-group">
-              <input id="ubicacion" [(ngModel)]="filtros.ubicacion" name="ubicacion" class="form-control"
-                placeholder="Ej: Madrid" />
+              <ng-select [items]="provincias" bindLabel="label" bindValue="value" [(ngModel)]="filtros.ubicacion"
+                name="ubicacion" placeholder="Selecciona una provincia" [searchable]="true"
+                class="form-control custom-ng-select" [ngClass]="{'form-control': true}">
+              </ng-select>
               <button type="button" class="btn btn-outline-secondary bi bi-geo-alt-fill" (click)="detectarUbicacion()"
-                title="Detectar ubicación"></button>
+                title="Detectar ubicación">
+              </button>
             </div>
           </div>
+
           <div class="mb-3">
             <label for="precioMin" class="form-label">Precio mínimo</label>
             <input id="precioMin" class="form-control" placeholder="Introduzca precio mínimo" type="number"

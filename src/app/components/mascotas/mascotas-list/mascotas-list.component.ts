@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RAZAS } from '../../../data/razas';
 import { MascotasService } from '../../../services/mascotas.service';
 import { Mascota } from '../../../models/Mascota.model';
 import { MascotasResumeComponent } from '../mascotas-resume/mascotas-resume.component';
@@ -11,6 +10,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Firestore, collection, addDoc, doc, deleteDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
+import { DatosService } from '../../../services/datos.service';
 
 @Component({
   selector: 'app-mascotas-list',
@@ -40,7 +40,8 @@ export class MascotasListComponent implements OnInit {
     private archivosService: ArchivosService,
     private snackBar: MatSnackBar,
     private firestore: Firestore,
-    private router: Router
+    private router: Router,
+    private datosService: DatosService // <--- Añadir aquí
   ) {
     this.formMascota = this.fb.group({
       nombre: ['', [Validators.required, Validators.maxLength(50)]], // Máximo 50 caracteres
@@ -106,14 +107,15 @@ export class MascotasListComponent implements OnInit {
     });
   }
 
-  updateRazasList(): void {
+  async updateRazasList(): Promise<void> {
     const tipo = this.formMascota.get('perro')?.value;
     if (tipo === null || tipo === undefined) {
       this.filteredRazas = [];
       return;
     }
-    const tipoStr = tipo ? 'perros' : 'gatos';
-    this.filteredRazas = (RAZAS[tipoStr] || []).map(raza => ({ label: raza, value: raza }));
+    const tipoStr: 'perro' | 'gato' = tipo ? 'perro' : 'gato';
+    const razas = await this.datosService.obtenerRazas(tipoStr);
+    this.filteredRazas = (razas || []).map(raza => ({ label: raza, value: raza }));
   }
 
   filtrarPadres(): void {
@@ -239,8 +241,7 @@ export class MascotasListComponent implements OnInit {
             id_padre: controls['id_padre'].value || '',
             id_madre: controls['id_madre'].value || '',
             imagenes: imagenesNombres,
-            id_usuario: user.uid,
-            fecha_creacion: new Date()
+            id_usuario: user.uid
           };
 
           // Guardar mascota en Firestore
