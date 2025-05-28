@@ -24,12 +24,6 @@ export const criadorGuard: CanActivateFn = async (route, state) => {
   }
 
   try {
-    // Comprobar documentación
-    const documentacion = await documentacionService.obtenerDocumentacion(userId);
-    if (!documentacion) {
-      router.navigate(['/inicio']);
-      return false;
-    }
 
     // Comprobar criadero y verificación
     const idCriadero = await usuarioService.getIdCriaderoByUsuarioId(userId);

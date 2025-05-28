@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule, ValidatorFn, ValidationErrors, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -16,7 +16,7 @@ import { Estado } from '../../models/documentacion.model';
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, MatSnackBarModule]
 })
-export class RegistrocriaderoComponent{
+export class RegistrocriaderoComponent implements OnInit {
   formRegistro: FormGroup;
   isSubmitting: boolean = false;
   showPassword: boolean = false;
@@ -24,6 +24,8 @@ export class RegistrocriaderoComponent{
   serverErrorFotoCriadero: string | null = null;
   serverErrorDni: string | null = null;
   serverErrorNz: string | null = null;
+  activeSection: string = 'registro';
+  documentacion: any = null;
 
   constructor(
     private authService: AuthService,
@@ -51,6 +53,10 @@ export class RegistrocriaderoComponent{
         fotoPerfilCriadero: new FormControl<File | null>(null, Validators.required)
       })
     });
+  }
+
+  async ngOnInit() {
+    await this.cargarEstadoVerificacion();
   }
 
   onFileSelectedCriadero(event: any): void {
@@ -262,5 +268,25 @@ export class RegistrocriaderoComponent{
 
   isVendedor(): boolean {
     return true;
+  }
+
+  setActiveSection(section: string): void {
+    this.activeSection = section;
+    if (section === 'verificacion') {
+      this.cargarEstadoVerificacion();
+    }
+  }
+
+  async cargarEstadoVerificacion() {
+    const userId = this.authService.getUsuarioId();
+    if (userId) {
+      this.documentacion = await this.documentacionService.obtenerDocumentacion(userId);
+      if (this.documentacion) {
+        this.activeSection = 'verificacion';
+      } else {
+        this.activeSection = 'registro';
+      }
+      this.cdr.markForCheck();
+    }
   }
 }
