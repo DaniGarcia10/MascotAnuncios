@@ -38,15 +38,8 @@
           </div>
           <div class="mb-3">
             <label for="raza" class="form-label">Raza</label>
-            <ng-select
-              [items]="filteredRazas"
-              bindLabel="label"
-              bindValue="value"
-              [(ngModel)]="filtros.raza"
-              name="raza"
-              placeholder="Selecciona una raza"
-              [searchable]="true"
-              (search)="onSearchRaza($event)"
+            <ng-select [items]="filteredRazas" bindLabel="label" bindValue="value" [(ngModel)]="filtros.raza"
+              name="raza" placeholder="Selecciona una raza" [searchable]="true" (search)="onSearchRaza($event)"
               class="custom-ng-select"
               [notFoundText]="filtros.tipoAnimal ? 'No se encontraron razas' : 'Selecciona una especie'">
             </ng-select>
@@ -58,9 +51,6 @@
                 name="ubicacion" placeholder="Selecciona una provincia" [searchable]="true"
                 class="form-control custom-ng-select" [ngClass]="{'form-control': true}">
               </ng-select>
-              <button type="button" class="btn btn-outline-secondary bi bi-geo-alt-fill" (click)="detectarUbicacion()"
-                title="Detectar ubicación">
-              </button>
             </div>
           </div>
 
