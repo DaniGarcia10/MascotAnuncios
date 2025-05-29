@@ -28,6 +28,11 @@
         <div *ngIf="anuncio.imagenes.length > 0" class="card-body">
           <!-- Imagen principal con flechas -->
           <div class="d-flex justify-content-center align-items-center position-relative mb-3">
+            <!-- Nombres de padre y madre pegados arriba de la imagen -->
+            <div *ngIf="padreMascota?.nombre || madreMascota?.nombre"
+              class="position-absolute start-0 top-0 w-100 d-flex justify-content-center gap-2"
+              style="z-index: 11; margin-top: 0.25rem;">
+            </div>
             <button class="btn btn-light position-absolute start-0" (click)="anteriorImagen()"
               style="z-index: 10; width: 50px; height: 50px;">
               <i class="bi bi-chevron-left fs-3"></i>
@@ -126,11 +131,28 @@
         <div class="modal-dialog modal-fullscreen">
           <div class="modal-content bg-transparent border-0 shadow-none">
             <div class="modal-body p-0 d-flex flex-column align-items-center justify-content-center bg-transparent"
-              style="height: 100vh;">
+              style="height: 100vh; position: relative;">
 
               <ng-container *ngIf="imagenesModal.length > 0">
                 <!-- Imagen principal con navegación -->
                 <div class="position-relative w-100 d-flex justify-content-center align-items-center" style="flex: 1;">
+
+                  <!-- Nombre del padre o madre justo encima de la imagen -->
+                  <ng-container *ngIf="tipoModalImagen === 'padre' && padreMascota">
+                    <div class="position-absolute top-0 start-50 translate-middle-x" style="z-index: 20;">
+                      <span class="badge bg-primary fs-3 px-4 py-2 shadow-lg" style="opacity: 0.95;">
+                        {{ padreMascota.nombre }}
+                      </span>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="tipoModalImagen === 'madre' && madreMascota">
+                    <div class="position-absolute top-0 start-50 translate-middle-x" style="z-index: 20;">
+                      <span class="badge fs-3 px-4 py-2 shadow-lg"
+                        style="background-color: #f78fb3; color: #fff; opacity: 0.95;">
+                        {{ madreMascota.nombre }}
+                      </span>
+                    </div>
+                  </ng-container>
 
                   <!-- Flecha izquierda -->
                   <button *ngIf="imagenesModal.length > 1"
@@ -157,7 +179,8 @@
                 <div class="d-flex justify-content-center flex-wrap mt-3" *ngIf="imagenesModal.length > 1">
                   <img *ngFor="let img of imagenesModal; let i = index" [src]="img"
                     (click)="seleccionarImagenCachorro(i)" [class.border-primary]="i === imagenCachorroSeleccionada"
-                    class="img-thumbnail m-1" style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;" loading="lazy">
+                    class="img-thumbnail m-1" style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                    loading="lazy">
                 </div>
               </ng-container>
 
@@ -201,7 +224,9 @@
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="telefonoModalLabel">Teléfono de {{ usuario?.nombre }}</h5>
+              <h5 class="modal-title" id="telefonoModalLabel">
+                Teléfono de {{ getPrimerNombre() }}
+              </h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body text-center">
@@ -288,7 +313,7 @@
       </div>
       <div class="modal-body text-center">
         <img *ngIf="criaderoData?.foto_perfil?.startsWith('http')" [src]="criaderoData?.foto_perfil" alt="Criadero"
-          class="border rounded mb-3" style="width: 80px; height: 80px; object-fit: cover;" loading="lazy">
+          class="border rounded mb-3" style="width: 220px; height: 220px; object-fit: cover;" loading="lazy">
         <h5 class="fw-bold mb-2">{{ criaderoData?.nombre }}</h5>
         <p class="mb-1"><i class="bi bi-geo-alt me-1"></i>{{ criaderoData?.ubicacion }}</p>
         <p class="mb-1"><strong>Núcleo zoológico:</strong> {{ criaderoData?.nucleo_zoologico }}</p>

@@ -88,6 +88,7 @@ export class AnunciosDetailComponent implements OnInit {
               padre.imagenes.map((img: string) => img.startsWith('http') ? img : `mascotas/${this.anuncio?.id_padre}/${img}`)
             );
           }
+          this.padreMascota = padre; 
         }
 
         if (this.anuncio?.id_madre && this.anuncio?.id_usuario) {
@@ -97,6 +98,7 @@ export class AnunciosDetailComponent implements OnInit {
               madre.imagenes.map((img: string) => img.startsWith('http') ? img : `mascotas/${this.anuncio?.id_madre}/${img}`)
             );
           }
+          this.madreMascota = madre;
         }
 
         if (this.anuncio?.id_usuario) {
@@ -403,4 +405,10 @@ export class AnunciosDetailComponent implements OnInit {
     this.imagenCachorroSeleccionada = idx;
   }
 
+  getPrimerNombre(): string {
+    return this.usuario?.nombre?.split(' ')[0] || 'Usuario';
+  }
+
+  padreMascota?: any;
+  madreMascota?: any;
 }
