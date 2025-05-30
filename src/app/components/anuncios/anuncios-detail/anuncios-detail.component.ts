@@ -411,4 +411,8 @@ export class AnunciosDetailComponent implements OnInit {
 
   padreMascota?: any;
   madreMascota?: any;
+
+  hasCachorrosDisponibles(): boolean {
+    return Array.isArray(this.cachorros) && this.cachorros.some(c => c.disponible);
+  }
 }
