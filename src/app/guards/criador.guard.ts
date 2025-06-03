@@ -33,6 +33,7 @@ export const criadorGuard: CanActivateFn = async (route, state) => {
     }
 
     const verificado = await criaderoService.getVerficadoById(idCriadero);
+    console.log('Verificado:', verificado);
     if (!verificado) {
       router.navigate(['/inicio']);
       return false;

@@ -39,7 +39,7 @@ export class InicioComponent implements OnInit {
       console.log('No hay usuario autenticado');
     }
 
-    this.archivosService.cargarImagenes(['inicio.jpg']).then((urls: string[]) => {
+    this.archivosService.cargarImagenes(['inicio.webp']).then((urls: string[]) => {
       this.imagenUrl = urls[0];
     }).catch((error: any) => {
       console.error('Error al cargar la imagen:', error);

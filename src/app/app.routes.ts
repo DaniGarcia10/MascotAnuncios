@@ -21,7 +21,8 @@ import { AdminGuard } from './guards/admin.guard';
 import { RegistrocriaderoComponent } from './components/registrocriadero/registrocriadero.component';
 import { criadorGuard } from './guards/criador.guard';
 import { noCriaderoGuard } from './guards/no-criadero.guard';
-
+import { PagoExitosoComponent } from './components/pago-exitoso/pago-exitoso.component';
+import { PagoCanceladoComponent } from './components/pago-cancelado/pago-cancelado.component';
 
 
 export const routes: Routes = [
@@ -41,6 +42,8 @@ export const routes: Routes = [
   { path: 'suscripciones', component: SuscripcionesComponent, canActivate: [criadorGuard] },
   { path: 'documentaciones', component: DocumentacionListComponent, canActivate: [AdminGuard] },
   { path: 'usuarios', component: UsuariosListComponent, canActivate: [AdminGuard] },
+  { path: 'pago-exitoso', component: PagoExitosoComponent },
+  { path: 'pago-cancelado', component: PagoCanceladoComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 @NgModule({

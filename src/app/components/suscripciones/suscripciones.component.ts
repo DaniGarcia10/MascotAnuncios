@@ -9,11 +9,12 @@ import { Observable, firstValueFrom } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ActivatedRoute } from '@angular/router';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-suscripciones',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, NgSelectModule, FormsModule],
+  imports: [ReactiveFormsModule, CommonModule, NgSelectModule, FormsModule, HttpClientModule],
   templateUrl: './suscripciones.component.html',
   styleUrls: ['./suscripciones.component.css']
 })
@@ -23,6 +24,7 @@ export class SuscripcionesComponent implements OnInit {
   suscripcion$: Observable<Suscripcion | null> | null = null;
   precioSeleccionado: number | null = null;
   procesando: boolean = false;
+  procesandoPago: boolean = false;
 
   planes = [
     { value: 30, label: '1 mes', precio: 9.99, ahorro: 'Ahorra un 0%' },
@@ -36,7 +38,8 @@ export class SuscripcionesComponent implements OnInit {
     private suscripcionesService: SuscripcionesService,
     private usuarioService: UsuarioService,
     private authService: AuthService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private http: HttpClient
   ) {
     this.suscripcionForm = this.fb.group({
       duracion: [null, Validators.required]
@@ -178,4 +181,30 @@ export class SuscripcionesComponent implements OnInit {
     const dias = Math.ceil(diff / (1000 * 60 * 60 * 24));
     return dias > 0 ? dias : 0;
   }
+
+  iniciarPagoStripe(): void {
+  if (this.procesandoPago) return;
+  this.procesandoPago = true;
+  const precio = this.precioSeleccionado;
+  const duracion = this.suscripcionForm.get('duracion')?.value;
+  if (!precio || !duracion) {
+    this.procesandoPago = false;
+    return;
+  }
+
+  this.http.post<{ url: string }>(
+    'http://127.0.0.1:5001/mascotanunicos/us-central1/createCheckoutSession',
+    { precio, duracion }
+  ).subscribe({
+    next: (res) => {
+      window.location.href = res.url;
+    },
+    error: (err) => {
+      console.error('Error al iniciar pago con Stripe:', err);
+      this.procesandoPago = false;
+    }
+  });
+}
+
+
 }

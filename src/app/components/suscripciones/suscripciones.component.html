@@ -17,7 +17,7 @@
     <!-- Contratar suscripción -->
     <div *ngIf="activeSection === 'contratar'">
       <div class="formulario-suscripcion bg-white rounded shadow-lg p-4">
-        <form [formGroup]="suscripcionForm" (ngSubmit)="crearSuscripcion()">
+        <form [formGroup]="suscripcionForm">
           <div class="mb-3">
             <h3 class="mb-4 card-title-grande text-center">Contratar suscripción</h3>
             <!-- Beneficios en dos columnas -->
@@ -62,16 +62,13 @@
 
           <!-- Precio y botón -->
           <div *ngIf="precioSeleccionado !== null" class="text-center mt-4">
-            <h4>Precio final:
-              <span class="card-title-grande ms-2">
-                {{ precioSeleccionado }}€
-              </span>
-            </h4>
             <button
-              type="submit"
-              class="btn-default w-50 mt-2"
-              [disabled]="suscripcionForm.invalid || procesando">
-              Ir al pago
+              type="button"
+              class="btn-default w-50"
+              [disabled]="!precioSeleccionado || procesandoPago"
+              (click)="iniciarPagoStripe()">
+              <span *ngIf="!procesandoPago">Pagar {{ precioSeleccionado }}€</span>
+              <span *ngIf="procesandoPago"><i class="bi bi-arrow-repeat spin"></i> Redirigiendo...</span>
             </button>
           </div>
         </form>
