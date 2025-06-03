@@ -71,14 +71,19 @@
 
     <!-- Lista de anuncios -->
     <div class="col-md-9">
-      <div *ngIf="anunciosFiltrados.length > 0; else noAnuncios">
-        <div *ngFor="let anuncio of anunciosFiltrados">
-          <app-anuncios-resume [anuncio]="anuncio"></app-anuncios-resume>
-        </div>
+      <div *ngIf="cargando">
+        <p class="text-center fw-bold">Cargando anuncios...</p>
       </div>
-      <ng-template #noAnuncios>
-        <p class="text-center text-danger fw-bold">No hay anuncios disponibles.</p>
-      </ng-template>
+      <div *ngIf="!cargando">
+        <div *ngIf="anunciosFiltrados.length > 0; else noAnuncios">
+          <div *ngFor="let anuncio of anunciosFiltrados">
+            <app-anuncios-resume [anuncio]="anuncio"></app-anuncios-resume>
+          </div>
+        </div>
+        <ng-template #noAnuncios>
+          <p class="text-center text-danger fw-bold">No hay anuncios disponibles.</p>
+        </ng-template>
+      </div>
     </div>
   </div>
 </div>

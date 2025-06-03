@@ -19,6 +19,7 @@ export class AnunciosListComponent implements OnInit {
   ordenSeleccionado: string | null = null;
   mostrarFiltros: boolean = false;
   esMovil: boolean = false;
+  cargando: boolean = true; 
 
   filtros = {
     tipoAnimal: null,
@@ -31,7 +32,7 @@ export class AnunciosListComponent implements OnInit {
   razas: { label: string, value: string }[] = [];
   filteredRazas: { label: string, value: string }[] = [];
 
-  provincias: { label: string, value: string }[] = []; // <-- NUEVO
+  provincias: { label: string, value: string }[] = [];
 
   constructor(
     private anunciosService: AnunciosService,
@@ -53,10 +54,16 @@ export class AnunciosListComponent implements OnInit {
       this.filtros.tipoAnimal = params['tipoAnimal'] ?? null;
       this.filtros.raza = params['raza'] ?? null;
 
+      // Limpia los arrays antes de cargar nuevos datos
+      this.anuncios = [];
+      this.anunciosFiltrados = [];
+
       this.anunciosService.getAnuncios().subscribe(data => {
         this.anuncios = data;
-        this.updateRazasList();
-        this.aplicarFiltros();
+        this.updateRazasList().then(() => {
+          this.aplicarFiltros();
+          this.cargando = false; 
+        });
       });
     });
   }

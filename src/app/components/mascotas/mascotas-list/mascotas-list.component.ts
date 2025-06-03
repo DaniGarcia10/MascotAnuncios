@@ -30,8 +30,8 @@ export class MascotasListComponent implements OnInit {
   machos: Mascota[] = [];
   hembras: Mascota[] = [];
   mascotaDetalle: Mascota | null = null;
-
   modalEliminarMascotaAbierto = false;
+  cargando: boolean = true; 
 
   constructor(
     private mascotasService: MascotasService,
@@ -41,7 +41,7 @@ export class MascotasListComponent implements OnInit {
     private snackBar: MatSnackBar,
     private firestore: Firestore,
     private router: Router,
-    private datosService: DatosService // <--- Añadir aquí
+    private datosService: DatosService 
   ) {
     this.formMascota = this.fb.group({
       nombre: ['', [Validators.required, Validators.maxLength(50)]], // Máximo 50 caracteres
@@ -82,7 +82,10 @@ export class MascotasListComponent implements OnInit {
           );
 
           this.filtrarPadres();
+          this.cargando = false;
         });
+      } else {
+        this.cargando = false; 
       }
     });
 
