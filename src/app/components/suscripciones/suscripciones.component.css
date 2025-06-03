@@ -65,6 +65,17 @@
   background-color: #f5f5dc;
 }
 
+.plan-card {
+  border: 2px solid #ddd;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.plan-card:hover,
+.selected .plan-card:hover {
+  box-shadow: 0 0 18px 4px rgba(139, 94, 60, 0.45) !important;
+  cursor: pointer;
+}
+
 /* Puedes poner esto en tu archivo de estilos */
 .spin {
   animation: spin 1s linear infinite;

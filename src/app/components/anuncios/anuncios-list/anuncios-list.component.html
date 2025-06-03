@@ -28,7 +28,7 @@
         <h5 class="card-title">Filtros</h5>
         <form (ngSubmit)="aplicarFiltros()">
           <div class="mb-3">
-            <label for="tipoAnimal" class="form-label">Especie</label>
+            <label for="tipoAnimal" class="form-label">Compañero:</label>
             <ng-select
               [items]="[{label: 'Todos', value: ''}, {label: 'Perro', value: 'perro'}, {label: 'Gato', value: 'gato'}]"
               bindLabel="label" bindValue="value" [(ngModel)]="filtros.tipoAnimal" name="tipoAnimal"
@@ -45,7 +45,7 @@
             </ng-select>
           </div>
           <div class="mb-3">
-            <label for="ubicacion" class="form-label">Ubicación</label>
+            <label for="ubicacion" class="form-label">Provincia:</label>
             <div class="input-group">
               <ng-select [items]="provincias" bindLabel="label" bindValue="value" [(ngModel)]="filtros.ubicacion"
                 name="ubicacion" placeholder="Selecciona una provincia" [searchable]="true"

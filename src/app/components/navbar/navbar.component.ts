@@ -66,7 +66,7 @@ export class NavbarComponent implements OnInit {
     });
 
     // Cargar la URL del logo
-    this.archivosService.cargarImagenes(['logo1.png']).then((urls) => {
+    this.archivosService.cargarImagenes(['logo.webp']).then((urls) => {
       this.logoUrl = urls[0]; // Asignar la URL del logo
     });
   }

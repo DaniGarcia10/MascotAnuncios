@@ -5,6 +5,5 @@ export interface Cachorro {
     sexo: 'Macho' | 'Hembra';
     precio: number;
     disponible: boolean;
-    descripcion: string;
     imagenes: string[];
 }

@@ -55,6 +55,8 @@ export class AnunciosDetailComponent implements OnInit {
   private idAnuncioActual: string | null = null;
   private usuarioId: string | null = null;
 
+  mascotaDetalle: any = null; // Para mostrar el detalle del padre/madre
+
   constructor(
     private route: ActivatedRoute,
     private anunciosService: AnunciosService,
@@ -414,5 +416,20 @@ export class AnunciosDetailComponent implements OnInit {
 
   hasCachorrosDisponibles(): boolean {
     return Array.isArray(this.cachorros) && this.cachorros.some(c => c.disponible);
+  }
+
+  abrirDetallePadreMadre(tipo: 'padre' | 'madre') {
+    this.mascotaDetalle = tipo === 'padre' ? this.padreMascota : this.madreMascota;
+  }
+
+  cerrarDetallesMascota() {
+    this.mascotaDetalle = null;
+  }
+
+  abrirModalImagenPadreMadre() {
+    if (!this.mascotaDetalle) return;
+    const tipo = this.mascotaDetalle === this.padreMascota ? 'padre' : 'madre';
+    this.abrirModalImagen(tipo);
+    this.cerrarDetallesMascota();
   }
 }

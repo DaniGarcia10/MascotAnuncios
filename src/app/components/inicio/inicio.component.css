@@ -23,3 +23,20 @@
     background-color: white;
     color: black;
 }
+
+.raza-dropdown-menu {
+    max-height: 200px; /* Ajusta el valor según lo que prefieras */
+    overflow-y: auto;
+    scrollbar-color: #fff #000; /* Opcional: personaliza el color de la barra de scroll */
+    scrollbar-width: thin;      /* Opcional: barra de scroll delgada en navegadores compatibles */
+}
+
+/* Opcional: mejora la visibilidad de la barra de scroll en navegadores Webkit (Chrome, Safari) */
+.raza-dropdown-menu::-webkit-scrollbar {
+    width: 8px;
+    background: #000;
+}
+.raza-dropdown-menu::-webkit-scrollbar-thumb {
+    background: #fff;
+    border-radius: 4px;
+}

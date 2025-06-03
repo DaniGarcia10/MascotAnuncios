@@ -46,24 +46,34 @@ export class AnunciosListComponent implements OnInit {
       this.esMovil = window.innerWidth < 768;
     });
 
-    // Cargar provincias
     const provincias = await this.datosService.obtenerProvincias();
     this.provincias = (provincias || []).map(p => ({ label: p, value: p }));
 
+    // Suscripción a cambios en los queryParams
+    this.route.queryParams.subscribe(() => {
+      this.cargarAnuncios();
+    });
+
+    // Llamada inicial para asegurar la carga aunque no cambien los queryParams
+    this.cargarAnuncios();
+  }
+
+  private cargarAnuncios(): void {
+    this.cargando = true;
+    this.anuncios = [];
+    this.anunciosFiltrados = [];
+
+    // Obtener los filtros desde los queryParams
     this.route.queryParams.subscribe(params => {
       this.filtros.tipoAnimal = params['tipoAnimal'] ?? null;
       this.filtros.raza = params['raza'] ?? null;
+    });
 
-      // Limpia los arrays antes de cargar nuevos datos
-      this.anuncios = [];
-      this.anunciosFiltrados = [];
-
-      this.anunciosService.getAnuncios().subscribe(data => {
-        this.anuncios = data;
-        this.updateRazasList().then(() => {
-          this.aplicarFiltros();
-          this.cargando = false; 
-        });
+    this.anunciosService.getAnuncios().subscribe(data => {
+      this.anuncios = data;
+      this.updateRazasList().then(() => {
+        this.aplicarFiltros();
+        this.cargando = false;
       });
     });
   }

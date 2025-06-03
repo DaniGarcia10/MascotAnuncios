@@ -65,14 +65,16 @@ export class MascotasDetailComponent implements OnInit {
           this.formMascota.patchValue({
             nombre: mascota.nombre,
             perro: mascota.perro,
-            raza: mascota.raza,
             color: mascota.color,
             sexo: mascota.sexo,
             descripcion: mascota.descripcion,
             id_padre: mascota.id_padre || null,
             id_madre: mascota.id_madre || null 
           });
-          await this.updateRazasList(); // <-- ahora es async
+          await this.updateRazasList();
+          this.formMascota.patchValue({
+            raza: mascota.raza 
+          });
           this.cargarMascotasUsuario();
         }
       });
@@ -217,7 +219,7 @@ export class MascotasDetailComponent implements OnInit {
     this.isSubmitting = true;
     const controls = this.formMascota.controls;
 
-    // Validación de campos obligatorios (igual que en mascotas-list)
+    // Validación de campos obligatorios (igual que in mascotas-list)
     const errores: string[] = [];
     if (controls['nombre'].invalid) {
       errores.push('El nombre es obligatorio.');

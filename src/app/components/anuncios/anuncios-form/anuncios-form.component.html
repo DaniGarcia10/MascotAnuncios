@@ -226,17 +226,6 @@
                 </div>
 
                 <div class="mb-3">
-                  <label class="form-label">Descripción:</label>
-                  <textarea class="form-control" formControlName="descripcion"
-                    placeholder="Ingresa una descripción"></textarea>
-                  <small
-                    *ngIf="cachorro.get('descripcion')?.errors?.['maxlength'] && cachorro.get('descripcion')?.touched"
-                    class="text-danger">
-                    Máximo 70 caracteres.
-                  </small>
-                </div>
-
-                <div class="mb-3">
                   <label class="form-label">Imágenes:</label>
                   <input type="file" class="form-control" (change)="onCachorroFileSelected($event, i)" multiple>
                   <div *ngIf="cachorro.get('imagenes')?.invalid && cachorro.get('imagenes')?.touched"

@@ -34,13 +34,8 @@
               </div>
               <div class="mb-3">
                 <label for="tipo" class="form-label">Tipo:</label>
-                <ng-select
-                  [items]="[{label: 'Perro', value: true}, {label: 'Gato', value: false}]"
-                  bindLabel="label"
-                  bindValue="value"
-                  formControlName="perro"
-                  placeholder="Selecciona tipo"
-                  class="custom-ng-select"
+                <ng-select [items]="[{label: 'Perro', value: true}, {label: 'Gato', value: false}]" bindLabel="label"
+                  bindValue="value" formControlName="perro" placeholder="Selecciona tipo" class="custom-ng-select"
                   [searchable]="false">
                 </ng-select>
                 <div *ngIf="formMascota.get('perro')?.invalid && formMascota.get('perro')?.touched" class="text-danger">
@@ -49,13 +44,8 @@
               </div>
               <div class="mb-3">
                 <label for="raza" class="form-label">Raza:</label>
-                <ng-select
-                  [items]="filteredRazas"
-                  bindLabel="label"
-                  bindValue="value"
-                  formControlName="raza"
-                  placeholder="Selecciona raza"
-                  class="custom-ng-select">
+                <ng-select [items]="filteredRazas" bindLabel="label" bindValue="value" formControlName="raza"
+                  placeholder="Selecciona raza" class="custom-ng-select">
                 </ng-select>
                 <div *ngIf="formMascota.get('raza')?.invalid && formMascota.get('raza')?.touched" class="text-danger">
                   <small>La raza es obligatoria.</small>
@@ -63,7 +53,8 @@
               </div>
               <div class="mb-3">
                 <label for="color" class="form-label">Color:</label>
-                <input id="color" formControlName="color" type="text" class="form-control" placeholder="Introduzca el color" required>
+                <input id="color" formControlName="color" type="text" class="form-control"
+                  placeholder="Introduzca el color" required>
                 <div *ngIf="formMascota.get('color')?.invalid && formMascota.get('color')?.touched" class="text-danger">
                   <small *ngIf="formMascota.get('color')?.errors?.['required']">El color es obligatorio.</small>
                   <small *ngIf="formMascota.get('color')?.errors?.['maxlength']">Máximo 20 caracteres.</small>
@@ -71,15 +62,8 @@
               </div>
               <div class="mb-3">
                 <label for="sexo" class="form-label">Sexo:</label>
-                <ng-select
-                  [items]="['Macho', 'Hembra']"
-                  bindLabel="this"
-                  bindValue="this"
-                  formControlName="sexo"
-                  placeholder="Selecciona el sexo"
-                  class="custom-ng-select"
-                  [searchable]="false"
-                  [clearable]="false">
+                <ng-select [items]="['Macho', 'Hembra']" bindLabel="this" bindValue="this" formControlName="sexo"
+                  placeholder="Selecciona el sexo" class="custom-ng-select" [searchable]="false" [clearable]="false">
                 </ng-select>
                 <div *ngIf="formMascota.get('sexo')?.invalid && formMascota.get('sexo')?.touched" class="text-danger">
                   <small>El sexo es obligatorio.</small>
@@ -97,7 +81,9 @@
               <div class="mb-3">
                 <label for="imagenes" class="form-label">Imágenes:</label>
                 <input id="imagenes" type="file" class="form-control" (change)="onFileSelectedMascota($event)" multiple>
-                <div *ngIf="(isSubmittingMascota || imagenesMascota?.length === 0) && (!imagenesMascota || imagenesMascota.length === 0)" class="text-danger">
+                <div
+                  *ngIf="(isSubmittingMascota || imagenesMascota?.length === 0) && (!imagenesMascota || imagenesMascota.length === 0)"
+                  class="text-danger">
                   <small>Debes añadir al menos una imagen.</small>
                 </div>
               </div>
@@ -160,44 +146,42 @@
       </div>
     </div>
 
-    <!-- Tarjeta de detalles de mascota --> 
-<div *ngIf="mascotaDetalle"
-     class="position-fixed top-0 start-0 w-100 h-100"
-     style="background:rgba(0,0,0,0.4);z-index:1050;">
-  <div class="d-flex align-items-center justify-content-center h-100 w-100 p-2">
-    <div class="card custom-card w-100"
-         style="max-width:420px; width:100%; position:relative; transform:scale(0.9); box-shadow: 0 4px 24px rgba(0,0,0,0.18);">
-      <!-- Botones de cerrar y eliminar -->
-      <div class="position-absolute top-0 start-0 m-2 d-flex align-items-center gap-2">
-        <button type="button" class="btn btn-link p-0 text-danger" (click)="abrirModalConfirmacionEliminarMascota()" title="Eliminar">
-          <i class="bi bi-trash" style="font-size: 1.5rem;"></i>
-        </button>
-      </div>
-      <div class="position-absolute top-0 end-0 m-2">
-        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarDetallesMascota()"></button>
-      </div>
+    <!-- Tarjeta de detalles de mascota -->
+    <div *ngIf="mascotaDetalle" class="position-fixed top-0 start-0 w-100 h-100"
+      style="background:rgba(0,0,0,0.4);z-index:1050;">
+      <div class="d-flex align-items-center justify-content-center h-100 w-100 p-2">
+        <div class="card custom-card w-100"
+          style="max-width:420px; width:100%; position:relative; transform:scale(0.9); box-shadow: 0 4px 24px rgba(0,0,0,0.18);">
+          <!-- Botones de cerrar y eliminar -->
+          <div class="position-absolute top-0 start-0 m-2 d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-link p-0 text-danger" (click)="abrirModalConfirmacionEliminarMascota()"
+              title="Eliminar">
+              <i class="bi bi-trash" style="font-size: 1.5rem;"></i>
+            </button>
+          </div>
+          <div class="position-absolute top-0 end-0 m-2">
+            <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarDetallesMascota()"></button>
+          </div>
 
-      <div class="card-body custom-card-body pt-4">
-        <div class="text-center mb-3">
-          <h4 class="fw-bold">{{ mascotaDetalle.nombre }}</h4>
-          <img *ngIf="mascotaDetalle.imagenes?.length"
-               [src]="mascotaDetalle.imagenes[0]"
-               alt="Mascota"
-               style="width:200px;max-width:100%;height:200px;object-fit:cover;"
-               class="rounded mb-2 shadow">
-          <div class="mb-1 text-muted">{{ mascotaDetalle.raza }} | {{ mascotaDetalle.color }} | {{ mascotaDetalle.sexo }}</div>
-        </div>
-        <div class="mb-2">
-          <strong>Descripción:</strong>
-          <div>{{ mascotaDetalle.descripcion || '-' }}</div>
-        </div>
-        <div class="d-flex justify-content-end mt-4">
-          <button class="btn-default w-100" (click)="editarMascotaDetalle()">Editar</button>
+          <div class="card-body custom-card-body pt-4">
+            <div class="text-center mb-3">
+              <h4 class="fw-bold">{{ mascotaDetalle.nombre }}</h4>
+              <img *ngIf="mascotaDetalle.imagenes?.length" [src]="mascotaDetalle.imagenes[0]" alt="Mascota"
+                style="width:200px;max-width:100%;height:200px;object-fit:cover;" class="rounded mb-2 shadow">
+              <div class="mb-1 text-muted">{{ mascotaDetalle.raza }} | {{ mascotaDetalle.color }} | {{
+                mascotaDetalle.sexo }}</div>
+            </div>
+            <div class="mb-2">
+              <strong>Descripción:</strong>
+              <div>{{ mascotaDetalle.descripcion || '-' }}</div>
+            </div>
+            <div class="d-flex justify-content-end mt-4">
+              <button class="btn-default w-100" (click)="editarMascotaDetalle()">Editar</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
 
   </div>
 </div>
@@ -225,7 +209,8 @@
 </div>
 
 <!-- Modal para error de extensión de imagen -->
-<div class="modal fade" id="modalErrorExtensionImagen" tabindex="-1" aria-labelledby="modalErrorExtensionImagenLabel" aria-hidden="true">
+<div class="modal fade" id="modalErrorExtensionImagen" tabindex="-1" aria-labelledby="modalErrorExtensionImagenLabel"
+  aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content text-center">
       <div class="modal-header">

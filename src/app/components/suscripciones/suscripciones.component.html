@@ -82,7 +82,7 @@
         <h3 class="mb-4 card-title-grande">Detalles de la suscripción</h3>
         <p>
           <span *ngIf="esSuscripcionActiva(suscripcion); else inactiva">
-            <i class="bi bi-check-circle-fill text-success">  Suscripcion activa</i>
+            <i class="bi bi-check-circle-fill text-success fw-bold">  Suscripcion activa</i>
           </span>
           <ng-template #inactiva>
             <i class="bi bi-x-circle-fill text-danger"> Inactiva</i>

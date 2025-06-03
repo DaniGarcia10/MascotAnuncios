@@ -368,10 +368,6 @@ export class MisanunciosDetailComponent implements OnInit {
           this.anuncio?.precio || '',
           [Validators.required, Validators.max(100000)]
         ],
-        descripcion: [
-          this.anuncio?.descripcion || '',
-          [Validators.maxLength(360)]
-        ],
         imagenes: [
           imagenesParaMostrar,
           [Validators.required]
@@ -577,7 +573,6 @@ export class MisanunciosDetailComponent implements OnInit {
         [Validators.required, Validators.max(100000)]
       ],
       disponible: [this.cachorroEditando.disponible],
-      descripcion: [this.cachorroEditando.descripcion],
       imagenes: [imagenesParaMostrar, [Validators.required]],
     });
     this.imagenSeleccionadaCachorro = 0;

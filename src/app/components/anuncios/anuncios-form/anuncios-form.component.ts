@@ -116,7 +116,6 @@ export class AnunciosFormComponent implements OnInit {
               sexo: ['', Validators.required],
               precio: [null, [Validators.required, Validators.max(100000)]],
               disponible: [true],
-              descripcion: ['', Validators.maxLength(70)],
               imagenes: [[], Validators.required],
             })
           );
@@ -216,7 +215,6 @@ export class AnunciosFormComponent implements OnInit {
           sexo: ['', Validators.required],
           precio: [null, [Validators.required, Validators.max(100000)]],
           disponible: [true],
-          descripcion: ['', Validators.maxLength(45)],
           imagenes: [[], Validators.required],
         })
       );
