@@ -73,6 +73,9 @@ export class MisanunciosDetailComponent implements OnInit {
 
   isGuardandoAnuncio: boolean = false;
 
+  // Nueva variable para la imagen en el mini modal de cachorro
+  imagenMiniModalCachorro: string = '';
+
   constructor(
     private route: ActivatedRoute,
     private anunciosService: AnunciosService,
@@ -371,6 +374,10 @@ export class MisanunciosDetailComponent implements OnInit {
         imagenes: [
           imagenesParaMostrar,
           [Validators.required]
+        ],
+        descripcion: [
+          this.anuncio?.descripcion || '',
+          [Validators.required, Validators.maxLength(500)]
         ],
       });
       // Escuchar cambios en el tipo para actualizar razas
@@ -805,7 +812,6 @@ export class MisanunciosDetailComponent implements OnInit {
       sexo: ['', [Validators.required]],
       precio: ['', [Validators.required, Validators.max(100000)]],
       disponible: [true],
-      descripcion: [''],
       imagenes: [[], [
         Validators.required,
         (control: AbstractControl) => (control.value && control.value.length > 0 ? null : { required: true })
@@ -940,5 +946,43 @@ export class MisanunciosDetailComponent implements OnInit {
         bsModal.show();
       }
     }, 0);
+  }
+
+  // Abre el mini modal de disponibilidad
+  async abrirMiniModalDisponibilidadCachorro(id: string, index: number) {
+    // Prepara el formCachorro solo con el campo disponible
+    const cachorro = this.cachorros[index];
+    this.cachorroEditando = { ...cachorro };
+    this.indexCachorroEditando = index;
+    this.formCachorro = this.fb.group({
+      disponible: [cachorro.disponible]
+    });
+    // Asigna la imagen principal (la primera)
+    this.imagenMiniModalCachorro = cachorro.imagenes?.[0] || '';
+    setTimeout(() => {
+      const modal = document.getElementById('modalDisponibilidadCachorro');
+      if (modal) {
+        // @ts-ignore
+        const bsModal = new window.bootstrap.Modal(modal);
+        bsModal.show();
+      }
+    }, 0);
+  }
+
+  // Desde el mini modal, abre el modal de edición completo
+  abrirModalEditarCachorroDesdeMiniModal() {
+    // Cierra el mini modal
+    setTimeout(() => {
+      const modal = document.getElementById('modalDisponibilidadCachorro');
+      if (modal) {
+        // @ts-ignore
+        const bsModal = window.bootstrap.Modal.getInstance(modal);
+        if (bsModal) bsModal.hide();
+      }
+    }, 0);
+    // Abre el modal de edición completo
+    if (this.cachorroEditando?.id) {
+      this.editarCachorro(this.cachorroEditando.id);
+    }
   }
 }

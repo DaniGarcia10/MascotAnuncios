@@ -84,7 +84,7 @@
         <div class="row">
           <!-- Cards de cachorros existentes -->
           <div *ngFor="let cachorro of cachorros; let i = index" class="col-md-4 mb-3">
-            <div class="card shadow-sm clickable position-relative mt-2" (click)="editarCachorro(cachorro.id)"
+            <div class="card shadow-sm clickable position-relative mt-2" (click)="abrirMiniModalDisponibilidadCachorro(cachorro.id, i)"
               [ngStyle]="!cachorro.disponible ? {'opacity': '0.5', 'filter': 'grayscale(1)', 'background': '#f8f9fa'} : {}">
               <div *ngIf="isGuardandoCachorro && indexCachorroEditando === i"
                 class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
@@ -117,9 +117,6 @@
                     {{ cachorro.precio }}€
                   </span>
                 </div>
-                <p class="card-text">
-                  {{ cachorro.descripcion }}
-                </p>
                 </div>
             </div>
           </div>
@@ -395,10 +392,6 @@
               </ng-container>
             </small>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Descripción:</label>
-            <textarea class="form-control" formControlName="descripcion"></textarea>
-          </div>
         </div>
         <div class="modal-footer d-flex justify-content-between">
           <button type="submit" class="btn-default w-100" [disabled]="formCachorro.invalid || isGuardandoCachorro">
@@ -599,6 +592,33 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger w-100" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal pequeño para cambiar disponibilidad y editar -->
+<div class="modal fade" id="modalDisponibilidadCachorro" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Disponibilidad del cachorro</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <!-- Botón para cambiar disponibilidad -->
+        <div class="mb-3 text-center">
+          <button type="button" class="btn"
+            [ngClass]="formCachorro?.get('disponible')?.value ? 'btn-danger' : 'btn-success'"
+            (click)="cambiarDisponibilidadCachorro()">
+            {{ formCachorro?.get('disponible')?.value ? 'Marcar como reservado' : 'Marcar como disponible' }}
+          </button>
+        </div>
+      <div class="modal-body text-center">
+        <img *ngIf="imagenMiniModalCachorro" [src]="imagenMiniModalCachorro" alt="Cachorro" style="max-width: 100%; max-height: 200px; margin-bottom: 1rem;">
+        <!-- Botón para editar cachorro -->
+        <div>
+          <button type="button" class="btn-default w-50" (click)="abrirModalEditarCachorroDesdeMiniModal()">Editar cachorro</button>
+        </div>
       </div>
     </div>
   </div>
