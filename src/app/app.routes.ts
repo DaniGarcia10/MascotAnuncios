@@ -23,6 +23,7 @@ import { criadorGuard } from './guards/criador.guard';
 import { noCriaderoGuard } from './guards/no-criadero.guard';
 import { PagoExitosoComponent } from './components/pago-exitoso/pago-exitoso.component';
 import { PagoCanceladoComponent } from './components/pago-cancelado/pago-cancelado.component';
+import { ContenidoFooterComponent } from './components/contenido-footer/contenido-footer.component';
 
 
 export const routes: Routes = [
@@ -44,6 +45,7 @@ export const routes: Routes = [
   { path: 'usuarios', component: UsuariosListComponent, canActivate: [AdminGuard] },
   { path: 'pago-exitoso', component: PagoExitosoComponent },
   { path: 'pago-cancelado', component: PagoCanceladoComponent },
+  { path: 'contenido-footer', component: ContenidoFooterComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 @NgModule({

@@ -48,16 +48,41 @@
               <small class="text-danger" *ngIf="formLogin.get('password')?.touched && formLogin.get('password')?.hasError('required')">
                 La contraseña es obligatoria.
               </small>
+              <div class="mt-2">
+                <a href="#" (click)="openResetModal(); $event.preventDefault();" class="link-accent">¿Olvidaste tu contraseña?</a>
+              </div>
             </div>
             <button type="submit" class="btn-default w-100">Iniciar sesión</button>
             <div class="text-center mt-3">
               <span>¿No tienes una cuenta?</span>
               <a routerLink="/registro" class="ms-1 link-accent">Regístrate</a>
             </div>
+            <div *ngIf="resetPasswordMessage" class="mt-2">
+              <small class="text-success">{{ resetPasswordMessage }}</small>
+            </div>
             <div *ngIf="serverError" class="mt-2">
               <small class="text-danger">{{ serverError }}</small>
             </div>
           </form>
+
+          <!-- Modal de confirmación -->
+          <div *ngIf="showResetModal" class="modal-backdrop-custom">
+            <div class="modal-custom modal-custom-wide">
+              <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title mb-0">Restablecer contraseña</h5>
+                <button type="button" class="btn-close btn-close-lg" aria-label="Cerrar" (click)="closeResetModal()" style="background: none; border: none; font-size: 2.5rem; line-height: 1;">
+                  &times;
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>¿Quieres que enviemos un correo para restablecer tu contraseña a <b>{{ formLogin.get('email')?.value || '(correo no ingresado)' }}</b>?</p>
+              </div>
+              <div class="modal-footer">
+                <button class="btn-default w-100" (click)="confirmResetPassword()">Aceptar</button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

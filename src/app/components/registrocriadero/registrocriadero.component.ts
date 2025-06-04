@@ -8,6 +8,7 @@ import { Firestore, doc, setDoc, collection, addDoc } from '@angular/fire/firest
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { DocumentacionService } from '../../services/documentacion.service';
 import { Estado } from '../../models/documentacion.model';
+import { UsuarioService } from '../../services/usuario.service'; 
 
 @Component({
   selector: 'app-registrocriadero',
@@ -34,7 +35,8 @@ export class RegistrocriaderoComponent implements OnInit {
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
     private archivosService: ArchivosService,
-    private documentacionService: DocumentacionService
+    private documentacionService: DocumentacionService,
+    private usuarioService: UsuarioService 
   ) {
     this.formRegistro = new FormGroup({
       telefono: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.maxLength(15)]),
@@ -57,6 +59,19 @@ export class RegistrocriaderoComponent implements OnInit {
 
   async ngOnInit() {
     await this.cargarEstadoVerificacion();
+
+    // Precargar el teléfono del usuario autenticado si existe
+    const userId = this.authService.getUsuarioId();
+    if (userId) {
+      try {
+        const usuario = await this.usuarioService.getUsuarioById(userId);
+        if (usuario && usuario.telefono) {
+          this.formRegistro.get('telefono')?.setValue(usuario.telefono);
+        }
+      } catch (error) {
+        console.error('No se pudo precargar el teléfono:', error);
+      }
+    }
   }
 
   onFileSelectedCriadero(event: any): void {

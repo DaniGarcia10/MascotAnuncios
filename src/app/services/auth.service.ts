@@ -1,6 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Usuario } from '../models/Usuario.model'; 
-import { Auth, User, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, sendEmailVerification } from '@angular/fire/auth'; // <-- Agrega sendEmailVerification
+import { Auth, User, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, sendEmailVerification, sendPasswordResetEmail } from '@angular/fire/auth'; // <-- Agrega sendEmailVerification
 import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { UsuarioService } from './usuario.service'; 
@@ -124,6 +124,11 @@ export class AuthService {
   getUsuarioId(): string | null {
     const user = this.auth.currentUser;
     return user ? user.uid : null; 
+  }
+
+  // Método para enviar correo de restablecimiento de contraseña
+  resetPassword(email: string): Promise<void> {
+    return sendPasswordResetEmail(this.auth, email);
   }
 
 }

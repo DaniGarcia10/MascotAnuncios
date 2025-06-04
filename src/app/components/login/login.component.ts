@@ -16,6 +16,9 @@ export class LoginComponent {
   imagenUrl: string | null = null; 
   serverError: string | null = null; 
   showPassword: boolean = false; 
+  resetPasswordMessage: string | null = null;
+  showResetModal: boolean = false;
+
   constructor(
     private authService: AuthService, 
     private router: Router 
@@ -77,5 +80,38 @@ export class LoginComponent {
       const code = error?.code;
       this.serverError = this.getFirebaseErrorMessage(code);
     });
+  }
+
+  resetPassword(): void {
+    this.resetPasswordMessage = null;
+    this.serverError = null;
+    const email = this.formLogin.get('email')?.value;
+    if (!email) {
+      this.serverError = 'Por favor, introduce tu correo electrónico para restablecer la contraseña.';
+      return;
+    }
+    this.authService.resetPassword(email)
+      .then(() => {
+        this.resetPasswordMessage = 'Se ha enviado un correo para restablecer tu contraseña.';
+      })
+      .catch((error: any) => {
+        const code = error?.code;
+        this.serverError = this.getFirebaseErrorMessage(code);
+      });
+  }
+
+  openResetModal(): void {
+    this.serverError = null;
+    this.resetPasswordMessage = null;
+    this.showResetModal = true;
+  }
+
+  closeResetModal(): void {
+    this.showResetModal = false;
+  }
+
+  confirmResetPassword(): void {
+    this.showResetModal = false;
+    this.resetPassword();
   }
 }

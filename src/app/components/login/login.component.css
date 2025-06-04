@@ -10,3 +10,34 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 12px var(--hover-shadow);
 }
+
+.modal-backdrop-custom {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+.modal-custom {
+  background: #fff;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  padding: 1.5rem;
+}
+.modal-custom-wide {
+  max-width: 600px;
+}
+.btn-close-lg {
+  font-size: 2.5rem !important;
+  line-height: 1 !important;
+  color: #000;
+  opacity: 0.7;
+}
+.btn-close-lg:hover {
+  opacity: 1;
+  color: #d32f2f;
+}

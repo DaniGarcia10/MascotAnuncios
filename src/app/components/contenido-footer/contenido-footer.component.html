@@ -1,0 +1,156 @@
+<div class="container mt-4">
+  <div class="row">
+    <!-- Menú lateral -->
+    <div class="menu-lateral p-3 col-12 col-lg-3">
+      <ul class="list-group shadow-lg">
+        <li class="list-group-item" [class.active]="seccion === 'criadores'" (click)="seccion = 'criadores'">
+          Criadores verificados
+        </li>
+        <li class="list-group-item" [class.active]="seccion === 'compra'" (click)="seccion = 'compra'">
+          Compra responsable
+        </li>
+        <li class="list-group-item" [class.active]="seccion === 'contacto'" (click)="seccion = 'contacto'">
+          Contacto
+        </li>
+      </ul>
+    </div>
+
+    <!-- Contenido -->
+    <div class="col-md-9">
+      <div *ngIf="seccion==='criadores'" id="criadores" class="container py-5">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="card shadow-lg border-0 p-4 bg-white">
+              <div class="card-body">
+                <h2 class="fw-bold mb-4 text-center display-6">
+                  <i class="bi bi-patch-check-fill text-primary me-2"></i>Criadores Verificados
+                </h2>
+                <p class="fs-6 text-dark">
+                  Todos nuestros criadores son <strong>profesionales registrados con Número de Núcleo Zoológico</strong>
+                  que han pasado por un proceso exhaustivo, <strong>revisado y validado por veterinarios
+                    colegiados</strong>, para poder ejercer su actividad de forma legal y ética. Este proceso incluye:
+                </p>
+                <ul class="fs-6 text-dark mb-4 list-unstyled">
+                  <li class="mb-3">
+                    <i class="bi bi-shield-check text-success me-2"></i>
+                    <strong>Condiciones sanitarias:</strong> Espacios limpios, adecuados para cada especie y con medidas
+                    para prevenir enfermedades.
+                  </li>
+                  <li class="mb-3">
+                    <i class="bi bi-clipboard2-pulse text-danger me-2"></i>
+                    <strong>Control sanitario:</strong> Supervisión veterinaria continua, revisiones, vacunación y
+                    tratamientos preventivos.
+                  </li>
+                  <li class="mb-3">
+                    <i class="bi bi-house-heart text-warning me-2"></i>
+                    <strong>Instalaciones adecuadas:</strong> Espacio, ventilación, temperatura y protección climática
+                    garantizados.
+                  </li>
+                  <li class="mb-3">
+                    <i class="bi bi-journal-text text-primary me-2"></i>
+                    <strong>Plan de cría:</strong> Registro detallado de ejemplares, camadas y líneas genéticas.
+                  </li>
+                  <li class="mb-3">
+                    <i class="bi bi-bar-chart-line text-info me-2"></i>
+                    <strong>Control de animales:</strong> Sistema de seguimiento individual sanitario y genético.
+                  </li>
+                  <li class="mb-3">
+                    <i class="bi bi-shield-lock text-secondary me-2"></i>
+                    <strong>Cumplimiento legal:</strong> Normativas de bienestar animal y medioambientales al día.
+                  </li>
+                </ul>
+                <p class="fs-6 text-dark">
+                  Todo este proceso ha sido <strong>supervisado y validado por un veterinario autorizado</strong> antes
+                  de otorgar el Número de Núcleo Zoológico, que certifica el cumplimiento total de la normativa.
+                </p>
+                <p class="fs-6 text-dark mb-0">
+                  Gracias a este control riguroso, puedes confiar en que las mascotas ofrecidas por nuestros criadores
+                  proceden de <strong>entornos responsables, seguros y saludables</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="seccion==='compra'" id="compra" class="container py-5">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="card shadow-lg border-0 p-4 bg-white">
+              <div class="card-body">
+                <h2 class="fw-bold mb-4 text-center display-6">
+                  <i class="bi bi-hand-thumbs-up-fill text-success me-2"></i>Compra Responsable
+                </h2>
+                <p class="fs-6 text-dark">
+                  Comprar una mascota es una decisión importante que conlleva un <strong>compromiso a largo
+                    plazo</strong>. Antes de adquirir un animal, asegúrate de que puedes ofrecerle el cuidado, tiempo y
+                  atención que necesita durante toda su vida.
+                </p>
+                <ul class="fs-6 text-dark mb-4 list-unstyled">
+                  <li class="mb-3">
+                    <i class="bi bi-heart-pulse text-danger me-2"></i>
+                    <strong>Compromiso de por vida:</strong> Las mascotas no son objetos. Requieren afecto, compañía y
+                    estabilidad durante años.
+                  </li>
+                  <li class="mb-3">
+                    <i class="bi bi-people text-primary me-2"></i>
+                    <strong>Adaptación a tu estilo de vida:</strong> Asegúrate de que tienes el tiempo, espacio y
+                    entorno adecuado para convivir con un animal.
+                  </li>
+                  <li class="mb-3">
+                    <i class="bi bi-info-circle text-warning me-2"></i>
+                    <strong>Infórmate bien:</strong> Conoce las necesidades específicas de la raza: alimentación,
+                    ejercicio, carácter, socialización y salud.
+                  </li>
+                  <li class="mb-3">
+                    <i class="bi bi-cash-coin text-success me-2"></i>
+                    <strong>Gastos reales:</strong> Una mascota implica costes veterinarios, comida, vacunas,
+                    accesorios, cuidados y más.
+                  </li>
+                  <li class="mb-3">
+                    <i class="bi bi-x-octagon text-danger me-2"></i>
+                    <strong>El abandono no es una opción:</strong> Es un acto cruel y sancionado por la ley. Si dudas,
+                    mejor no compres.
+                  </li>
+                </ul>
+                <p class="fs-6 text-dark mb-0">
+                  <strong>Una compra responsable comienza con una decisión informada y consciente.</strong> Si estás
+                  preparado, una mascota puede cambiar tu vida para mejor.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="seccion==='contacto'" id="contacto" class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-lg border-0 p-4 bg-white text-center">
+        <div class="card-body">
+          <h2 class="fw-bold mb-4 display-6">
+            <i class="bi bi-envelope-paper-fill text-primary me-2"></i>Contacto
+          </h2>
+          <p class="fs-6 text-dark mb-3">
+            ¿Tienes dudas, sugerencias o quieres colaborar con nosotros? No dudes en escribirnos o llamarnos.
+          </p>
+          <div class="fs-5 text-dark">
+            <p class="mb-2">
+              <i class="bi bi-envelope-fill me-2"></i>
+              <strong>Email:</strong> danielgarciapelaez&#64;gmail.com
+            </p>
+            <p>
+              <i class="bi bi-telephone-fill text-success me-2"></i>
+              <strong>Teléfono:</strong> +34 608 008 186
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    </div>
+  </div>
+</div>
