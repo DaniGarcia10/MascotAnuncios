@@ -41,42 +41,37 @@ export class AnunciosListComponent implements OnInit {
   ) { }
 
   async ngOnInit(): Promise<void> {
+  this.esMovil = window.innerWidth < 768;
+  window.addEventListener('resize', () => {
     this.esMovil = window.innerWidth < 768;
-    window.addEventListener('resize', () => {
-      this.esMovil = window.innerWidth < 768;
-    });
+  });
 
-    const provincias = await this.datosService.obtenerProvincias();
-    this.provincias = (provincias || []).map(p => ({ label: p, value: p }));
+  const provincias = await this.datosService.obtenerProvincias();
+  this.provincias = (provincias || []).map(p => ({ label: p, value: p }));
 
-    // Suscripción a cambios en los queryParams
-    this.route.queryParams.subscribe(() => {
-      this.cargarAnuncios();
-    });
+  // Única suscripción y toda la lógica aquí
+  this.route.queryParams.subscribe(params => {
+    this.filtros.tipoAnimal = params['tipoAnimal'] ?? null;
+    this.filtros.raza = params['raza'] ?? null;
 
-    // Llamada inicial para asegurar la carga aunque no cambien los queryParams
     this.cargarAnuncios();
-  }
+  });
+}
 
   private cargarAnuncios(): void {
-    this.cargando = true;
-    this.anuncios = [];
-    this.anunciosFiltrados = [];
+  this.cargando = true;
+  this.anuncios = [];
+  this.anunciosFiltrados = [];
 
-    // Obtener los filtros desde los queryParams
-    this.route.queryParams.subscribe(params => {
-      this.filtros.tipoAnimal = params['tipoAnimal'] ?? null;
-      this.filtros.raza = params['raza'] ?? null;
+  this.anunciosService.getAnuncios().subscribe(data => {
+    this.anuncios = data;
+    this.updateRazasList().then(() => {
+      this.aplicarFiltros();
+      this.cargando = false;
     });
+  });
+}
 
-    this.anunciosService.getAnuncios().subscribe(data => {
-      this.anuncios = data;
-      this.updateRazasList().then(() => {
-        this.aplicarFiltros();
-        this.cargando = false;
-      });
-    });
-  }
 
   async updateRazasList(): Promise<void> {
     if (!this.filtros.tipoAnimal) {
@@ -107,6 +102,11 @@ export class AnunciosListComponent implements OnInit {
         value: raza
       }));
   }
+
+  forzarRecarga(): void {
+  this.cargarAnuncios();
+  }
+
 
   aplicarFiltros(): void {
     this.anunciosFiltrados = this.anuncios.filter(anuncio => {

@@ -235,7 +235,7 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body text-center">
-              <p class="fs-4 fw-bold">{{ usuario?.telefono }}</p>
+              <p class="fs-4 fw-bold">{{ anuncio.telefono }}</p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn-default" data-bs-dismiss="modal">Cerrar</button>
@@ -340,9 +340,15 @@
       <div class="card-body custom-card-body pt-4">
         <div class="text-center mb-3">
           <h4 class="fw-bold">{{ mascotaDetalle.nombre }}</h4>
-          <img *ngIf="mascotaDetalle.imagenes?.length" [src]="mascotaDetalle.imagenes[0]" alt="Mascota"
-            style="width:200px;max-width:100%;height:200px;object-fit:cover;cursor:pointer;" class="rounded mb-2 shadow"
-            (click)="abrirModalImagenPadreMadre()">
+          <div style="display: inline-block; position: relative;">
+            <img *ngIf="mascotaDetalle.imagenes?.length" [src]="mascotaDetalle.imagenes[0]" alt="Mascota"
+              style="width:200px;max-width:100%;height:200px;object-fit:cover;cursor:pointer;" class="rounded mb-2 shadow"
+              (click)="abrirModalImagenPadreMadre()">
+            <!-- Icono fullscreen encima de la imagen, sin fondo ni borde -->
+            <i *ngIf="mascotaDetalle.imagenes?.length"
+               class="bi bi-arrows-fullscreen fs-5"
+               style="position: absolute; top: 14px; right: 14px; z-index: 2; opacity: 0.85; pointer-events: none; background: rgba(255,255,255,0.85); border-radius: 10%; padding: 3px;"></i>
+          </div>
           <div class="mb-1 text-muted">{{ mascotaDetalle.raza }} | {{ mascotaDetalle.color }} | {{ mascotaDetalle.sexo }}</div>
         </div>
         <div class="mb-2">

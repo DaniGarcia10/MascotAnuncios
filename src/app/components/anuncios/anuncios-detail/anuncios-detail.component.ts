@@ -55,7 +55,7 @@ export class AnunciosDetailComponent implements OnInit {
   private idAnuncioActual: string | null = null;
   private usuarioId: string | null = null;
 
-  mascotaDetalle: any = null; // Para mostrar el detalle del padre/madre
+  mascotaDetalle: any = null; 
 
   constructor(
     private route: ActivatedRoute,

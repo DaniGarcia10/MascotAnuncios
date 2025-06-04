@@ -31,7 +31,7 @@ export class MisanunciosDetailComponent implements OnInit {
   imagenSeleccionada: number = 0;
   precioMinimo?: string;
   precioMaximo?: string;
-  usuario?: { nombre: string; telefono: string };
+  usuario?: { nombre: string; };
   estiloImagenModal: { [key: string]: string } = {
     width: 'auto',
     height: 'auto',
@@ -87,7 +87,7 @@ export class MisanunciosDetailComponent implements OnInit {
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private datosService: DatosService // <-- Inyecta el servicio
-  ) {}
+  ) { }
 
   async ngOnInit(): Promise<void> {
     const id = this.route.snapshot.paramMap.get('id');
@@ -106,7 +106,7 @@ export class MisanunciosDetailComponent implements OnInit {
         if (this.anuncio?.id_usuario) {
           const usuario = await this.usuarioService.getUsuarioById(this.anuncio.id_usuario);
           if (usuario) {
-            this.usuario = { nombre: usuario.nombre, telefono: usuario.telefono };
+            this.usuario = { nombre: usuario.nombre };
             this.criaderoData = await this.criaderoService.getCriaderoById(usuario.id_criadero);
           }
 
@@ -355,6 +355,10 @@ export class MisanunciosDetailComponent implements OnInit {
           this.anuncio?.raza || '',
           [Validators.required]
         ],
+        telefono: [
+          this.anuncio?.telefono || '',
+          [Validators.required, Validators.pattern(/^[\d\s\+\-]{7,20}$/)]
+        ],
         ubicacion: [
           this.anuncio?.ubicacion || '',
           [Validators.required]
@@ -516,6 +520,7 @@ export class MisanunciosDetailComponent implements OnInit {
       titulo: valores.titulo,
       raza: valores.raza,
       ubicacion: valores.ubicacion,
+      telefono: valores.telefono,
       edad,
       precio: valores.precio,
       descripcion: valores.descripcion,
@@ -885,8 +890,8 @@ export class MisanunciosDetailComponent implements OnInit {
     this.isGuardandoCachorro = false;
     this.cerrarModalCachorro();
     this.cerrarModalConfirmacionEliminarCachorro();
-    this.snackBar.open('Cachorro eliminado correctamente', 'X', { 
-      duration: 2500, 
+    this.snackBar.open('Cachorro eliminado correctamente', 'X', {
+      duration: 2500,
       panelClass: 'snackbar-success',
       verticalPosition: 'top'
     });
@@ -950,12 +955,20 @@ export class MisanunciosDetailComponent implements OnInit {
 
   // Abre el mini modal de disponibilidad
   async abrirMiniModalDisponibilidadCachorro(id: string, index: number) {
-    // Prepara el formCachorro solo con el campo disponible
+    // Prepara el formCachorro con TODOS los campos
     const cachorro = this.cachorros[index];
     this.cachorroEditando = { ...cachorro };
     this.indexCachorroEditando = index;
     this.formCachorro = this.fb.group({
-      disponible: [cachorro.disponible]
+      color: [cachorro.color || '', []],
+      sexo: [cachorro.sexo || '', [Validators.required]],
+      precio: [cachorro.precio || '', [Validators.required, Validators.max(100000)]],
+      disponible: [cachorro.disponible],
+      imagenes: [cachorro.imagenes || [], [
+        Validators.required,
+        (control: AbstractControl) => (control.value && control.value.length > 0 ? null : { required: true })
+      ]],
+      // Puedes agregar otros campos si los necesitas
     });
     // Asigna la imagen principal (la primera)
     this.imagenMiniModalCachorro = cachorro.imagenes?.[0] || '';
