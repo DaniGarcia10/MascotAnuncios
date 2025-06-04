@@ -5,8 +5,9 @@
         <h3 class="card-title-grande">Publicar Anuncio</h3>
       </div>
       <div class="card-body custom-card-body">
+
         <!-- Indicador de destacado -->
-        <div *ngIf="!cargandoSuscripcion">
+        <div *ngIf="!cargandoSuscripcion" class="d-flex align-items-center mb-3 gap-3 flex-wrap">
           <ng-container *ngIf="formAnuncio.get('destacado')?.value; else noDestacado">
             <span class="anuncio-destacado badge d-inline-flex align-items-center px-3 py-2 rounded-pill">
               <i class="bi bi-star-fill me-2"></i> Este anuncio aparecerá destacado
@@ -23,6 +24,32 @@
             <i class="bi bi-star-fill me-1"></i> Destacar anuncio
           </button>
         </div>
+
+        <!-- DESPLEGABLE DE PLANTILLAS O BOTÓN CREAR PLANTILLA -->
+        <div class="mb-3 d-flex">
+          <ng-select *ngIf="plantillasUsuario.length > 0" [items]="plantillasUsuario" bindLabel="nombre"
+            [(ngModel)]="plantillaSeleccionada" (change)="aplicarPlantilla($event)" (clear)="limpiarFormulario()"
+            placeholder="Cargar plantilla" class="custom-ng-select" style="min-width:220px;max-width:300px;">
+            <ng-template ng-label-tmp let-item="item">
+              <i class="bi bi-file-earmark-text me-1"></i> {{ item.nombre }}
+            </ng-template>
+            <ng-template ng-option-tmp let-item="item">
+              <i class="bi bi-file-earmark-text me-1"></i> {{ item.nombre }}
+            </ng-template>
+          </ng-select>
+
+          <!-- Si NO hay plantillas, muestra el mensaje y el botón alineados horizontalmente -->
+          <div *ngIf="plantillasUsuario.length === 0 && !cargandoSuscripcion"
+            class="d-flex align-items-center" style="gap: 10px;">
+            <p class="text-muted mb-0" style="max-width: 300px;">
+              Para hacer más rápido tu publicación de anuncios, crea plantillas.
+            </p>
+            <button class="btn-default ms-2" type="button" (click)="irACrearPlantilla()">
+              <i class="bi bi-plus-circle me-1"></i> Crear plantilla
+            </button>
+          </div>
+        </div>
+
         <form [formGroup]="formAnuncio" (ngSubmit)="onSubmit()">
           <!-- Tipo -->
           <div class="mb-3">

@@ -1,0 +1,167 @@
+<div class="container mt-5 mb-5">
+  <div class="row">
+    <!-- LISTA DE PLANTILLAS A LA IZQUIERDA -->
+    <div class="col-lg-4 mb-4">
+      <div class="card">
+        <div class="card-header text-center">
+          <h5>Mis plantillas guardadas</h5>
+        </div>
+        <div class="card-body">
+          <!-- Opción Nueva plantilla SIEMPRE visible y en la misma posición -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span (click)="nuevaPlantilla()" class="text-success fw-bold" style="cursor:pointer;">
+              <i class="bi bi-plus-circle"></i> Nueva plantilla
+            </span>
+          </div>
+          <!-- Separador -->
+          <hr class="my-2">
+          <ng-container *ngIf="misPlantillas.length > 0; else sinPlantillas">
+            <div *ngFor="let plantilla of misPlantillas" class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
+              <span (click)="onSeleccionarPlantilla(plantilla.id)" style="cursor:pointer;">
+                {{ plantilla.nombre }}
+              </span>
+              <button class="btn btn-sm btn-outline-danger" (click)="abrirModalEliminar(plantilla.id)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </ng-container>
+          <ng-template #sinPlantillas>
+            <p class="text-muted text-center">No tienes plantillas guardadas.</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORMULARIO DE PLANTILLA A LA DERECHA -->
+    <div class="col-lg-8">
+      <div class="card custom-card">
+        <div class="card-header custom-card-header text-center">
+          <h3 class="card-title-grande">Plantilla</h3>
+        </div>
+        <div class="card-body custom-card-body">
+          <form [formGroup]="formPlantilla" (ngSubmit)="onSubmit()">
+            <!-- Nombre -->
+            <div class="mb-3">
+              <label class="form-label">Nombre de la plantilla:</label>
+              <input type="text" class="form-control" placeholder="Ej: Plantilla para border collie" formControlName="nombrePlantilla">
+              <div *ngIf="formPlantilla.get('nombrePlantilla')?.invalid && formPlantilla.get('nombrePlantilla')?.touched" class="text-danger">
+                El nombre de la plantilla es obligatorio.
+              </div>
+            </div>
+
+            <!-- Tipo -->
+            <div class="mb-3">
+              <label class="form-label">Tipo:</label>
+              <ng-select [items]="[{label: 'Perro', value: true}, {label: 'Gato', value: false}]"
+                bindLabel="label" bindValue="value" formControlName="perro"
+                placeholder="Selecciona tipo" class="custom-ng-select" [searchable]="false">
+              </ng-select>
+              <div *ngIf="formPlantilla.get('perro')?.invalid && formPlantilla.get('perro')?.touched" class="text-danger">
+                Tipo es obligatorio.
+              </div>
+            </div>
+
+            <!-- Raza -->
+            <div class="mb-3">
+              <label class="form-label">Raza:</label>
+              <ng-select [items]="filteredRazas" bindLabel="label" bindValue="value" formControlName="raza"
+                placeholder="Selecciona raza" class="custom-ng-select">
+              </ng-select>
+              <div *ngIf="formPlantilla.get('raza')?.invalid && formPlantilla.get('raza')?.touched" class="text-danger">
+                Raza es obligatoria.
+              </div>
+            </div>
+
+            <!-- Título -->
+            <div class="mb-3">
+              <label class="form-label">Título:</label>
+              <input type="text" class="form-control" placeholder="Ingresa el título" formControlName="titulo">
+              <div *ngIf="formPlantilla.get('titulo')?.invalid && formPlantilla.get('titulo')?.touched" class="text-danger">
+                Título es obligatorio.
+              </div>
+            </div>
+
+            <!-- Edad -->
+            <div class="mb-3">
+              <label class="form-label">Edad:</label>
+              <div class="d-flex">
+                <input type="number" class="form-control me-2" placeholder="Ingresa la edad" formControlName="edadValor">
+                <ng-select [items]="['meses', 'semanas']" bindLabel="this" bindValue="this" formControlName="edadUnidad"
+                  placeholder="Semanas/Meses" class="custom-ng-select" [searchable]="false">
+                </ng-select>
+              </div>
+              <small *ngIf="formPlantilla.get('edadValor')?.invalid && formPlantilla.get('edadValor')?.touched" class="text-danger">
+                La edad es obligatoria.
+              </small>
+              <small *ngIf="formPlantilla.get('edadUnidad')?.invalid && formPlantilla.get('edadUnidad')?.touched" class="text-danger">
+                Elige una unidad de edad.
+              </small>
+            </div>
+
+            <!-- Provincia -->
+            <div class="mb-3">
+              <label class="form-label">Provincia:</label>
+              <ng-select [items]="provincias" formControlName="ubicacion" placeholder="Selecciona provincia"
+                class="custom-ng-select">
+              </ng-select>
+              <div *ngIf="formPlantilla.get('ubicacion')?.invalid && formPlantilla.get('ubicacion')?.touched" class="text-danger">
+                Provincia es obligatoria.
+              </div>
+            </div>
+
+            <!-- Precio -->
+            <div class="mb-3">
+              <label class="form-label">Precio:</label>
+              <input type="number" class="form-control" formControlName="precio" placeholder="Precio en €" min="0">
+              <small *ngIf="formPlantilla.get('precio')?.invalid && formPlantilla.get('precio')?.touched" class="text-danger">
+                <ng-container *ngIf="formPlantilla.get('precio')?.errors?.['required']">
+                  El precio es obligatorio.
+                </ng-container>
+                <ng-container *ngIf="formPlantilla.get('precio')?.errors?.['max']">
+                  El precio no puede superar 100000.
+                </ng-container>
+              </small>
+            </div>
+
+            <!-- Descripción -->
+            <div class="mb-3">
+              <label class="form-label">Descripción:</label>
+              <textarea class="form-control" formControlName="descripcion"
+                placeholder="Describe la plantilla" maxlength="360" rows="4"></textarea>
+              <small class="text-muted">
+                {{ formPlantilla.get('descripcion')?.value?.length || 0 }}/360 caracteres
+              </small>
+              <div *ngIf="formPlantilla.get('descripcion')?.errors?.['maxlength'] && formPlantilla.get('descripcion')?.touched" class="text-danger">
+                Máximo 360 caracteres.
+              </div>
+            </div>
+
+            <button type="submit" class="btn-default w-100" [disabled]="isSubmitting">
+              {{ isSubmitting ? 'Guardando...' : 'Guardar Plantilla' }}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="modalEliminarPlantilla" tabindex="-1" aria-labelledby="modalEliminarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEliminarLabel">Eliminar plantilla</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        ¿Seguro que deseas eliminar 
+        <b>{{ getNombrePlantillaAEliminar() }}</b>
+        ?
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <button type="button" class="btn btn-danger w-50" (click)="confirmarEliminarPlantilla()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>

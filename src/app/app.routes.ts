@@ -24,7 +24,7 @@ import { noCriaderoGuard } from './guards/no-criadero.guard';
 import { PagoExitosoComponent } from './components/pago-exitoso/pago-exitoso.component';
 import { PagoCanceladoComponent } from './components/pago-cancelado/pago-cancelado.component';
 import { ContenidoFooterComponent } from './components/contenido-footer/contenido-footer.component';
-
+import { PlantillasComponent } from './components/plantillas/plantillas.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [NoAuthGuard] },
@@ -46,6 +46,7 @@ export const routes: Routes = [
   { path: 'pago-exitoso', component: PagoExitosoComponent },
   { path: 'pago-cancelado', component: PagoCanceladoComponent },
   { path: 'contenido-footer', component: ContenidoFooterComponent },
+  { path: 'plantillas', component: PlantillasComponent, canActivate: [criadorGuard] },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 @NgModule({

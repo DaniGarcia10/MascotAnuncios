@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, collectionData, doc, getDoc, deleteDoc, addDoc, updateDoc, query, where } from '@angular/fire/firestore';
-import { Storage, ref, deleteObject } from '@angular/fire/storage';
 import { Observable, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Anuncio } from '../models/Anuncio.model';
@@ -19,7 +18,6 @@ export class AnunciosService {
 
   constructor(
     private firestore: Firestore,
-    private storage: Storage,
     private archivosService: ArchivosService,
     private cachorrosService: CachorrosService
   ) { }

@@ -1,0 +1,7 @@
+::ng-deep .ng-dropdown-panel {
+  left: 0 !important;
+  right: auto !important;
+  min-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}

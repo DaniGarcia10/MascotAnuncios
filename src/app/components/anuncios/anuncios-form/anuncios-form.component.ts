@@ -14,6 +14,8 @@ import { UsuarioService } from '../../../services/usuario.service';
 import { DatosService } from '../../../services/datos.service';
 import { Mascota } from '../../../models/Mascota.model';
 import { Suscripcion } from '../../../models/Suscripcion.model';
+import { PlantillasService } from '../../../services/plantillas.service';
+import { Plantilla } from '../../../models/Plantilla.model';
 
 @Component({
   selector: 'app-anuncios-form',
@@ -33,6 +35,8 @@ export class AnunciosFormComponent implements OnInit {
   hembras: Mascota[] = [];
   tieneSuscripcionActiva: boolean = false;
   cargandoSuscripcion = true;
+  plantillasUsuario: Plantilla[] = [];
+  plantillaSeleccionada: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -44,7 +48,8 @@ export class AnunciosFormComponent implements OnInit {
     private mascotasService: MascotasService,
     private suscripcionesService: SuscripcionesService,
     private usuarioService: UsuarioService,
-    private datosService: DatosService 
+    private datosService: DatosService ,
+    private plantillasService: PlantillasService,
   ) {}
 
   ngOnInit(): void {
@@ -77,6 +82,7 @@ export class AnunciosFormComponent implements OnInit {
       if (user) {
         this.formAnuncio.get('id_usuario')?.setValue(user.uid); 
         this.cargarMascotasUsuario(user.uid);
+        this.cargarPlantillasUsuario(user.uid);
 
         // Obtener el id de la suscripción y comprobar si está activa
         this.usuarioService.getIdSuscripcionByUsuarioId(user.uid).then(idSuscripcion => {
@@ -113,7 +119,7 @@ export class AnunciosFormComponent implements OnInit {
           this.cachorros.push(
             this.fb.group({
               color: [''],
-              sexo: ['', Validators.required],
+              sexo: [null, Validators.required],
               precio: [null, [Validators.required, Validators.max(100000)]],
               disponible: [true],
               imagenes: [[], Validators.required],
@@ -131,7 +137,7 @@ export class AnunciosFormComponent implements OnInit {
     // Cargar provincias usando el servicio y su caché
     this.datosService.obtenerProvincias().then(provincias => {
       this.provincias = provincias;
-      console.log('Provincias cargadas:', this.provincias); // <-- Añade esto
+      console.log('Provincias cargadas:', this.provincias); 
     });
   }
 
@@ -165,6 +171,12 @@ export class AnunciosFormComponent implements OnInit {
       error: (err) => {
         console.error('Error al cargar las mascotas del usuario:', err);
       },
+    });
+  }
+
+  cargarPlantillasUsuario(userId: string): void {
+    this.plantillasService.getPlantillaByUsuario(userId).subscribe(plantillas => {
+      this.plantillasUsuario = plantillas;
     });
   }
 
@@ -330,5 +342,70 @@ export class AnunciosFormComponent implements OnInit {
   destacarAnuncio(): void {
     // Redirige a la página de suscripciones y abre la sección de contratar
     this.router.navigate(['/suscripciones'], { queryParams: { contratar: 1 } });
+  }
+
+  async aplicarPlantilla(plantilla: any): Promise<void> {
+    if (!plantilla) return;
+
+    // Descomponer la edad (ejemplo: "3 meses" o "5 semanas")
+    let edadValor = null, edadUnidad = null;
+    if (plantilla.edad) {
+      const [valor, unidad] = plantilla.edad.split(' ');
+      edadValor = Number(valor);
+      edadUnidad = unidad;
+    }
+
+    // Si cambia el tipo, actualiza razas antes de setear la raza
+    if (this.formAnuncio.get('perro')?.value !== plantilla.perro) {
+      this.formAnuncio.get('perro')?.setValue(plantilla.perro);
+      await this.updateRazasList();
+    }
+
+    this.formAnuncio.patchValue({
+      perro: plantilla.perro,
+      raza: plantilla.raza,
+      titulo: plantilla.titulo,
+      descripcion: plantilla.descripcion,
+      edadValor,
+      edadUnidad,
+      ubicacion: plantilla.ubicacion,
+      precio: plantilla.precio
+    });
+
+    this.formAnuncio.markAllAsTouched();
+  }
+
+  limpiarFormulario(): void {
+    // Reinicia el formulario a su estado inicial
+    this.formAnuncio.reset({
+      perro: null,
+      raza: null,
+      titulo: '',
+      descripcion: '',
+      fecha_publicacion: new Date().toISOString(),
+      id_padre: null,
+      id_madre: null,
+      edad: '',
+      edadValor: null,
+      edadUnidad: null,
+      id_usuario: this.formAnuncio.get('id_usuario')?.value || '', // Mantén el usuario si ya está
+      activo: true,
+      ubicacion: null,
+      imagenes: [],
+      cachorros: [],
+      especificar_cachorros: false,
+      precio: null,
+      destacado: this.formAnuncio.get('destacado')?.value || null,
+      especificarPadres: false,
+      telefono: this.formAnuncio.get('telefono')?.value || null
+    });
+    this.clearCachorros();
+    this.plantillaSeleccionada = null;
+    this.formAnuncio.markAsUntouched();
+  }
+
+  // Añade este método público
+  irACrearPlantilla(): void {
+    this.router.navigate(['/plantillas']);
   }
 }
