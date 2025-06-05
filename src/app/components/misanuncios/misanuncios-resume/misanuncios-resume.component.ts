@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { CriaderoService } from '../../../services/criadero.service';
 import { UsuarioService } from '../../../services/usuario.service';
 import { CachorrosService } from '../../../services/cachorros.service';
@@ -16,6 +16,7 @@ import { AnunciosService } from '../../../services/anuncios.service';
 })
 export class MisanunciosResumeComponent implements OnInit {
   @Input() anuncio: any;
+  @Output() eliminar = new EventEmitter<any>();
 
   criaderoData: any;
   precioMinimo: string | null = null;
@@ -85,17 +86,7 @@ export class MisanunciosResumeComponent implements OnInit {
   }
 
   eliminarAnuncio(id: number): void {
-    const confirmacion = confirm('¿Estás seguro de que deseas eliminar este anuncio?');
-    if (confirmacion) {
-      this.anunciosService.eliminarAnuncio(id.toString()).subscribe({
-        next: () => {
-          console.log(`Anuncio con ID ${id} eliminado exitosamente.`);
-        },
-        error: (err) => {
-          console.error(`Error al eliminar el anuncio con ID ${id}:`, err);
-        }
-      });
-    }
+    this.eliminar.emit(this.anuncio);
   }
   
 }

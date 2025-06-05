@@ -19,34 +19,39 @@
             </span>
           </ng-template>
           <button *ngIf="!formAnuncio.get('destacado')?.value"
-            class="btn btn-warning text-dark fw-bold ms-0 ms-lg-3 mt-2 mt-lg-0" (click)="destacarAnuncio()"
-            type="button">
+            class="btn btn-warning text-dark fw-bold btn-sm px-3 py-1 rounded-pill boton-destacar ms-0 ms-md-auto mt-2 mt-md-0"
+            (click)="destacarAnuncio()" type="button">
             <i class="bi bi-star-fill me-1"></i> Destacar anuncio
           </button>
         </div>
 
         <!-- DESPLEGABLE DE PLANTILLAS O BOTÓN CREAR PLANTILLA -->
-        <div class="mb-3 d-flex">
-          <ng-select *ngIf="plantillasUsuario.length > 0" [items]="plantillasUsuario" bindLabel="nombre"
-            [(ngModel)]="plantillaSeleccionada" (change)="aplicarPlantilla($event)" (clear)="limpiarFormulario()"
-            placeholder="Cargar plantilla" class="custom-ng-select" style="min-width:220px;max-width:300px;">
-            <ng-template ng-label-tmp let-item="item">
-              <i class="bi bi-file-earmark-text me-1"></i> {{ item.nombre }}
-            </ng-template>
-            <ng-template ng-option-tmp let-item="item">
-              <i class="bi bi-file-earmark-text me-1"></i> {{ item.nombre }}
-            </ng-template>
-          </ng-select>
+        <div class="mb-3 d-flex flex-column">
+          <div class="d-flex">
+            <ng-select *ngIf="plantillasUsuario.length > 0" [items]="plantillasUsuario" bindLabel="nombre"
+              [(ngModel)]="plantillaSeleccionada" (change)="aplicarPlantilla($event)" (clear)="limpiarFormulario()"
+              placeholder="Cargar plantilla" class="custom-ng-select" style="min-width:220px;max-width:300px;">
+              <ng-template ng-label-tmp let-item="item">
+                <i class="bi bi-file-earmark-text me-1"></i> {{ item.nombre }}
+              </ng-template>
+              <ng-template ng-option-tmp let-item="item">
+                <i class="bi bi-file-earmark-text me-1"></i> {{ item.nombre }}
+              </ng-template>
+            </ng-select>
 
-          <!-- Si NO hay plantillas, muestra el mensaje y el botón alineados horizontalmente -->
-          <div *ngIf="plantillasUsuario.length === 0 && !cargandoSuscripcion"
-            class="d-flex align-items-center" style="gap: 10px;">
-            <p class="text-muted mb-0" style="max-width: 300px;">
-              Para hacer más rápido tu publicación de anuncios, crea plantillas.
-            </p>
-            <button class="btn-default ms-2" type="button" (click)="irACrearPlantilla()">
-              <i class="bi bi-plus-circle me-1"></i> Crear plantilla
-            </button>
+            <!-- Si NO hay plantillas, muestra el mensaje y el botón alineados horizontalmente -->
+            <div *ngIf="plantillasUsuario.length === 0 && !cargandoSuscripcion"
+              class="d-flex flex-wrap align-items-center w-100 gap-2 gap-md-0 justify-content-between"
+              style="max-width: 100%;">
+              <p class="text-muted mb-0" style="max-width: 300px;">
+                Para hacer más rápido tu publicación de anuncios, crea plantillas.
+              </p>
+              <span (click)="irACrearPlantilla()"
+                class="fw-bold ms-0 ms-md-2 mt-2 mt-md-0"
+                style="cursor:pointer; color: var(--primary-text-color); white-space: nowrap;">
+                <i class="bi bi-journal-text"></i> Ir a Mis Plantillas
+              </span>
+            </div>
           </div>
         </div>
 

@@ -18,6 +18,9 @@ export class MisanunciosListComponent implements OnInit, OnDestroy {
   cargando: boolean = true;
   private userSub: Subscription | undefined;
 
+  mostrarModal: boolean = false;
+  anuncioAEliminar: any = null;
+
   constructor(private anunciosService: AnunciosService, private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
@@ -49,6 +52,25 @@ export class MisanunciosListComponent implements OnInit, OnDestroy {
 
   editarAnuncio(anuncio: any): void {
     this.router.navigate(['/mis-anuncios', anuncio.id, 'editar']);
+  }
+
+  // Llama este método desde el hijo
+  solicitarEliminar(anuncio: any): void {
+    this.anuncioAEliminar = anuncio;
+    this.mostrarModal = true;
+  }
+
+  cancelarEliminar(): void {
+    this.mostrarModal = false;
+    this.anuncioAEliminar = null;
+  }
+
+  confirmarEliminar(): void {
+    if (!this.anuncioAEliminar) return;
+    this.anunciosService.eliminarAnuncio(this.anuncioAEliminar.id).subscribe(() => {
+      this.anunciosFiltrados = this.anunciosFiltrados.filter(a => a.id !== this.anuncioAEliminar.id);
+      this.cancelarEliminar();
+    });
   }
 
 }

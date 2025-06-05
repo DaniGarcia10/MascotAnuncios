@@ -8,14 +8,32 @@
       <div *ngIf="anunciosFiltrados.length > 0; else noAnuncios" class="row row-cols-1 row-cols-md-2 g-3">
         <div *ngFor="let anuncio of anunciosFiltrados" class="col">
           <app-misanuncios-resume 
-            [anuncio]="anuncio" 
-            (anuncioClick)="editarAnuncio(anuncio)">
+            [anuncio]="anuncio"
+            (eliminar)="solicitarEliminar(anuncio)">
           </app-misanuncios-resume>
         </div>
       </div>
       <ng-template #noAnuncios>
         <p class="text-center text-danger fw-bold">No hay anuncios disponibles.</p>
       </ng-template>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación de eliminación de anuncio -->
+<div class="modal fade show d-block" tabindex="-1" *ngIf="mostrarModal" style="background:rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmar eliminación</h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cancelarEliminar()"></button>
+      </div>
+      <div class="modal-body">
+        ¿Seguro que quieres eliminar este anuncio? Esta acción no se puede deshacer.
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-danger w-50" (click)="confirmarEliminar()">Eliminar</button>
+      </div>
     </div>
   </div>
 </div>

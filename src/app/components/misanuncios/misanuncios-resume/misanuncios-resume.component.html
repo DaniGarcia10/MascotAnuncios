@@ -48,7 +48,7 @@
     <div *ngIf="anuncioSeleccionado === anuncio.id"
          class="card-footer bg-light text-muted d-flex justify-content-end mt-auto">
       <button class="btn-default me-2 w-50" (click)="editarAnuncio(anuncio.id)">Editar</button>
-      <button class="btn btn-danger w-50" (click)="eliminarAnuncio(anuncio.id)">Eliminar</button>
+      <button class="btn btn-danger w-50" (click)="eliminarAnuncio(anuncio.id); $event.stopPropagation()">Eliminar</button>
     </div>
   </div>
 </div>

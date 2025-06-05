@@ -35,7 +35,7 @@ export class PlantillasComponent implements OnInit {
     this.formPlantilla = this.fb.group({
       nombrePlantilla: ['', Validators.required], 
       perro: [null, Validators.required],
-      raza: [null, Validators.required],
+      raza: [{ value: null, disabled: true }, Validators.required], // <-- Deshabilitado por defecto
       titulo: ['', Validators.required],
       descripcion: ['', [Validators.maxLength(360)]],
       edadValor: [null, Validators.required],
@@ -57,10 +57,23 @@ export class PlantillasComponent implements OnInit {
     // Cargar razas iniciales según el valor por defecto de 'perro'
     this.updateRazasList();
 
-    this.formPlantilla.get('perro')?.valueChanges.subscribe(() => {
+    // Habilita/deshabilita raza según el valor de 'perro'
+    this.formPlantilla.get('perro')?.valueChanges.subscribe((valor) => {
       this.updateRazasList();
       this.formPlantilla.get('raza')?.setValue(null);
+      if (valor === null || valor === undefined) {
+        this.formPlantilla.get('raza')?.disable();
+      } else {
+        this.formPlantilla.get('raza')?.enable();
+      }
     });
+
+    // Inicializa el estado de raza según el valor inicial de 'perro'
+    if (!this.formPlantilla.get('perro')?.value) {
+      this.formPlantilla.get('raza')?.disable();
+    } else {
+      this.formPlantilla.get('raza')?.enable();
+    }
 
     this.cargarMisPlantillas();
   }
