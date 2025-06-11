@@ -1,10 +1,14 @@
+// Angular core
 import { Component, Input, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+
+// Servicios
 import { CriaderoService } from '../../../services/criadero.service';
 import { UsuarioService } from '../../../services/usuario.service';
 import { CachorrosService } from '../../../services/cachorros.service';
 import { ArchivosService } from '../../../services/archivos.service';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+
 
 @Component({
   selector: 'app-anuncios-resume',

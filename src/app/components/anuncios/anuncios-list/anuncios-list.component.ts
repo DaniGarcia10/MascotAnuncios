@@ -22,11 +22,11 @@ export class AnunciosListComponent implements OnInit {
   cargando: boolean = true; 
 
   filtros = {
-    tipoAnimal: null,
-    raza: null,
+    tipoAnimal: null as 'perro' | 'gato' | null,
+    raza: null as string | null,
     ubicacion: null as string | null,
-    precioMin: null,
-    precioMax: null
+    precioMin: null as number | null,
+    precioMax: null as number | null
   };
 
   razas: { label: string, value: string }[] = [];
@@ -58,18 +58,18 @@ export class AnunciosListComponent implements OnInit {
   });
 }
 
-  private cargarAnuncios(): void {
-  this.cargando = true;
-  this.anuncios = [];
-  this.anunciosFiltrados = [];
+  public cargarAnuncios(): void { // Cambia de private a public
+    this.cargando = true;
+    this.anuncios = [];
+    this.anunciosFiltrados = [];
 
-  this.anunciosService.getAnuncios().subscribe(data => {
-    this.anuncios = data;
-    this.updateRazasList().then(() => {
-      this.aplicarFiltros();
-      this.cargando = false;
+    this.anunciosService.getAnuncios().subscribe(data => {
+      this.anuncios = data;
+      this.updateRazasList().then(() => {
+        this.aplicarFiltros();
+        this.cargando = false;
+      });
     });
-  });
 }
 
 
@@ -180,92 +180,5 @@ export class AnunciosListComponent implements OnInit {
         break;
     }
   }
-
-  detectarUbicacion(): void {
-    if (!navigator.geolocation) {
-      this.usarUbicacionPorIP();
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-
-        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
-          .then(res => res.json())
-          .then(data => {
-            console.log('Datos GPS:', data);
-
-            const direccion = data.address;
-            const posibles = [
-              direccion.city,
-              direccion.town,
-              direccion.village,
-              direccion.county,
-              direccion.state_district
-            ];
-
-            const nombreDetectado = posibles.find(nombre => !!nombre);
-
-            if (!nombreDetectado) {
-              console.warn('No se encontró ningún campo de ubicación útil');
-              this.usarUbicacionPorIP();
-              return;
-            }
-
-            // Buscar la provincia por coincidencia parcial
-            const provinciaEncontrada = this.provincias.find(p =>
-              nombreDetectado.toLowerCase().includes(p.label.toLowerCase()) ||
-              p.label.toLowerCase().includes(nombreDetectado.toLowerCase())
-            );
-
-            if (provinciaEncontrada) {
-              this.filtros.ubicacion = provinciaEncontrada.value;
-            } else {
-              console.warn('No se pudo mapear correctamente a una provincia:', nombreDetectado);
-              this.filtros.ubicacion = null;
-            }
-          })
-          .catch((error) => {
-            console.error('Error Nominatim:', error);
-            this.usarUbicacionPorIP();
-          });
-      },
-      (error) => {
-        console.warn('Error GPS:', error.message);
-        this.usarUbicacionPorIP();
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      }
-    );
-  }
-
-
-  usarUbicacionPorIP(): void {
-    fetch('https://ipapi.co/json/')
-      .then(res => res.json())
-      .then(data => {
-        console.log('Datos por IP:', data);
-        const provincia = data.region; 
-
-        const provinciaEncontrada = this.provincias.find(p => p.label.toLowerCase() === provincia.toLowerCase());
-        if (provinciaEncontrada) {
-          this.filtros.ubicacion = provinciaEncontrada.value;
-        } else {
-          console.warn('Provincia no encontrada por IP:', provincia);
-          alert('No se pudo detectar tu provincia.');
-        }
-      })
-      .catch((error) => {
-        console.error('Error IP geolocation:', error);
-        alert('No se pudo detectar tu ubicación.');
-      });
-  }
-
-
 
 }

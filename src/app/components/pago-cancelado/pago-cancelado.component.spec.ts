@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 
 import { PagoCanceladoComponent } from './pago-cancelado.component';
 
@@ -8,7 +9,10 @@ describe('PagoCanceladoComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PagoCanceladoComponent]
+      imports: [PagoCanceladoComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: {} }
+      ]
     })
     .compileComponents();
 

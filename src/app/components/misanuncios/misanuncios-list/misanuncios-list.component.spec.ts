@@ -1,4 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Firestore } from '@angular/fire/firestore';
+import { Auth } from '@angular/fire/auth';
+import { Storage } from '@angular/fire/storage';
+import { ActivatedRoute } from '@angular/router';
 
 import { MisanunciosListComponent } from './misanuncios-list.component';
 
@@ -8,7 +12,13 @@ describe('MisanunciosListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MisanunciosListComponent]
+      imports: [MisanunciosListComponent],
+      providers: [
+        { provide: Firestore, useValue: {} },
+        { provide: Auth, useValue: {} },
+        { provide: Storage, useValue: {} },
+        { provide: ActivatedRoute, useValue: {} }
+      ]
     })
     .compileComponents();
 

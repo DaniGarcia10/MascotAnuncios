@@ -1,4 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Firestore } from '@angular/fire/firestore';
+import { Auth } from '@angular/fire/auth';
+import { Storage } from '@angular/fire/storage';
+import { ActivatedRoute } from '@angular/router';
+
 import { AnunciosResumeComponent } from './anuncios-resume.component';
 
 describe('AnunciosResumeComponent', () => {
@@ -7,7 +12,13 @@ describe('AnunciosResumeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AnunciosResumeComponent]
+      imports: [AnunciosResumeComponent],
+      providers: [
+        { provide: Firestore, useValue: {} },
+        { provide: Auth, useValue: {} },
+        { provide: Storage, useValue: {} },
+        { provide: ActivatedRoute, useValue: {} }
+      ]
     })
     .compileComponents();
 
