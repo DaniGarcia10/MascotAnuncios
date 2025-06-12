@@ -66,7 +66,7 @@
                    style="width: 100%; max-width: 400px; aspect-ratio: 1/1; object-fit: cover; display: block; margin-left: auto; margin-right: auto;">
             </div>
             <div class="mb-3">
-              <label for="nombre" class="form-label"><strong>Nombre:</strong></label>
+              <label for="nombre" class="form-label"><strong>Nombre completo:</strong></label>
               <input id="nombre" formControlName="nombre" placeholder="Introduzca su nombre" class="form-control"
                 [readonly]="!editMode" />
             </div>
@@ -163,7 +163,7 @@
                 Las contraseñas no coinciden.
               </small>
             </div>
-            <button type="submit" class="btn-default w-100">Cambiar Contraseña</button>
+            <button type="submit" class="btn-default w-100">Cambiar contraseña</button>
           </form>
         </div>
       </div>
@@ -183,7 +183,7 @@
           <h5><strong>Nombre:</strong> {{ criadero.nombre }}</h5>
           <p><strong>Núcleo Zoológico:</strong> {{ criadero.nucleo_zoologico }}</p>
           <p><strong>Ubicación:</strong> {{ criadero.ubicacion }}</p>
-          <p><strong>Fecha de Registro:</strong> {{ criadero.fecha_registro }}</p>
+          <p><strong>Fecha de Registro:</strong> {{ criadero.fecha_registro | date:'dd/MM/yyyy' }}</p>
           <p>
             <span *ngIf="criadero.verificado; else noVerificado" class="text-success">
               Verificado <i class="bi bi-patch-check-fill"></i>

@@ -10,6 +10,8 @@ import { AuthService } from '../../services/auth.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { v4 as uuidv4 } from 'uuid';
+import { PagosService } from '../../services/pagos.service'; 
 
 @Component({
   selector: 'app-suscripciones',
@@ -37,6 +39,7 @@ export class SuscripcionesComponent implements OnInit {
     private fb: FormBuilder,
     private suscripcionesService: SuscripcionesService,
     private usuarioService: UsuarioService,
+    private pagosService: PagosService,
     private authService: AuthService,
     private route: ActivatedRoute,
     private http: HttpClient
@@ -81,7 +84,7 @@ export class SuscripcionesComponent implements OnInit {
   }
 
   async crearSuscripcion(): Promise<void> {
-    if (this.procesando) return; // Evita doble click
+    if (this.procesando) return; 
     this.procesando = true;
     try {
       if (this.suscripcionForm.valid) {
@@ -101,7 +104,7 @@ export class SuscripcionesComponent implements OnInit {
             if (suscripcionId) {
               const suscripcionActual = await firstValueFrom(this.suscripcionesService.obtenerSuscripcion(suscripcionId));
               if (!suscripcionActual) {
-                suscripcionId = null; // Forzar la creación de una nueva suscripción
+                suscripcionId = null; 
               } else {
                 const ahoraMadrid = new Date(
                   new Date().toLocaleString('en-US', { timeZone: 'Europe/Madrid' })
@@ -182,29 +185,55 @@ export class SuscripcionesComponent implements OnInit {
     return dias > 0 ? dias : 0;
   }
 
-  iniciarPagoStripe(): void {
-  if (this.procesandoPago) return;
-  this.procesandoPago = true;
-  const precio = this.precioSeleccionado;
-  const duracion = this.suscripcionForm.get('duracion')?.value;
-  if (!precio || !duracion) {
-    this.procesandoPago = false;
-    return;
-  }
-
-  this.http.post<{ url: string }>(
-    'http://127.0.0.1:5001/mascotanunicos/us-central1/createCheckoutSession',
-    { precio, duracion }
-  ).subscribe({
-    next: (res) => {
-      window.location.href = res.url;
-    },
-    error: (err) => {
-      console.error('Error al iniciar pago con Stripe:', err);
+  async iniciarPagoStripe(): Promise<void> {
+    if (this.procesandoPago) return;
+    this.procesandoPago = true;
+    const precio = this.precioSeleccionado;
+    const duracion = this.suscripcionForm.get('duracion')?.value;
+    if (!precio || !duracion) {
       this.procesandoPago = false;
+      return;
     }
-  });
-}
 
+    // 1. Obtener el usuario autenticado
+    this.authService.getUserDataAuth().subscribe({
+      next: async (authData) => {
+        const userId = authData.user?.uid || '';
+        if (!userId) {
+          this.procesandoPago = false;
+          return;
+        }
 
+        // 2. Crear el pago en Firebase y obtener el id generado automáticamente
+        try {
+          const pagoRef = await this.pagosService.guardarPagoAutoId({
+            duracion,
+            id_usuario: userId,
+            pagado: false
+          });
+          const id_pago = pagoRef.id;
+
+          // 3. Llamar al backend para crear la sesión de Stripe, pasando el id_pago
+          this.http.post<{ url: string }>(
+            'http://127.0.0.1:5001/mascotanunicos/us-central1/createCheckoutSession',
+            { precio, duracion, id_pago }
+          ).subscribe({
+            next: (res) => {
+              window.location.href = res.url;
+            },
+            error: (err) => {
+              console.error('Error al iniciar pago con Stripe:', err);
+              this.procesandoPago = false;
+            }
+          });
+        } catch (error) {
+          console.error('Error al guardar el pago:', error);
+          this.procesandoPago = false;
+        }
+      },
+      error: () => {
+        this.procesandoPago = false;
+      }
+    });
+  }
 }

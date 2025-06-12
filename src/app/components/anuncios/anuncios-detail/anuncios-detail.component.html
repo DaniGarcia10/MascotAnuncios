@@ -237,8 +237,14 @@
             <div class="modal-body text-center">
               <p class="fs-4 fw-bold">{{ anuncio.telefono }}</p>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn-default" data-bs-dismiss="modal">Cerrar</button>
+            <div class="modal-footer d-flex align-items-center" >
+              <span *ngIf="mensajeTelefonoCopiado" class="flex-grow-1">
+                {{ mensajeTelefonoCopiado }}
+              </span>
+              <div class="flex-grow-1"></div>
+              <button type="button" class="btn-default ms-auto" (click)="copiarTelefono()">
+                <i class="bi bi-clipboard"></i> Copiar teléfono
+              </button>
             </div>
           </div>
         </div>

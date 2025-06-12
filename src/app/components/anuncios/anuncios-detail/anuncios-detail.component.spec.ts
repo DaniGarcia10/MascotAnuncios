@@ -44,6 +44,21 @@ describe('AnunciosDetailComponent', () => {
     )
   };
 
+  const mockFirestore = {
+    collection: jasmine.createSpy().and.returnValue({
+      doc: jasmine.createSpy().and.returnValue({
+        get: jasmine.createSpy().and.returnValue(Promise.resolve({ data: () => ({}) })),
+        set: jasmine.createSpy().and.returnValue(Promise.resolve()),
+        update: jasmine.createSpy().and.returnValue(Promise.resolve()),
+        delete: jasmine.createSpy().and.returnValue(Promise.resolve())
+      }),
+      valueChanges: jasmine.createSpy().and.returnValue(of([])),
+      add: jasmine.createSpy().and.returnValue(Promise.resolve())
+    })
+  };
+
+  const mockDatabase = {};
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AnunciosDetailComponent],
@@ -55,8 +70,8 @@ describe('AnunciosDetailComponent', () => {
             snapshot: { paramMap: { get: () => 'test-id' } }
           }
         },
-        { provide: Firestore, useValue: {} },
-        { provide: Database, useValue: {} },
+        { provide: Firestore, useValue: mockFirestore },
+        { provide: Database, useValue: mockDatabase },
         { provide: Auth, useValue: {} },
         { provide: ArchivosService, useValue: mockArchivosService },
         { provide: MascotasService, useValue: { getMascotaByIdAndUsuario: () => Promise.resolve({ imagenes: ['img1.jpg'] }) } },

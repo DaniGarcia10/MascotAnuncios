@@ -11,5 +11,9 @@ import { Documentacion } from '../../../models/documentacion.model';
   styleUrls: ['./documentacion-resume.component.css']
 })
 export class DocumentacionResumeComponent {
-  @Input() usuario!: { usuario: Usuario; documentacion?: Documentacion };
+  @Input() usuario!: { 
+    usuario: Usuario; 
+    documentacion?: Documentacion;
+    criadero?: any; // Usa el tipo correcto si tienes un modelo Criadero
+  };
 }

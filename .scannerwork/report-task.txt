@@ -2,5 +2,5 @@ projectKey=MascotAnuncios
 serverUrl=http://localhost:9000
 serverVersion=25.4.0.105899
 dashboardUrl=http://localhost:9000/dashboard?id=MascotAnuncios
-ceTaskId=1d12ce12-175f-427d-9630-d49e09129caa
-ceTaskUrl=http://localhost:9000/api/ce/task?id=1d12ce12-175f-427d-9630-d49e09129caa
+ceTaskId=2fab92f6-ba80-4a46-84e7-18ea779e11d6
+ceTaskUrl=http://localhost:9000/api/ce/task?id=2fab92f6-ba80-4a46-84e7-18ea779e11d6

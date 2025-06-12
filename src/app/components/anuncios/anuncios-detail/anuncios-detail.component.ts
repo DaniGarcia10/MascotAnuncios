@@ -57,6 +57,8 @@ export class AnunciosDetailComponent implements OnInit {
 
   mascotaDetalle: any = null; 
 
+  mensajeTelefonoCopiado: string = '';
+
   constructor(
     private route: ActivatedRoute,
     private anunciosService: AnunciosService,
@@ -431,5 +433,15 @@ export class AnunciosDetailComponent implements OnInit {
     const tipo = this.mascotaDetalle === this.padreMascota ? 'padre' : 'madre';
     this.abrirModalImagen(tipo);
     this.cerrarDetallesMascota();
+  }
+
+  copiarTelefono() {
+    if (this.anuncio?.telefono) {
+      navigator.clipboard.writeText(this.anuncio.telefono);
+      this.mensajeTelefonoCopiado = '¡Teléfono copiado!';
+      setTimeout(() => {
+        this.mensajeTelefonoCopiado = '';
+      }, 2000);
+    }
   }
 }

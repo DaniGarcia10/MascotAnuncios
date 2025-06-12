@@ -1,6 +1,5 @@
-<!-- Tarjeta de resumen de usuario -->
-<div class="p-2 border rounded mb-2 cursor-pointer
-  "
+<!-- Tarjeta de resumen de usuario y criadero -->
+<div class="p-2 border rounded mb-2 cursor-pointer"
   [ngClass]="{
     'bg-danger': usuario.documentacion?.estado === 'RECHAZADO',
     'bg-white': usuario.documentacion?.estado === 'PENDIENTE',
@@ -9,7 +8,23 @@
   }"
   [class.text-white]="usuario.documentacion?.estado === 'RECHAZADO' || usuario.documentacion?.estado === 'ACEPTADO'"
 >
-  <strong>{{ usuario.usuario.nombre }}</strong><br>
-  <small>{{ usuario.usuario.email }}</small><br>
-  <small>{{ usuario.usuario.telefono }}</small><br>
+  <div class="row">
+    <!-- Columna izquierda: Usuario -->
+    <div class="col-12 col-md-6 mb-2 mb-md-0">
+      <strong>{{ usuario.usuario.nombre }}</strong><br>
+      <small>{{ usuario.usuario.email }}</small><br>
+      <small>{{ usuario.usuario.telefono }}</small><br>
+    </div>
+    <!-- Columna derecha: Criadero -->
+    <div class="col-12 col-md-6">
+      <ng-container *ngIf="usuario.criadero">
+         {{ usuario.criadero.nombre || 'Sin nombre' }}<br>
+        <small> {{ usuario.criadero.nucleo_zoologico || 'No registrado' }}</small><br>
+        <small> {{ usuario.criadero.ubicacion || 'No registrada' }}</small>
+      </ng-container>
+      <ng-container *ngIf="!usuario.criadero">
+        <span class="text-muted">Sin datos de criadero</span>
+      </ng-container>
+    </div>
+  </div>
 </div>

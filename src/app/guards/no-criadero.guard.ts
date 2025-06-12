@@ -26,7 +26,7 @@ export const noCriaderoGuard: CanActivateFn = async (route, state) => {
   try {
     // Comprobar criadero y verificación
     const idCriadero = await usuarioService.getIdCriaderoByUsuarioId(userId);
-    if (idCriadero) {
+    if (idCriadero && idCriadero !== null) {
       const verificado = await criaderoService.getVerficadoById(idCriadero);
       if (!verificado) {
         return true;

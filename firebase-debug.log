@@ -1,0 +1,16 @@
+[debug] [2025-06-12T16:01:00.649Z] ----------------------------------------------------------------------
+[debug] [2025-06-12T16:01:00.657Z] Command:       C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions
+[debug] [2025-06-12T16:01:00.658Z] CLI Version:   14.5.1
+[debug] [2025-06-12T16:01:00.658Z] Platform:      win32
+[debug] [2025-06-12T16:01:00.658Z] Node Version:  v20.19.2
+[debug] [2025-06-12T16:01:00.658Z] Time:          Thu Jun 12 2025 18:01:00 GMT+0200 (hora de verano de Europa central)
+[debug] [2025-06-12T16:01:00.658Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-06-12T16:01:00.807Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-06-12T16:01:00.807Z] > authorizing via signed-in user (danielgarciapelaez@gmail.com)
+[debug] [2025-06-12T16:01:00.807Z] [iam] checking project mascotanunicos for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2025-06-12T16:01:00.810Z] Checked if tokens are valid: true, expires at: 1749747104974
+[debug] [2025-06-12T16:01:00.810Z] Checked if tokens are valid: true, expires at: 1749747104974
+[debug] [2025-06-12T16:01:00.810Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/mascotanunicos:testIamPermissions [none]
+[debug] [2025-06-12T16:01:00.810Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/mascotanunicos:testIamPermissions x-goog-quota-user=projects/mascotanunicos
+[debug] [2025-06-12T16:01:00.811Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/mascotanunicos:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
