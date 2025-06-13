@@ -305,7 +305,7 @@
           <button class="btn btn-success" (click)="compartirAnuncio()">
             <i class="bi bi-share me-1"></i>Compartir anuncio
           </button>
-          <button class="btn btn-danger" (click)="denunciarAnuncio()">
+          <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalDenuncia">
             <i class="bi bi-flag me-1"></i>Denunciar anuncio
           </button>
         </div>
@@ -363,5 +363,69 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Modal de denuncia de anuncio -->
+<div class="modal fade" id="modalDenuncia" tabindex="-1" aria-labelledby="modalDenunciaLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" (ngSubmit)="enviarDenuncia()" #formDenuncia="ngForm">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalDenunciaLabel">Denunciar anuncio</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="emailDenuncia" class="form-label">Tu email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="emailDenuncia"
+            name="email"
+            [(ngModel)]="denuncia.email"
+            required
+            email
+            maxlength="80"
+            #emailDenuncia="ngModel"
+          >
+          <div *ngIf="emailDenuncia.invalid && (emailDenuncia.dirty || emailDenuncia.touched)" class="text-danger small mt-1">
+            <div *ngIf="emailDenuncia.errors?.['required']">El email es obligatorio.</div>
+            <div *ngIf="emailDenuncia.errors?.['email']">Introduce un email válido.</div>
+            <div *ngIf="emailDenuncia.errors?.['maxlength']">El email no puede superar 80 caracteres.</div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="motivoDenuncia" class="form-label">Motivo</label>
+          <textarea
+            class="form-control"
+            id="motivoDenuncia"
+            name="motivo"
+            rows="3"
+            [(ngModel)]="denuncia.motivo"
+            required
+            minlength="10"
+            maxlength="500"
+            #motivoDenuncia="ngModel"
+          ></textarea>
+          <div *ngIf="motivoDenuncia.invalid && (motivoDenuncia.dirty || motivoDenuncia.touched)" class="text-danger small mt-1">
+            <div *ngIf="motivoDenuncia.errors?.['required']">El motivo es obligatorio.</div>
+            <div *ngIf="motivoDenuncia.errors?.['minlength']">El motivo debe tener al menos 10 caracteres.</div>
+            <div *ngIf="motivoDenuncia.errors?.['maxlength']">El motivo no puede superar 500 caracteres.</div>
+          </div>
+        </div>
+        <div *ngIf="mensajeDenuncia" class="alert alert-success py-2">
+          {{ mensajeDenuncia }}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="submit"
+          class="btn btn-danger"
+          [disabled]="formDenuncia.invalid || enviandoDenuncia"
+        >
+          Enviar denuncia
+        </button>
+      </div>
+    </form>
   </div>
 </div>

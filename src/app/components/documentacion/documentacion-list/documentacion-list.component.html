@@ -12,29 +12,35 @@
 
       <!-- Botones de estado -->
       <div class="col-12 col-md-6">
-        <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2">
-          <button type="button" class="btn btn-secondary"
-            style="min-width: 120px;"
-            [class.active]="!estadoSeleccionado"
-            (click)="filtrarPorEstado(null)">
-            Todos
-          </button>
-          <button type="button" class="btn btn-success"
-            style="min-width: 120px;"
-            [class.active]="estadoSeleccionado === Estado.ACEPTADO"
-            (click)="filtrarPorEstado(Estado.ACEPTADO)">ACEPTADO</button>
-          <button type="button" class="btn btn-warning"
-            style="min-width: 120px;"
-            [class.active]="estadoSeleccionado === Estado.PENDIENTE"
-            (click)="filtrarPorEstado(Estado.PENDIENTE)">
-            PENDIENTE
-          </button>
-          <button type="button" class="btn btn-primary"
-            style="min-width: 120px;"
-            [class.active]="estadoSeleccionado === Estado.RECHAZADO"
-            (click)="filtrarPorEstado(Estado.RECHAZADO)">
-            RECHAZADO
-          </button>
+        <div class="row g-1">
+          <div class="col-6 col-md-3">
+            <button type="button" class="btn btn-secondary w-100"
+              [class.active]="!estadoSeleccionado"
+              (click)="filtrarPorEstado(null)">
+              Todos
+            </button>
+          </div>
+          <div class="col-6 col-md-3">
+            <button type="button" class="btn btn-success w-100"
+              [class.active]="estadoSeleccionado === Estado.ACEPTADO"
+              (click)="filtrarPorEstado(Estado.ACEPTADO)">
+              ACEPTADO
+            </button>
+          </div>
+          <div class="col-6 col-md-3 mt-1 mt-md-0">
+            <button type="button" class="btn btn-warning w-100"
+              [class.active]="estadoSeleccionado === Estado.PENDIENTE"
+              (click)="filtrarPorEstado(Estado.PENDIENTE)">
+              PENDIENTE
+            </button>
+          </div>
+          <div class="col-6 col-md-3 mt-1 mt-md-0">
+            <button type="button" class="btn btn-primary w-100"
+              [class.active]="estadoSeleccionado === Estado.RECHAZADO"
+              (click)="filtrarPorEstado(Estado.RECHAZADO)">
+              RECHAZADO
+            </button>
+          </div>
         </div>
       </div>
 

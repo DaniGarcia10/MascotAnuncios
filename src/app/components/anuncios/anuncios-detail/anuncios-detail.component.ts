@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { AnunciosService } from '../../../services/anuncios.service';
 import { Anuncio } from '../../../models/Anuncio.model';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms'; // <-- Agrega esta línea
 import { MascotasService } from '../../../services/mascotas.service';
 import { CriaderoService } from '../../../services/criadero.service';
 import { Criadero } from '../../../models/Criadero.model';
@@ -14,10 +15,12 @@ import { FavoritosService } from '../../../services/favoritos.service';
 import { AuthService } from '../../../services/auth.service';
 import { doc, setDoc, updateDoc, arrayUnion, arrayRemove, getDoc } from '@angular/fire/firestore';
 import { Firestore } from '@angular/fire/firestore';
+import { DenunciasService } from '../../../services/denuncias.service';
+import { Denuncia } from '../../../models/Denuncia.model';
 
 @Component({
   selector: 'app-anuncios-detail',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule], 
   templateUrl: './anuncios-detail.component.html',
   styleUrls: ['./anuncios-detail.component.css']
 })
@@ -59,6 +62,10 @@ export class AnunciosDetailComponent implements OnInit {
 
   mensajeTelefonoCopiado: string = '';
 
+  denuncia: Denuncia = { id: '', id_usuario: '', id_anuncio: '', email: '', motivo: '', revisada: false };
+  mensajeDenuncia: string = '';
+  enviandoDenuncia: boolean = false; 
+
   constructor(
     private route: ActivatedRoute,
     private anunciosService: AnunciosService,
@@ -69,7 +76,8 @@ export class AnunciosDetailComponent implements OnInit {
     private archivosService: ArchivosService,
     private favoritosService: FavoritosService,
     private authService: AuthService,
-    private firestore: Firestore
+    private firestore: Firestore,
+    private denunciasService: DenunciasService
   ) {}
 
   ngOnInit(): void {
@@ -338,9 +346,36 @@ export class AnunciosDetailComponent implements OnInit {
     }
   }
 
-  denunciarAnuncio() {
-    // Esto puedes sustituirlo por una lógica real con modal o llamada a API
-    alert('Gracias por tu reporte. Revisaremos este anuncio.');
+  enviarDenuncia() {
+    if (!this.anuncio?.id || !this.anuncio?.id_usuario) return;
+    this.enviandoDenuncia = true;
+    this.denuncia.id_anuncio = this.anuncio.id;
+    this.denuncia.id_usuario = this.anuncio.id_usuario; 
+    this.denuncia.revisada = false;
+    this.denunciasService.añadirDenuncia(this.denuncia).then(() => {
+      this.mensajeDenuncia = '¡Denuncia enviada correctamente!';
+      this.denuncia = { 
+        id: '', 
+        id_anuncio: this.anuncio?.id || '', 
+        id_usuario: this.anuncio?.id_usuario || '', 
+        email: '', 
+        motivo: '', 
+        revisada: false 
+      };
+      setTimeout(() => {
+        this.mensajeDenuncia = '';
+        this.enviandoDenuncia = false; // Desbloquea el botón tras cerrar modal
+        // Cerrar modal con Bootstrap 5
+        const modal = document.getElementById('modalDenuncia');
+        if (modal) {
+          // @ts-ignore
+          bootstrap.Modal.getOrCreateInstance(modal).hide();
+        }
+      }, 1500);
+    }).catch(() => {
+      this.mensajeDenuncia = 'Error al enviar la denuncia. Inténtalo de nuevo.';
+      this.enviandoDenuncia = false; // Desbloquea el botón si hay error
+    });
   }
 
   async toggleFavorito() {

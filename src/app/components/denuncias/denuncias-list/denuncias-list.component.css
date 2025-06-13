@@ -1,0 +1,8 @@
+.selected {
+    border-left: 6px solid var(--accent-color);
+    background-color: #eaf2ff !important;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    transition: transform 0.15s, box-shadow 0.15s;
+    transform: scale(1.05);
+    z-index: 2;
+}

@@ -54,6 +54,9 @@
         <li *ngIf="esAdmin" class="nav-item me-3">
           <a class="nav-link" routerLink="/documentaciones">Documentación</a>
         </li>
+        <li *ngIf="esAdmin" class="nav-item me-3">
+          <a class="nav-link" routerLink="/denuncias">Denuncias</a>
+        </li>
 
         <!-- Enlaces para invitados -->
         <li *ngIf="!isAuthenticated" class="nav-item me-3">

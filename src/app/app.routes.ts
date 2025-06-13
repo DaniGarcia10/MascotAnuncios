@@ -25,6 +25,7 @@ import { PagoExitosoComponent } from './components/pago-exitoso/pago-exitoso.com
 import { PagoCanceladoComponent } from './components/pago-cancelado/pago-cancelado.component';
 import { ContenidoFooterComponent } from './components/contenido-footer/contenido-footer.component';
 import { PlantillasComponent } from './components/plantillas/plantillas.component';
+import { DenunciasListComponent } from './components/denuncias/denuncias-list/denuncias-list.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [NoAuthGuard] },
@@ -43,6 +44,7 @@ export const routes: Routes = [
   { path: 'suscripciones', component: SuscripcionesComponent, canActivate: [criadorGuard] },
   { path: 'documentaciones', component: DocumentacionListComponent, canActivate: [AdminGuard] },
   { path: 'usuarios', component: UsuariosListComponent, canActivate: [AdminGuard] },
+  { path: 'denuncias', component: DenunciasListComponent, canActivate: [AdminGuard] },
   { path: 'pago-exitoso', component: PagoExitosoComponent },
   { path: 'pago-cancelado', component: PagoCanceladoComponent },
   { path: 'contenido-footer', component: ContenidoFooterComponent },
