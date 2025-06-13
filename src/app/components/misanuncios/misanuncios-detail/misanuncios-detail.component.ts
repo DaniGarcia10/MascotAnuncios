@@ -711,7 +711,6 @@ export class MisanunciosDetailComponent implements OnInit {
         sexo: valores.sexo,
         precio: valores.precio,
         disponible: valores.disponible,
-        descripcion: valores.descripcion,
         imagenes
       };
 
