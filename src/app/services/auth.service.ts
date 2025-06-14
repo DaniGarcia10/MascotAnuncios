@@ -71,10 +71,30 @@ export class AuthService {
   // Método para login con Facebook
   loginWithFacebook(): Promise<any> {
     const provider = new FacebookAuthProvider();
-    return this.ngZone.run(() => {
-      return signInWithPopup(this.auth, provider);
+    return this.ngZone.run(async () => {
+      const result = await signInWithPopup(this.auth, provider);
+      const user = result.user;
+
+      // Verificar si el usuario ya existe en Firestore
+      const userDocRef = doc(this.firestore, 'usuarios', user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (!userDocSnap.exists()) {
+        // Solo crea el documento si no existe
+        await setDoc(userDocRef, {
+          nombre: user.displayName || '',
+          email: user.email || '',
+          foto_perfil: user.photoURL || '',
+          telefono: '',
+          vendedor: false,
+          id_criadero: null
+        });
+      }
+
+      return result;
     });
   }
+
 
   logout(): Promise<void> {
     return this.ngZone.run(() => {
