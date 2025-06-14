@@ -115,7 +115,7 @@
                   [ngClass]="{
                     'bg-success': usuarioSeleccionado.documentacion?.estado === 'ACEPTADO',
                     'bg-warning text-dark': usuarioSeleccionado.documentacion?.estado === 'PENDIENTE',
-                    'bg-primary': usuarioSeleccionado.documentacion?.estado === 'RECHAZADO'
+                    'bg-danger': usuarioSeleccionado.documentacion?.estado === 'RECHAZADO'
                   }">
                   {{ usuarioSeleccionado.documentacion?.estado || 'Sin estado' }}
                 </span>
