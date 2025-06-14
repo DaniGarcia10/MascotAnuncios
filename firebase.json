@@ -9,5 +9,19 @@
     "ui": {
       "enabled": false
     }
+  },
+  "hosting": {
+    "public": "dist/mascot-anuncios/browser",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   }
 }

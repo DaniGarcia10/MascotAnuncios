@@ -8,5 +8,6 @@ export const environment = {
         messagingSenderId: "416737966841",
         appId: "1:416737966841:web:eea5633c8f688a69978028",
     },
-    production: false
+    production: true,
+    stripePublicKey: 'pk_live_51RUVOcCf8nuZrQy3VszKtO5ja2F24IjAusvLQ1V2ctVXUrSoA9UQ5V3ntq4NoVft00UngbKwViOKMDBLXbhK9PKo00m0a3HzlN'
 };

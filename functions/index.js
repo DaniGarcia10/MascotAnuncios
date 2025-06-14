@@ -1,11 +1,11 @@
 require('dotenv').config();
 const functions = require("firebase-functions");
-const stripe = require("stripe")("sk_test_51RUVOtEFlPjTfgQFtvivM7BgJLNIOSQf9tVlbtg4A6cEwb0vg53Mau7IUU9v9JJpx9e2OKgJsgIoORPKR8i1FKvx007abwYG1Z"); // clave secreta de Stripe
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const cors = require("cors")({ origin: true });
 const admin = require("firebase-admin");
 if (!admin.apps.length) admin.initializeApp();
 
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET || 'whsec_0KxDd5JmsnwJ3nycQrAMP8pCnKjYi6ux';
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 exports.createCheckoutSession = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
@@ -39,8 +39,8 @@ exports.createCheckoutSession = functions.https.onRequest((req, res) => {
         ],
         metadata: { id_pago }, 
         //duracion
-        success_url: `http://localhost:4200/pago-exitoso?id_pago=${id_pago}`,
-        cancel_url: "http://localhost:4200/pago-cancelado",
+        success_url: `https://mascotanuncios.com/pago-exitoso?id_pago=${id_pago}`,
+        cancel_url: "https://mascotanuncios.com/pago-cancelado",
       });
 
       res.status(200).json({ url: session.url });

@@ -215,7 +215,7 @@ export class SuscripcionesComponent implements OnInit {
 
           // 3. Llamar al backend para crear la sesión de Stripe, pasando el id_pago
           this.http.post<{ url: string }>(
-            'http://127.0.0.1:5001/mascotanunicos/us-central1/createCheckoutSession',
+            'https://us-central1-mascotanunicos.cloudfunctions.net/createCheckoutSession',
             { precio, duracion, id_pago }
           ).subscribe({
             next: (res) => {
