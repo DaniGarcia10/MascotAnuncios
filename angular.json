@@ -36,6 +36,14 @@
             ]
           },
           "configurations": {
+            "testing": {
+            "fileReplacements": [
+              {
+                "replace": "src/environments/environment.ts",
+                "with": "src/environments/environment.testing.ts"
+                }
+             ]
+           },
             "production": {
               "outputHashing": "all"
             },

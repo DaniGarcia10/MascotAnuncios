@@ -10,7 +10,6 @@ import { AuthService } from '../../services/auth.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { v4 as uuidv4 } from 'uuid';
 import { PagosService } from '../../services/pagos.service'; 
 
 @Component({
@@ -28,6 +27,7 @@ export class SuscripcionesComponent implements OnInit {
   procesando: boolean = false;
   procesandoPago: boolean = false;
 
+  
   planes = [
     { value: 30, label: '1 mes', precio: 9.99, ahorro: 'Ahorra un 0%' },
     { value: 90, label: '3 meses', precio: 24.99, ahorro: 'Ahorra un 16%' },
