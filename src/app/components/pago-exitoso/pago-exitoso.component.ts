@@ -28,10 +28,8 @@ export class PagoExitosoComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log('[PagoExitoso] Iniciando proceso de pago exitoso');
     this.authService.getUserDataAuth().subscribe({
       next: async (auth) => {
-        console.log('[PagoExitoso] Datos de auth:', auth);
         if (!auth || !auth.user) {
           this.mensaje = 'No se pudo obtener la información del usuario.';
           console.warn('[PagoExitoso] Usuario no autenticado');
@@ -46,7 +44,6 @@ export class PagoExitosoComponent implements OnInit {
 
         // Recoge el id_pago de los query params
         const id_pago = this.route.snapshot.queryParamMap.get('id_pago');
-        console.log('[PagoExitoso] id_pago recibido:', id_pago);
         if (!id_pago) {
           this.mensaje = 'No se encontró el identificador del pago.';
           console.warn('[PagoExitoso] id_pago no presente en la URL');
@@ -56,7 +53,6 @@ export class PagoExitosoComponent implements OnInit {
         try {
           // Busca el pago en Firestore
           const pago = await firstValueFrom(this.pagosService.obtenerPago(id_pago));
-          console.log('[PagoExitoso] Resultado de búsqueda de pago:', pago);
           if (!pago) {
             this.mensaje = 'No se encontró el pago en la base de datos.';
             console.warn('[PagoExitoso] Pago no encontrado en Firestore');
@@ -74,17 +70,13 @@ export class PagoExitosoComponent implements OnInit {
           }
 
           const duracion = pago.duracion || 30;
-          console.log('[PagoExitoso] Duración del pago:', duracion);
-
           // Obtener usuario y su suscripción actual
           const usuario = await this.usuarioService.getUsuarioById(uid);
-          console.log('[PagoExitoso] Usuario obtenido:', usuario);
           let suscripcionId = usuario?.suscripcion || null;
 
           if (suscripcionId) {
             // Hay suscripción previa, obtenerla
             const suscripcionActual = await firstValueFrom(this.suscripcionesService.obtenerSuscripcion(suscripcionId));
-            console.log('[PagoExitoso] Suscripción actual:', suscripcionActual);
             if (suscripcionActual) {
               // Calcular nueva fecha_fin
               const ahoraMadrid = new Date(
@@ -105,7 +97,6 @@ export class PagoExitosoComponent implements OnInit {
               await this.suscripcionesService.actualizarSuscripcion(suscripcionId, {
                 fecha_fin: nuevaFechaFin.toISOString()
               });
-              console.log('[PagoExitoso] Suscripción renovada. Nueva fecha_fin:', nuevaFechaFin.toISOString());
               this.mensaje = '¡Suscripción renovada con éxito!';
               return;
             }
@@ -123,7 +114,6 @@ export class PagoExitosoComponent implements OnInit {
 
           suscripcionId = await this.suscripcionesService.crearSuscripcion(nuevaSuscripcion);
           await this.usuarioService.actualizarUsuario(uid, { suscripcion: suscripcionId });
-          console.log('[PagoExitoso] Suscripción creada. ID:', suscripcionId);
           this.mensaje = '¡Suscripción creada con éxito!';
         } catch (error) {
           console.error('[PagoExitoso] Error al registrar la suscripción:', error);

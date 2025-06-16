@@ -13,8 +13,7 @@ import { Cachorro } from '../../../models/Cachorro.model';
 import { ArchivosService } from '../../../services/archivos.service';
 import { FavoritosService } from '../../../services/favoritos.service';
 import { AuthService } from '../../../services/auth.service';
-import { doc, setDoc, updateDoc, arrayUnion, arrayRemove, getDoc } from '@angular/fire/firestore';
-import { Firestore } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, updateDoc, arrayUnion, arrayRemove, getDoc } from '@angular/fire/firestore';
 import { DenunciasService } from '../../../services/denuncias.service';
 import { Denuncia } from '../../../models/Denuncia.model';
 

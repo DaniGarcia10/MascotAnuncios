@@ -16,7 +16,12 @@ export class ContenidoFooterComponent implements OnInit {
   ngOnInit(): void {
     // Escuchar cambios en el fragmento de la URL
     this.route.fragment.subscribe(fragment => {
-      if (fragment === 'criadores' || fragment === 'compra' || fragment === 'contacto') {
+      if (
+        fragment === 'quienes-somos' ||
+        fragment === 'criadores' ||
+        fragment === 'compra' ||
+        fragment === 'contacto'
+      ) {
         this.seccion = fragment;
       } else {
         this.seccion = 'criadores';

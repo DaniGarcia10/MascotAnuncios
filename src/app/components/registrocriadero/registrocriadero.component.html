@@ -3,23 +3,20 @@
     <!-- Menú lateral -->
     <div class="menu-lateral p-3 col-12 col-lg-3 mb-3 mb-lg-0">
       <ul class="list-group shadow-lg">
-        <li 
-          class="list-group-item" 
-          [class.active]="activeSection === 'registro'" 
-          (click)="setActiveSection('registro')"
-          *ngIf="!documentacion"
-        >
+        <li class="list-group-item" [class.active]="activeSection === 'registro'" (click)="setActiveSection('registro')"
+          *ngIf="!documentacion || documentacion?.estado === 'RECHAZADO'">
           Registrar criadero
         </li>
-        <li 
-          class="list-group-item" 
-          [class.active]="activeSection === 'verificacion'" 
-          (click)="setActiveSection('verificacion')"
-          *ngIf="documentacion"
-        >
+        <li class="list-group-item" [class.active]="activeSection === 'verificacion'"
+          (click)="setActiveSection('verificacion')" *ngIf="documentacion">
           Estado de la verificación
         </li>
       </ul>
+      <!-- Nota explicativa para publicar anuncios -->
+      <div class="alert alert-info mt-2 small" role="alert">
+        <b>Nota:</b> Para poder publicar anuncios en la plataforma, primero debes registrar tu criadero y completar la
+        verificación.
+      </div>
     </div>
     <!-- Contenido principal -->
     <div class="contenido-principal flex-grow-1 p-0 col-12 col-lg-9">
@@ -49,9 +46,10 @@
                 <h5 class="mt-3">Datos del Criadero</h5>
                 <div class="mb-3">
                   <label for="nucleo-zoologico" class="form-label">Núcleo Zoológico:</label>
-                  <input id="nucleo-zoologico" formControlName="nucleo_zoologico" type="text"
-                    class="form-control" placeholder="Ingresa el núcleo zoológico">
-                  <div *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.invalid && formRegistro.get('criadero.nucleo_zoologico')?.touched"
+                  <input id="nucleo-zoologico" formControlName="nucleo_zoologico" type="text" class="form-control"
+                    placeholder="Ingresa el núcleo zoológico">
+                  <div
+                    *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.invalid && formRegistro.get('criadero.nucleo_zoologico')?.touched"
                     class="text-danger">
                     <small *ngIf="formRegistro.get('criadero.nucleo_zoologico')?.errors?.['required']">El
                       núcleo zoológico
@@ -71,7 +69,8 @@
                   <label for="criadero-nombre" class="form-label">Nombre del Criadero:</label>
                   <input id="criadero-nombre" formControlName="nombre" type="text" class="form-control"
                     placeholder="Ingresa el nombre del criadero" required>
-                  <div *ngIf="formRegistro.get('criadero.nombre')?.invalid && formRegistro.get('criadero.nombre')?.touched"
+                  <div
+                    *ngIf="formRegistro.get('criadero.nombre')?.invalid && formRegistro.get('criadero.nombre')?.touched"
                     class="text-danger">
                     <small *ngIf="formRegistro.get('criadero.nombre')?.errors?.['required']">El nombre del
                       criadero es
@@ -85,7 +84,8 @@
                   <label for="criadero-ubicacion" class="form-label">Ubicación del Criadero:</label>
                   <input id="criadero-ubicacion" formControlName="ubicacion" type="text" class="form-control"
                     placeholder="Ingresa la provincia del criadero">
-                  <div *ngIf="formRegistro.get('criadero.ubicacion')?.invalid && formRegistro.get('criadero.ubicacion')?.touched"
+                  <div
+                    *ngIf="formRegistro.get('criadero.ubicacion')?.invalid && formRegistro.get('criadero.ubicacion')?.touched"
                     class="text-danger">
                     <small *ngIf="formRegistro.get('criadero.ubicacion')?.errors?.['required']">La ubicación
                       es
@@ -99,7 +99,8 @@
                   <label for="fotoPerfilCriadero" class="form-label">Foto de Perfil del Criadero:</label>
                   <input id="fotoPerfilCriadero" type="file" class="form-control"
                     (change)="onFileSelectedCriadero($event)">
-                  <div *ngIf="formRegistro.get('criadero.fotoPerfilCriadero')?.invalid && formRegistro.get('criadero.fotoPerfilCriadero')?.touched"
+                  <div
+                    *ngIf="formRegistro.get('criadero.fotoPerfilCriadero')?.invalid && formRegistro.get('criadero.fotoPerfilCriadero')?.touched"
                     class="text-danger">
                     <small>La foto de perfil del criadero es obligatoria.</small>
                   </div>
@@ -180,25 +181,28 @@
           </div>
           <div class="card-body custom-card-body text-center">
             <div class="mb-3">
-              <span 
-                class="badge fs-6 px-2 py-2"
-                [ngClass]="{
+              <span class="badge fs-6 px-2 py-2" [ngClass]="{
                   'badge-verificado': documentacion?.estado === 'ACEPTADO',
                   'badge-pendiente': documentacion?.estado === 'PENDIENTE',
                   'badge-rechazado': documentacion?.estado === 'RECHAZADO',
                   'bg-secondary': !['ACEPTADO', 'PENDIENTE', 'RECHAZADO'].includes(documentacion?.estado)
-                }"
-              >
+                }">
                 {{ documentacion?.estado || 'No disponible' }}
               </span>
             </div>
-            <div 
-              class="border rounded bg-white p-2 mt-2"
-              *ngIf="documentacion?.motivo && documentacion?.motivo.trim() !== ''"
-            >
-              <strong>Motivo:</strong>
+            <div class="border rounded bg-white p-2 mt-2"
+              *ngIf="documentacion?.motivo && documentacion?.motivo.trim() !== ''">
+              <strong>Motivo: </strong>
               <span>{{ documentacion?.motivo }}</span>
             </div>
+            <!-- Botón para reenviar documentación si está RECHAZADO -->
+            <button
+              *ngIf="documentacion?.estado === 'RECHAZADO'"
+              class="btn-default mt-4"
+              (click)="reenviarDocumentacion()"
+            >
+              Enviar de nuevo la documentación
+            </button>
           </div>
         </div>
       </div>

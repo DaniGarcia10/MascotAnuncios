@@ -3,6 +3,9 @@
     <!-- Menú lateral -->
     <div class="menu-lateral p-3 col-12 col-lg-3">
       <ul class="list-group shadow-lg">
+        <li class="list-group-item" [class.active]="seccion === 'quienes-somos'" (click)="seccion = 'quienes-somos'">
+          ¿Quiénes somos?
+        </li>
         <li class="list-group-item" [class.active]="seccion === 'criadores'" (click)="seccion = 'criadores'">
           Criadores verificados
         </li>
@@ -17,6 +20,40 @@
 
     <!-- Contenido -->
     <div class="col-md-9">
+      <div *ngIf="seccion==='quienes-somos'" id="quienes-somos" class="container py-5">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="card shadow-lg border-0 p-4 bg-white">
+              <div class="card-body">
+                <h2 class="fw-bold mb-4 text-center display-6">
+                  <i class="bi bi-people-fill me-2"></i>¿Quiénes somos?
+                </h2>
+                <p class="fs-6 text-dark">
+                  <strong>MascotAnuncios.com</strong> es una plataforma gratuita pensada para facilitar la publicación
+                  de anuncios de mascotas a criadores responsables y amantes de los animales.<br>
+                  Nacimos con la idea de ofrecer una alternativa clara, rápida, fácil y gratuita frente a otras webs de
+                  compraventa.
+                </p>
+                <h3 class="fw-bold fs-5 mt-4 mb-2">🚀 Nuestra misión es:</h3>
+                <ul class="fs-6 text-dark mb-4">
+                  <li>Asegurar el bienestar de las mascotas.</li>
+                  <li>Ahorrarle tiempo a los criadores con funciones como plantillas para publicar múltiples anuncios
+                    con un solo formulario.</li>
+                  <li>Ofrecer planes de pago opcionales para destacar anuncios, sin obligar a nadie a pagar.</li>
+                </ul>
+                <p class="fs-6 text-dark mb-2">
+                  🔒 Apostamos por la transparencia, el buen trato animal y la usabilidad.
+                </p>
+                <p class="fs-6 text-dark mb-0">
+                  👥 Somos un equipo de desarrolladores y amantes de los animales, comprometidos con crear una
+                  herramienta útil, accesible y centrada en la experiencia del usuario.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div *ngIf="seccion==='criadores'" id="criadores" class="container py-5">
         <div class="row justify-content-center">
           <div class="col-lg-10">
@@ -78,7 +115,7 @@
           <div class="col-lg-10">
             <div class="card shadow-lg border-0 p-4 bg-white">
               <div class="card-body">
-                <h2 class="fw-bold mb-4 text-center display-6">Compra Responsable</h2>
+                <h2 class="fw-bold mb-4 text-center display-6"><i class="bi bi-cart-check-fill text-success me-2"></i>Compra Responsable</h2>
                 <p class="fs-6 text-dark">
                   Comprar una mascota es una decisión importante que conlleva un <strong>compromiso a largo
                     plazo</strong>. Antes de adquirir un animal, asegúrate de que puedes ofrecerle el cuidado, tiempo y
@@ -122,29 +159,33 @@
       </div>
 
       <div *ngIf="seccion==='contacto'" id="contacto" class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-8">
-      <div class="card shadow-lg border-0 p-4 bg-white text-center">
-        <div class="card-body">
-          <h2 class="fw-bold mb-4 display-6">Contacto</h2>
-          <p class="fs-6 text-dark mb-3">
-            ¿Tienes dudas, sugerencias o quieres colaborar con nosotros? No dudes en escribirnos o llamarnos.
-          </p>
-          <div class="fs-5 text-dark">
-            <p class="mb-2">
-              <i class="bi bi-envelope-fill me-2"></i>
-              <strong>Email:</strong> danielgarciapelaez&#64;gmail.com
-            </p>
-            <p>
-              <i class="bi bi-telephone-fill text-success me-2"></i>
-              <strong>Teléfono:</strong> +34 608 008 186
-            </p>
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="card shadow-lg border-0 p-4 bg-white text-center">
+              <div class="card-body">
+                <h2 class="fw-bold mb-4 display-6"><i class="bi bi-envelope-fill me-2 text-danger"></i>Contacto</h2>
+                <p class="fs-6 text-dark mb-3">
+                  ¿Tienes dudas, sugerencias o quieres colaborar con nosotros? No dudes en escribirnos o llamarnos.
+                </p>
+                <div class="fs-5 text-dark">
+                  <p class="mb-2">
+                    <i class="bi bi-envelope-fill me-2"></i>
+                    <strong>Email:</strong> contacto.mascotanuncios&#64;gmail.com
+                  </p>
+                  <p>
+                    <i class="bi bi-telephone-fill text-success me-2"></i>
+                    <strong>Teléfono:</strong> +34 608 008 186
+                  </p>
+                  <p>
+                    <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+                    Estamos en <strong>Sevilla</strong>, pero trabajamos online y damos servicio a todo el país.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
 
 
     </div>

@@ -31,12 +31,10 @@ export class InicioComponent implements OnInit {
     const user = this.auth.currentUser;
     if (user) {
       this.usuarioService.getUsuarioById(user.uid).then((usuario) => {
-        console.log('Datos del usuario:', { user, usuario });
       }).catch((error: any) => {
         console.error('Error al obtener los datos del usuario:', error);
       });
     } else {
-      console.log('No hay usuario autenticado');
     }
 
     this.archivosService.cargarImagenes(['inicio.webp']).then((urls: string[]) => {

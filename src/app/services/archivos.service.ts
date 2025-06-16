@@ -119,7 +119,6 @@ async obtenerUrlImagen(ruta: string): Promise<string> {
     const storageRef = ref(this.storage, ruta);
     await uploadBytes(storageRef, imagenComprimida);
 
-    console.log(`Imagen subida (comprimida): ${ruta}`);
     return nombreArchivo;
   }
 
@@ -154,7 +153,6 @@ async obtenerUrlImagen(ruta: string): Promise<string> {
   
       try {
         await deleteObject(storageRef);
-        console.log(`Imagen eliminada: ${rutaCompleta}`);
       } catch (error) {
         console.error(`Error al eliminar la imagen ${rutaCompleta}:`, error);
       }
@@ -171,7 +169,6 @@ async obtenerUrlImagen(ruta: string): Promise<string> {
       const listado = await listAll(folderRef);
       const eliminaciones = listado.items.map((item) => deleteObject(item));
       await Promise.all(eliminaciones);
-      console.log(`Carpeta ${tipo}s/${id} eliminada con éxito.`);
     } catch (error: any) {
       if (error.code !== 'storage/object-not-found') {
         console.error(`Error al eliminar carpeta ${tipo}s/${id}:`, error);
@@ -184,7 +181,6 @@ async obtenerUrlImagen(ruta: string): Promise<string> {
   async listarArchivosUsuario(userId: string) {
     const testRef = ref(this.storage, `documentacion/${userId}/`);
     const testArchivos = await listAll(testRef);
-    console.log('Archivos directos en la carpeta del usuario:', testArchivos.items.map(a => a.name));
   }
 
   async subirDocumentacion(
@@ -216,7 +212,6 @@ async obtenerUrlImagen(ruta: string): Promise<string> {
     const storageRef = ref(this.storage, ruta);
     await uploadBytes(storageRef, archivoSubida);
 
-    console.log(`Documento subido (comprimido si era imagen): ${ruta}`);
     return nombreArchivo;
   }
 
@@ -228,7 +223,6 @@ async obtenerUrlImagen(ruta: string): Promise<string> {
   }[]> {
     const docRef = ref(this.storage, 'documentacion/');
     const carpetas = await listAll(docRef);
-    console.log('Carpetas encontradas:', carpetas.prefixes.map(c => c.name));
     const usuarios = await Promise.all(
       carpetas.prefixes.map(async carpetaRef => {
         const userId = carpetaRef.name;

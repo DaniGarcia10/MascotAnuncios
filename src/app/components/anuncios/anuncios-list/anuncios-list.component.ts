@@ -35,36 +35,38 @@ export class AnunciosListComponent implements OnInit {
   provincias: { label: string, value: string }[] = [];
 
   constructor(
-    private anunciosService: AnunciosService,
-    private route: ActivatedRoute,
-    private datosService: DatosService
+    private readonly anunciosService: AnunciosService,
+    private readonly route: ActivatedRoute,
+    private readonly datosService: DatosService
   ) { }
 
-  async ngOnInit(): Promise<void> {
-  this.esMovil = window.innerWidth < 768;
-  window.addEventListener('resize', () => {
+  ngOnInit(): void {
     this.esMovil = window.innerWidth < 768;
-  });
+    window.addEventListener('resize', () => {
+      this.esMovil = window.innerWidth < 768;
+    });
 
-  const provincias = await this.datosService.obtenerProvincias();
-  this.provincias = (provincias || []).map(p => ({ label: p, value: p }));
+    (async () => {
+      const provincias = await this.datosService.obtenerProvincias();
+      this.provincias = (provincias || []).map(p => ({ label: p, value: p }));
 
-  // Única suscripción y toda la lógica aquí
-  this.route.queryParams.subscribe(params => {
-    this.filtros.tipoAnimal = params['tipoAnimal'] ?? null;
-    this.filtros.raza = params['raza'] ?? null;
+      this.route.queryParams.subscribe(params => {
+        this.filtros.tipoAnimal = params['tipoAnimal'] ?? null;
+        this.filtros.raza = params['raza'] ?? null;
 
-    this.cargarAnuncios();
-  });
-}
+        this.cargarAnuncios();
+      });
+    })();
+  }
 
-  public cargarAnuncios(): void { // Cambia de private a public
+  public cargarAnuncios(): void {
     this.cargando = true;
     this.anuncios = [];
     this.anunciosFiltrados = [];
 
     this.anunciosService.getAnuncios().subscribe(data => {
-      this.anuncios = data;
+      // Filtrar solo los anuncios activos
+      this.anuncios = data.filter(anuncio => anuncio.activo);
       this.updateRazasList().then(() => {
         this.aplicarFiltros();
         this.cargando = false;
@@ -78,7 +80,7 @@ export class AnunciosListComponent implements OnInit {
       this.filteredRazas = [];
       return;
     }
-    const tipo = this.filtros.tipoAnimal as 'perro' | 'gato';
+    const tipo = this.filtros.tipoAnimal;
     const razas = await this.datosService.obtenerRazas(tipo);
     this.filteredRazas = (razas || []).map(raza => ({
       label: raza,
@@ -92,7 +94,7 @@ export class AnunciosListComponent implements OnInit {
       this.filteredRazas = [];
       return;
     }
-    const tipo = this.filtros.tipoAnimal as 'perro' | 'gato';
+    const tipo = this.filtros.tipoAnimal;
     const allRazas = await this.datosService.obtenerRazas(tipo);
 
     this.filteredRazas = (allRazas || [])
@@ -144,13 +146,8 @@ export class AnunciosListComponent implements OnInit {
   }
 
   ordenarAnuncios(): void {
-    if (!this.anuncios || this.anuncios.length === 0) {
-      return; // No hay anuncios para ordenar
-    }
-
-    // Si no hay anuncios filtrados todavía, copia todos los anuncios
     if (!this.anunciosFiltrados || this.anunciosFiltrados.length === 0) {
-      this.anunciosFiltrados = [...this.anuncios];
+      return; 
     }
 
     if (!this.ordenSeleccionado) {

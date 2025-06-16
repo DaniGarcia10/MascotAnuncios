@@ -25,6 +25,7 @@ import { PagoCanceladoComponent } from './components/pago-cancelado/pago-cancela
 import { ContenidoFooterComponent } from './components/contenido-footer/contenido-footer.component';
 import { PlantillasComponent } from './components/plantillas/plantillas.component';
 import { DenunciasListComponent } from './components/denuncias/denuncias-list/denuncias-list.component';
+import { anuncioActivoGuardGuard } from './guards/anuncio-activo-guard.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [NoAuthGuard] },
@@ -33,7 +34,7 @@ export const routes: Routes = [
   { path: 'inicio', component: InicioComponent },
   { path: 'perfil', component: PerfilComponent },
   { path: 'anuncios', component: AnunciosListComponent },
-  { path: 'anuncios/:id', component: AnunciosDetailComponent },
+  { path: 'anuncios/:id', component: AnunciosDetailComponent, canActivate: [anuncioActivoGuardGuard] },
   { path: 'mis-anuncios', component: MisanunciosListComponent, canActivate: [criadorGuard] },
   { path: 'mis-anuncios/:id', component: MisanunciosDetailComponent, canActivate: [criadorGuard] },
   { path: 'mascotas', component: MascotasListComponent, canActivate: [criadorGuard] },
@@ -48,7 +49,7 @@ export const routes: Routes = [
   { path: 'pago-cancelado', component: PagoCanceladoComponent },
   { path: 'contenido-footer', component: ContenidoFooterComponent },
   { path: 'plantillas', component: PlantillasComponent, canActivate: [criadorGuard] },
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '', redirectTo: '/inicio', pathMatch: 'full' },
 ];
 @NgModule({
   imports: [

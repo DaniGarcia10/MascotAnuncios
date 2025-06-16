@@ -17,6 +17,7 @@ import { AnunciosService } from '../../../services/anuncios.service';
 export class MisanunciosResumeComponent implements OnInit {
   @Input() anuncio: any;
   @Output() eliminar = new EventEmitter<any>();
+  @Output() activar = new EventEmitter<any>();
 
   criaderoData: any;
   precioMinimo: string | null = null;
@@ -89,4 +90,7 @@ export class MisanunciosResumeComponent implements OnInit {
     this.eliminar.emit(this.anuncio);
   }
   
+  activarAnuncio(id: number): void {
+    this.activar.emit(this.anuncio);
+  }
 }

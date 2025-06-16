@@ -304,4 +304,8 @@ export class RegistrocriaderoComponent implements OnInit {
       this.cdr.markForCheck();
     }
   }
+
+  reenviarDocumentacion(): void {
+    this.setActiveSection('registro');
+  }
 }

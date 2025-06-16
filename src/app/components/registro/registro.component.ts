@@ -256,14 +256,12 @@ export class RegistroComponent {
     try {
       const response: any = await this.authService.registro(usuario.email, usuario.password);
       const userId = response.user?.uid;
-      console.log('Registro exitoso:', userId);
 
       let nombreFotoPerfil = '';
       if (fotoPerfil) {
         const extension = fotoPerfil.name.split('.').pop()?.toLowerCase();
         nombreFotoPerfil = `${userId}.${extension}`;
         await this.archivosService.subirImagen(fotoPerfil, 'usuario', userId);
-        console.log('Foto de perfil subida:', nombreFotoPerfil);
       }
 
       let idCriadero: string | null = null;

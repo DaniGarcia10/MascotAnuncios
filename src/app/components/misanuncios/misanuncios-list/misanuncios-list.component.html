@@ -9,7 +9,8 @@
         <div *ngFor="let anuncio of anunciosFiltrados" class="col">
           <app-misanuncios-resume 
             [anuncio]="anuncio"
-            (eliminar)="solicitarEliminar(anuncio)">
+            (eliminar)="solicitarEliminar(anuncio)"
+            (activar)="activarAnuncio($event)">
           </app-misanuncios-resume>
         </div>
       </div>

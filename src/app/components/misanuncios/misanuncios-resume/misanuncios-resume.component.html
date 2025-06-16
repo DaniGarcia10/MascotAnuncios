@@ -1,53 +1,67 @@
-<div class="mb-3"> <!-- Eliminado col-6 -->
+<div class="mb-3">
   <div class="card h-100 d-flex flex-column shadow-sm clickable"
        [class.selected]="anuncioSeleccionado === anuncio.id"
        (click)="seleccionarAnuncio(anuncio.id)">
-
-    <div class="row g-0 row-cols-1 h-100">
-      <!-- Imagen -->
-      <div class="col-4 d-flex position-relative">
-        <div class="w-100" style="height: 140px; overflow: hidden; position: relative;">
-          <img *ngIf="anuncio.imagenes?.length"
-               [src]="anuncio.imagenes[0]"
-               class="img-fluid w-100 h-100 object-fit-cover"
-               alt="Imagen del anuncio">
+    <!-- Contenido principal afectado por opacidad y filtro -->
+    <div [ngStyle]="!anuncio.activo ? {'opacity': '0.5', 'filter': 'grayscale(1)', 'background': '#f8f9fa'} : {}">
+      <div class="row g-0 row-cols-1 h-100">
+        <!-- Imagen -->
+        <div class="col-4 d-flex position-relative">
+          <div class="w-100" style="height: 140px; overflow: hidden; position: relative;">
+            <img *ngIf="anuncio.imagenes?.length"
+                 [src]="anuncio.imagenes[0]"
+                 class="img-fluid w-100 h-100 object-fit-cover"
+                 alt="Imagen del anuncio">
+            <span *ngIf="!anuncio.activo"
+                  class="badge bg-secondary position-absolute top-50 start-0 translate-middle-y w-100 text-center py-3 px-2 rounded-0"
+                  style="z-index: 2; font-size: 1.35rem; left: 0; right: 0; border-radius: 0 0 1.5rem 1.5rem;">
+              Inactivo
+            </span>
+          </div>
         </div>
-      </div>
-
-      <!-- Contenido -->
-      <div class="col-8 d-flex flex-column">
-        <div class="card-body d-flex flex-column flex-grow-1 py-1 px-2">
-          <p class="card-text mb-1 small">
-            <i class="bi bi-clock me-1"></i>{{ calcularTiempoTranscurrido(anuncio.fecha_publicacion) }}
-          </p>
-          <h5 class="card-title fw-bold fs-6 mb-1">{{ anuncio.titulo }}</h5>
-          <ul class="list-unstyled mb-0 small">
-            <li>
-              <strong>
-                <ng-container *ngIf="anuncio?.especificar_cachorros; else precioUnico">
-                  <ng-container *ngIf="precioMinimo && precioMaximo && precioMinimo !== precioMaximo">
-                    {{ precioMinimo + '€ - ' + precioMaximo + '€' }}
+        <!-- Contenido -->
+        <div class="col-8 d-flex flex-column">
+          <div class="card-body d-flex flex-column flex-grow-1 py-1 px-2">
+            <p class="card-text mb-1 small">
+              <i class="bi bi-clock me-1"></i>{{ calcularTiempoTranscurrido(anuncio.fecha_publicacion) }}
+            </p>
+            <h5 class="card-title fw-bold fs-6 mb-1">{{ anuncio.titulo }}</h5>
+            <ul class="list-unstyled mb-0 small">
+              <li>
+                <strong>
+                  <ng-container *ngIf="anuncio?.especificar_cachorros; else precioUnico">
+                    <ng-container *ngIf="precioMinimo && precioMaximo && precioMinimo !== precioMaximo">
+                      {{ precioMinimo + '€ - ' + precioMaximo + '€' }}
+                    </ng-container>
+                    <ng-container *ngIf="precioMinimo && precioMaximo && precioMinimo === precioMaximo">
+                      {{ precioMinimo + '€' }}
+                    </ng-container>
                   </ng-container>
-                  <ng-container *ngIf="precioMinimo && precioMaximo && precioMinimo === precioMaximo">
-                    {{ precioMinimo + '€' }}
-                  </ng-container>
-                </ng-container>
-                <ng-template #precioUnico>
-                  {{ anuncio.precio }}€
-                </ng-template>
-              </strong>
-            </li>
-            <li><span class="badge bg-secondary">{{ anuncio.raza }}</span></li>
-            <li><i class="bi bi-geo-alt"></i> {{ anuncio.ubicacion }}</li>
-          </ul>         
+                  <ng-template #precioUnico>
+                    {{ anuncio.precio }}€
+                  </ng-template>
+                </strong>
+              </li>
+              <li><span class="badge bg-secondary">{{ anuncio.raza }}</span></li>
+              <li><i class="bi bi-geo-alt"></i> {{ anuncio.ubicacion }}</li>
+            </ul>         
+          </div>
         </div>
       </div>
     </div>
-
-    <!-- Footer abajo siempre -->
+    <!-- Footer abajo siempre, sin opacidad ni filtro -->
     <div *ngIf="anuncioSeleccionado === anuncio.id"
          class="card-footer bg-light text-muted d-flex justify-content-end mt-auto">
-      <button class="btn-default me-2 w-50" (click)="editarAnuncio(anuncio.id)">Editar</button>
+      <button *ngIf="!anuncio.activo"
+              class="btn btn-success me-2 w-50"
+              (click)="activarAnuncio(anuncio.id); $event.stopPropagation()">
+        Activar
+      </button>
+      <button *ngIf="anuncio.activo"
+              class="btn-default me-2 w-50"
+              (click)="editarAnuncio(anuncio.id)">
+        Editar
+      </button>
       <button class="btn btn-danger w-50" (click)="eliminarAnuncio(anuncio.id); $event.stopPropagation()">Eliminar</button>
     </div>
   </div>

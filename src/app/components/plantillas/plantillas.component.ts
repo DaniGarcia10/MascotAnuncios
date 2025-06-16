@@ -23,6 +23,7 @@ export class PlantillasComponent implements OnInit {
   misPlantillas: Plantilla[] = [];
   idPlantillaAEliminar: string | null = null;
   plantillaSeleccionadaId: string | null = null;
+  cargandoPlantillas = false; // NUEVO
 
   constructor(
     private fb: FormBuilder,
@@ -83,8 +84,12 @@ export class PlantillasComponent implements OnInit {
   cargarMisPlantillas(): void {
     const idUsuario = this.formPlantilla.get('id_usuario')?.value;
     if (!idUsuario) return;
+    this.cargandoPlantillas = true; 
     this.plantillasService.getPlantillaByUsuario(idUsuario).subscribe(plantillas => {
       this.misPlantillas = plantillas;
+      this.cargandoPlantillas = false;
+    }, () => {
+      this.cargandoPlantillas = false;
     });
   }
 

@@ -15,18 +15,25 @@
           </div>
           <!-- Separador -->
           <hr class="my-2">
-          <ng-container *ngIf="misPlantillas.length > 0; else sinPlantillas">
-            <div *ngFor="let plantilla of misPlantillas" class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
-              <span (click)="onSeleccionarPlantilla(plantilla.id)" style="cursor:pointer;">
-                {{ plantilla.nombre }}
-              </span>
-              <button class="btn btn-sm btn-outline-danger" (click)="abrirModalEliminar(plantilla.id)">
-                <i class="bi bi-trash"></i>
-              </button>
-            </div>
+
+          <!-- NUEVO BLOQUE DE MENSAJES -->
+          <ng-container *ngIf="cargandoPlantillas; else plantillasCargadas">
+            <p class="text-center text-muted">Cargando plantillas...</p>
           </ng-container>
-          <ng-template #sinPlantillas>
-            <p class="text-muted text-center">No tienes plantillas guardadas.</p>
+          <ng-template #plantillasCargadas>
+            <ng-container *ngIf="misPlantillas.length > 0; else sinPlantillas">
+              <div *ngFor="let plantilla of misPlantillas" class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
+                <span (click)="onSeleccionarPlantilla(plantilla.id)" style="cursor:pointer;">
+                  {{ plantilla.nombre }}
+                </span>
+                <button class="btn btn-sm btn-outline-danger" (click)="abrirModalEliminar(plantilla.id)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </ng-container>
+            <ng-template #sinPlantillas>
+              <p class="text-muted text-center">No hay plantillas disponibles.</p>
+            </ng-template>
           </ng-template>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AnunciosService } from '../../../services/anuncios.service';
-import { AuthService } from '../../../services/auth.service'; // Importar el servicio de autenticación
+import { AuthService } from '../../../services/auth.service'; 
 import { CommonModule } from '@angular/common';
 import { MisanunciosResumeComponent } from '../misanuncios-resume/misanuncios-resume.component';
 import { Router } from '@angular/router';
@@ -21,7 +21,11 @@ export class MisanunciosListComponent implements OnInit, OnDestroy {
   mostrarModal: boolean = false;
   anuncioAEliminar: any = null;
 
-  constructor(private anunciosService: AnunciosService, private authService: AuthService, private router: Router) {}
+  constructor(
+    private readonly anunciosService: AnunciosService,
+    private readonly authService: AuthService,
+    private readonly router: Router
+  ) {}
 
   ngOnInit(): void {
     this.userSub = this.authService.getUserDataAuth().subscribe(({ user }) => {
@@ -70,6 +74,12 @@ export class MisanunciosListComponent implements OnInit, OnDestroy {
     this.anunciosService.eliminarAnuncio(this.anuncioAEliminar.id).subscribe(() => {
       this.anunciosFiltrados = this.anunciosFiltrados.filter(a => a.id !== this.anuncioAEliminar.id);
       this.cancelarEliminar();
+    });
+  }
+
+  activarAnuncio(anuncio: any): void {
+    this.anunciosService.actualizarAnuncio(anuncio.id, { activo: true }).then(() => {
+      anuncio.activo = true;
     });
   }
 
