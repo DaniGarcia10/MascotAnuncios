@@ -27,6 +27,9 @@
             </li>
           </ul>
         </li>
+        <li *ngIf="isAuthenticated && (!verificado || !documentacionCargada)" class="nav-item me-3">
+          <a class="nav-link" routerLink="/registrocriadero">Publicar como criador</a>
+        </li>
 
         <!-- Área del vendedor -->
         <ng-container *ngIf="isAuthenticated && esVendedor && verificado">
@@ -42,7 +45,7 @@
               <li><a class="dropdown-item" routerLink="/mis-anuncios"><i class="bi bi-card-list"></i> Mis anuncios</a></li>
               <li><a class="dropdown-item" routerLink="/mascotas"><i class="bi bi-list-ul"></i> Mis mascotas</a></li>
               <li><a class="dropdown-item" routerLink="/plantillas"><i class="bi bi-journal-text"></i> Mis plantillas</a></li>
-              <li><a class="dropdown-item" routerLink="/suscripciones"><i class="bi bi-star-fill"></i> Mi suscripción</a></li>
+              <li><a class="dropdown-item" routerLink="/suscripciones"><i class="bi bi-star-fill"></i> Destacar anuncios</a></li>
             </ul>
           </li>
         </ng-container>
@@ -77,7 +80,6 @@
               <i class="fas fa-user-circle fa-2x"></i>
             </a>
             <ul class="dropdown-menu dropdown-custom dropdown-menu-end" aria-labelledby="profileDropdown">
-              <li *ngIf="!verificado || !documentacionCargada"><a class="dropdown-item" routerLink="/registrocriadero">Publicación de anuncios</a></li>
               <li><a class="dropdown-item" routerLink="/perfil"><i class="bi bi-person-fill"></i> Mi perfil</a></li>
               <li><a class="dropdown-item" routerLink="/favoritos"><i class="bi bi-heart-fill"></i> Favoritos</a></li>
               <li><a class="dropdown-item" (click)="logout()"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a></li>

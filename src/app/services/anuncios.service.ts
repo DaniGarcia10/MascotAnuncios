@@ -155,6 +155,7 @@ export class AnunciosService {
    * @param data Campos a actualizar
    */
   async actualizarAnuncio(idAnuncio: string, data: any): Promise<void> {
+    console.log(data);
     const anuncioDocRef = doc(this.firestore, 'anuncios', idAnuncio);
     await updateDoc(anuncioDocRef, data);
   }

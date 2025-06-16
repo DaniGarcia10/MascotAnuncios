@@ -515,6 +515,20 @@
           </div>
 
           <div class="mb-3">
+            <label class="form-label">Precio del anuncio:</label>
+            <input type="number" class="form-control" formControlName="precio" placeholder="Precio del anuncio">
+            <small *ngIf="formAnuncio.get('precio')?.invalid && formAnuncio.get('precio')?.touched"
+              class="text-danger">
+              <ng-container *ngIf="formAnuncio.get('precio')?.errors?.['required']">
+                El precio es obligatorio.
+              </ng-container>
+              <ng-container *ngIf="formAnuncio.get('precio')?.errors?.['max']">
+                El precio no puede superar 100000.
+              </ng-container>
+            </small>
+          </div>
+
+          <div class="mb-3">
             <label class="form-label">Descripción:</label>
             <textarea class="form-control" formControlName="descripcion"></textarea>
             <small

@@ -62,10 +62,6 @@ export class LoginComponent {
   loginWithGoogle(): void {
     this.authService.loginWithGoogle().then((result: any) => {
       const user = result.user;
-      console.log('UID:', user.uid);
-      console.log('Nombre:', user.displayName);
-      console.log('Email:', user.email);
-      console.log('Foto:', user.photoURL);
       this.router.navigate(['/anuncios']);
     }).catch((error: any) => {
       const code = error?.code;
